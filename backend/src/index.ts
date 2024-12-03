@@ -1,19 +1,19 @@
 import "reflect-metadata";
-import { datasource } from "./datasource";
+import { datasource } from "./datasource/datasource";
 import { buildSchema } from "type-graphql";
 import { PicturesResolver } from "./resolvers/Pictures";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { CategoriesResolver } from "./resolvers/Categories";
-import { AdsResolver } from "./resolvers/Ads";
 import { TagsResolver } from "./resolvers/Tags";
+import { SeasonsResolver } from "./resolvers/Seasons";
+import { IngredientTypesResolver } from "./resolvers/IngredientTypes";
 
 async function initiliaze() {
   await datasource.initialize();
   console.log("Datasource is connected 🔌");
 
   const schema = await buildSchema({
-    resolvers: [AdsResolver, CategoriesResolver, TagsResolver],
+    resolvers: [SeasonsResolver, IngredientTypesResolver],
     validate: true
   })
 
