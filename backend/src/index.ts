@@ -8,13 +8,14 @@ import { TagsResolver } from "./resolvers/Tags";
 import { SeasonsResolver } from "./resolvers/SeasonsResolver";
 import { IngredientTypesResolver } from "./resolvers/IngredientTypesResolver";
 import { UnitsResolver } from "./resolvers/UnitsResolver";
+import { IngredientsResolver } from "./resolvers/IngredientsResolver";
 
 async function initiliaze() {
   await datasource.initialize();
   console.log("Datasource is connected 🔌");
 
   const schema = await buildSchema({
-    resolvers: [SeasonsResolver, IngredientTypesResolver, UnitsResolver],
+    resolvers: [SeasonsResolver, IngredientTypesResolver, UnitsResolver, IngredientsResolver],
     validate: true
   })
 

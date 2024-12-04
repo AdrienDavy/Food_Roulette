@@ -2,6 +2,7 @@ import { datasource } from "../datasource";
 import { seedSeasons } from "./seedSeasons";
 import { seedIngredientTypes } from "./seedIngredientTypes";
 import { seedUnits } from "./seedUnits";
+import { seedIngredients } from "./seedIngredients";
 
 
 // When you init this project, run npm run seed
@@ -14,6 +15,7 @@ async function runSeeds() {
         await seedUnits();
         await seedSeasons();
         await seedIngredientTypes();
+        await seedIngredients();
 
         console.log("Seeds executed successfully! 🌱");
     } catch (error) {
