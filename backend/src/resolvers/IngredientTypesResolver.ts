@@ -1,5 +1,5 @@
 import { Arg, ID, Info, Mutation, Query, Resolver } from "type-graphql";
-import { IngredientType, IngredientTypeCreateInput, IngredientTypeUpdateInput } from "../entities/IngredientType";
+import { IngredientType, IngredientTypeCreateInput, IngredientTypeUpdateInput } from "../entities/IngredientTypeEntitie";
 import { GraphQLResolveInfo } from "graphql";
 import { makeRelations } from "../utils/makeRelations";
 

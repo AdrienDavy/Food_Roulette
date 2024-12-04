@@ -5,15 +5,16 @@ import { PicturesResolver } from "./resolvers/Pictures";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { TagsResolver } from "./resolvers/Tags";
-import { SeasonsResolver } from "./resolvers/Seasons";
-import { IngredientTypesResolver } from "./resolvers/IngredientTypes";
+import { SeasonsResolver } from "./resolvers/SeasonsResolver";
+import { IngredientTypesResolver } from "./resolvers/IngredientTypesResolver";
+import { UnitsResolver } from "./resolvers/UnitsResolver";
 
 async function initiliaze() {
   await datasource.initialize();
   console.log("Datasource is connected 🔌");
 
   const schema = await buildSchema({
-    resolvers: [SeasonsResolver, IngredientTypesResolver],
+    resolvers: [SeasonsResolver, IngredientTypesResolver, UnitsResolver],
     validate: true
   })
 

@@ -1,5 +1,5 @@
 import { Arg, ID, Info, Mutation, Query, Resolver } from "type-graphql";
-import { Season, SeasonCreateInput, SeasonUpdateInput } from "../entities/Season";
+import { Season, SeasonCreateInput, SeasonUpdateInput } from "../entities/SeasonEntitie";
 import { GraphQLResolveInfo } from "graphql";
 import { makeRelations } from "../utils/makeRelations";
 

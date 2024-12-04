@@ -1,6 +1,6 @@
-import { IngredientType } from "../../entities/IngredientType";
+import { IngredientType } from "../../entities/IngredientTypeEntitie";
 
-export async function seedIngredients() {
+export async function seedIngredientTypes() {
     console.log("Vérification des types d'ingrédients existants...");
 
     const existingIngredientTypes = await IngredientType.find();
