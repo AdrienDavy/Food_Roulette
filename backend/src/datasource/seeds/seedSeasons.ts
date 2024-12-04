@@ -1,4 +1,4 @@
-import { Season, SeasonName } from "../../entities/Season";
+import { Season, SeasonName } from "../../entities/SeasonEntitie";
 
 export async function seedSeasons() {
     console.log("Vérification des saisons existantes...");
