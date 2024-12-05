@@ -49,6 +49,9 @@ export class BrandCreateInput {
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image!: string;
+
+    @Field(() => [ID], { nullable: true })
+    ingredientIds!: number[];
 }
 
 @InputType()
@@ -59,4 +62,7 @@ export class BrandUpdateInput {
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image!: string;
+
+    @Field(() => [ID], { nullable: true })
+    ingredientIds!: number[];
 }

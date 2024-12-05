@@ -57,6 +57,7 @@ export class SeasonsResolver {
         const season = await Season.findOneBy({ id });
         if (season !== null) {
             await season.remove();
+            Object.assign(season, { id });
             return season;
         } else {
             return null;

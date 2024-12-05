@@ -148,10 +148,12 @@ export class IngredientsResolver {
     @Mutation(() => Ingredient, { nullable: true })
     async deleteIngredient(@Arg("id", () => ID) id: number): Promise<Ingredient | null> {
         const ingredient = await Ingredient.findOneBy({ id });
-        if (!ingredient) return null;
-
-        await ingredient.remove();
-        Object.assign(ingredient, { id });
-        return ingredient;
+        if (ingredient !== null) {
+            await ingredient.remove();
+            Object.assign(ingredient, { id });
+            return ingredient;
+        } else {
+            return null;
+        }
     }
 }

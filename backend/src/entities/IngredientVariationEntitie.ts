@@ -40,7 +40,6 @@ export class IngredientVariation extends BaseEntity {
     @Field(() => [Shop], { nullable: true })
     shops!: Shop[];
 
-
     @ManyToOne(() => Ingredient, (ingredient) => ingredient.variations, { nullable: false })
     @Field(() => Ingredient)
     ingredient!: Ingredient;

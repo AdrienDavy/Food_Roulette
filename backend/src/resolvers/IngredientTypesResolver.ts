@@ -61,6 +61,7 @@ export class IngredientTypesResolver {
         const ingredientType = await IngredientType.findOneBy({ id });
         if (ingredientType !== null) {
             await ingredientType.remove();
+            Object.assign(ingredientType, { id });
             return ingredientType;
         } else {
             return null;

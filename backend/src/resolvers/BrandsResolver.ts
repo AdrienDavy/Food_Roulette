@@ -3,6 +3,8 @@ import { Brand, BrandCreateInput, BrandUpdateInput } from "../entities/BrandEnti
 import { makeRelations } from "../utils/makeRelations";
 import { GraphQLResolveInfo } from "graphql";
 import { In } from "typeorm";
+import { cleanAndCapitalize } from "../utils/cleanAndCapitalizeFirstLetter";
+import { Ingredient } from "../entities/IngredientEntitie";
 
 @Resolver()
 export class BrandResolver {
@@ -26,7 +28,7 @@ export class BrandResolver {
         @Arg("data", () => [BrandCreateInput]) data: BrandCreateInput[]
     ): Promise<Brand[]> {
         // Déduplique les noms
-        const uniqueNames = [...new Set(data.map((brand) => brand.name))];
+        const uniqueNames = [...new Set(data.map((brand) => cleanAndCapitalize(brand.name)))];
 
         // Vérifie les doublons existants
         const existingBrands = await Brand.find({
@@ -44,15 +46,31 @@ export class BrandResolver {
 
         // Crée les nouvelles marques
         const brands: Brand[] = [];
-        for (const name of uniqueNames) {
+        for (const item of data) {
             const brand = new Brand();
-            brand.name = name;
+            brand.name = cleanAndCapitalize(item.name);
+            brand.image = item.image;
+
+            // Si des ingredientIds sont fournis, les associer
+            if (item.ingredientIds && item.ingredientIds.length > 0) {
+                const ingredients = await Ingredient.findBy({
+                    id: In(item.ingredientIds),
+                });
+
+                if (ingredients.length !== item.ingredientIds.length) {
+                    throw new Error("Some ingredient IDs are invalid.");
+                }
+
+                brand.ingredients = ingredients;
+            }
+
             await brand.save();
             brands.push(brand);
         }
 
         return brands;
     }
+
 
     @Mutation(() => Brand, { nullable: true })
     async updateBrand(
@@ -71,10 +89,13 @@ export class BrandResolver {
     @Mutation(() => Brand, { nullable: true })
     async deleteBrand(@Arg("id", () => ID) id: number): Promise<Brand | null> {
         const brand = await Brand.findOneBy({ id });
-        if (!brand) return null;
-
-        await brand.remove();
-        return brand;
+        if (brand !== null) {
+            await brand.remove();
+            Object.assign(brand, { id });
+            return brand;
+        } else {
+            return null;
+        }
     }
 
 

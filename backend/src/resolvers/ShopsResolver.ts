@@ -89,10 +89,13 @@ export class ShopResolver {
     @Mutation(() => Shop, { nullable: true })
     async deleteShop(@Arg("id", () => ID) id: number): Promise<Shop | null> {
         const shop = await Shop.findOneBy({ id });
-        if (!shop) return null;
-
-        await shop.remove();
-        return shop;
+        if (shop !== null) {
+            await shop.remove();
+            Object.assign(shop, { id });
+            return shop;
+        } else {
+            return null;
+        }
     }
 
 

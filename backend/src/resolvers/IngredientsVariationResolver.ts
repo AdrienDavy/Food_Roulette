@@ -92,10 +92,12 @@ export class IngredientVariationResolver {
     @Mutation(() => IngredientVariation, { nullable: true })
     async deleteIngredientVariation(@Arg("id", () => ID) id: number): Promise<IngredientVariation | null> {
         const variation = await IngredientVariation.findOneBy({ id });
-        if (!variation) return null;
-
-        await variation.remove();
-        Object.assign(variation, { id });
-        return variation;
+        if (variation !== null) {
+            await variation.remove();
+            Object.assign(variation, { id });
+            return variation;
+        } else {
+            return null;
+        }
     }
 }

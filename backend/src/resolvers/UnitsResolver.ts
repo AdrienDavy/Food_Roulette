@@ -49,10 +49,12 @@ export class UnitsResolver {
     @Mutation(() => Unit, { nullable: true })
     async deleteUnit(@Arg("id", () => ID) id: number): Promise<Unit | null> {
         const unit = await Unit.findOneBy({ id });
-        if (!unit) return null;
-
-        await unit.remove();
-        Object.assign(unit, { id });
-        return unit;
+        if (unit !== null) {
+            await unit.remove();
+            Object.assign(unit, { id });
+            return unit;
+        } else {
+            return null;
+        }
     }
 }
