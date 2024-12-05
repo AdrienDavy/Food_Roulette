@@ -2,13 +2,19 @@ import {
     BaseEntity,
     Column,
     Entity,
+    JoinTable,
+    ManyToMany,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ID, InputType, ObjectType } from "type-graphql";
 import { IsNotEmpty, IsUrl, Length } from "class-validator";
 import { IngredientType } from "./IngredientTypeEntitie";
 import { Season } from "./SeasonEntitie";
+import { IngredientVariation } from "./IngredientVariationEntitie";
+import { Brand } from "./BrandEntitie";
+import { Shop } from "./ShopEntitie";
 
 @Entity("ingredients")
 @ObjectType()
@@ -28,6 +34,10 @@ export class Ingredient extends BaseEntity {
     @Field({ nullable: true })
     image!: string;
 
+    @OneToMany(() => IngredientVariation, (variation) => variation.ingredient)
+    @Field(() => [IngredientVariation], { nullable: true })
+    variations!: IngredientVariation[];
+
     @ManyToOne(() => IngredientType, { nullable: true })
     @Field(() => IngredientType, { nullable: true })
     type!: IngredientType;
@@ -35,6 +45,15 @@ export class Ingredient extends BaseEntity {
     @ManyToOne(() => Season, { nullable: true })
     @Field(() => Season, { nullable: true })
     season!: Season;
+
+    @ManyToOne(() => Brand, (brand) => brand.ingredients, { nullable: true })
+    @Field(() => Brand, { nullable: true })
+    brand!: Brand;
+
+    @ManyToMany(() => Shop, (shop) => shop.ingredients)
+    @JoinTable()
+    @Field(() => [Shop], { nullable: true })
+    shops!: Shop[];
 
     @Column({ default: false })
     @Field()
@@ -58,6 +77,12 @@ export class IngredientCreateInput {
     @Field(() => ID, { nullable: true })
     seasonId!: number;
 
+    @Field(() => ID, { nullable: true })
+    brandId!: number;
+
+    @Field(() => ID, { nullable: true })
+    shopId!: number;
+
     @Field({ defaultValue: false })
     hasIngredient!: boolean;
 }
@@ -77,6 +102,12 @@ export class IngredientUpdateInput {
 
     @Field(() => ID, { nullable: true })
     seasonId?: number;
+
+    @Field(() => ID, { nullable: true })
+    brandId!: number;
+
+    @Field(() => ID, { nullable: true })
+    shopId!: number;
 
     @Field({ nullable: true })
     hasIngredient?: boolean;

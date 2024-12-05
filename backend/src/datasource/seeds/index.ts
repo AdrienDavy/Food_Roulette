@@ -3,6 +3,9 @@ import { seedSeasons } from "./seedSeasons";
 import { seedIngredientTypes } from "./seedIngredientTypes";
 import { seedUnits } from "./seedUnits";
 import { seedIngredients } from "./seedIngredients";
+import { seedIngredientVariations } from "./seedIngredientVariations";
+import { seedBrands } from "./seedBrands";
+import { seedShops } from "./seedShops";
 
 
 // When you init this project, run npm run seed
@@ -16,6 +19,9 @@ async function runSeeds() {
         await seedSeasons();
         await seedIngredientTypes();
         await seedIngredients();
+        await seedIngredientVariations()
+        await seedBrands()
+        await seedShops()
 
         console.log("Seeds executed successfully! 🌱");
     } catch (error) {

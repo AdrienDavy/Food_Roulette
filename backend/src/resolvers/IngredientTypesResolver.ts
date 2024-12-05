@@ -17,8 +17,12 @@ export class IngredientTypesResolver {
 
     // Requête pour récupérer un type d'ingrédient par ID
     @Query(() => IngredientType, { nullable: true })
-    async ingredientType(@Arg("id", () => ID) id: number): Promise<IngredientType | null> {
-        const ingredientType = await IngredientType.findOneBy({ id });
+    async ingredientType(@Arg("id", () => ID) id: number, @Info() info: GraphQLResolveInfo): Promise<IngredientType | null> {
+        const ingredientType = await IngredientType.findOne({
+            where: { id },
+            relations:
+                makeRelations(info, IngredientType),
+        });
         if (ingredientType) {
             return ingredientType;
         } else {
