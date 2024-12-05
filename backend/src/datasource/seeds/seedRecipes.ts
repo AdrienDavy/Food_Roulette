@@ -16,7 +16,7 @@ export async function seedRecipes() {
                 preparation: "Râpez les carottes et assaisonnez avec une vinaigrette.",
                 cookTime: 0,
                 ingredientIds: [1], // Carotte
-                variationIds: [], // Aucune variation
+                variationIds: [1], // Aucune variation
                 tagIds: [1], // Exemple : Tag 'Végétarien'
                 seasonId: 1, // Printemps
                 image: "https://cdn.pixabay.com/photo/2017/03/22/22/35/salad-2163197_960_720.jpg",

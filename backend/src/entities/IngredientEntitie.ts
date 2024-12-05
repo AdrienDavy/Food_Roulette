@@ -53,7 +53,7 @@ export class Ingredient extends BaseEntity {
 
 
     @Column({ default: false })
-    @Field()
+    @Field({ nullable: true })
     hasIngredient!: boolean;
 }
 
@@ -74,11 +74,10 @@ export class IngredientCreateInput {
     @Field(() => ID, { nullable: true })
     seasonId!: number;
 
-
     @Field(() => [ID], { nullable: true })
     shopIds!: number[];
 
-    @Field({ defaultValue: false })
+    @Field({ defaultValue: false, nullable: true })
     hasIngredient!: boolean;
 }
 
@@ -98,10 +97,9 @@ export class IngredientUpdateInput {
     @Field(() => ID, { nullable: true })
     seasonId?: number;
 
-
     @Field(() => ID, { nullable: true })
     shopId!: number;
 
-    @Field({ nullable: true })
+    @Field({ defaultValue: false, nullable: true })
     hasIngredient?: boolean;
 }

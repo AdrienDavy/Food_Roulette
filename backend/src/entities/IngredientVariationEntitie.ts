@@ -43,6 +43,11 @@ export class IngredientVariation extends BaseEntity {
     @ManyToOne(() => Ingredient, (ingredient) => ingredient.variations, { nullable: false })
     @Field(() => Ingredient)
     ingredient!: Ingredient;
+
+
+    @Column({ default: false })
+    @Field()
+    hasIngredient!: boolean;
 }
 
 @InputType()
@@ -56,6 +61,9 @@ export class IngredientVariationCreateManyInput {
 
     @Field(() => ID)
     ingredientId!: number; // ID de l'ingrédient parent
+
+    @Field({ defaultValue: false })
+    hasIngredient!: boolean;
 }
 
 
@@ -71,4 +79,7 @@ export class IngredientVariationUpdateInput {
 
     @Field(() => ID, { nullable: true })
     ingredientId?: number;
+
+    @Field({ defaultValue: false })
+    hasIngredient!: boolean;
 }

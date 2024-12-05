@@ -16,14 +16,14 @@ async function runSeeds() {
         await datasource.initialize();
         console.log("Datasource is connected 🔌");
 
-        await seedUnits();
-        await seedSeasons();
-        await seedIngredientTypes();
+        await seedBrands();
         await seedIngredients();
-        await seedIngredientVariations()
-        await seedBrands()
-        await seedShops()
-        await seedRecipes()
+        await seedIngredientTypes();
+        await seedIngredientVariations();
+        await seedRecipes();
+        await seedSeasons();
+        await seedShops();
+        await seedUnits();
 
         console.log("Seeds executed successfully! 🌱");
     } catch (error) {
