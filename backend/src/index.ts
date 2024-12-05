@@ -9,13 +9,17 @@ import { SeasonsResolver } from "./resolvers/SeasonsResolver";
 import { IngredientTypesResolver } from "./resolvers/IngredientTypesResolver";
 import { UnitsResolver } from "./resolvers/UnitsResolver";
 import { IngredientsResolver } from "./resolvers/IngredientsResolver";
+import { IngredientVariationResolver } from "./resolvers/IngredientsVariationResolver";
+import { BrandResolver } from "./resolvers/BrandsResolver";
+import { ShopResolver } from "./resolvers/ShopsResolver";
 
 async function initiliaze() {
   await datasource.initialize();
   console.log("Datasource is connected 🔌");
 
   const schema = await buildSchema({
-    resolvers: [SeasonsResolver, IngredientTypesResolver, UnitsResolver, IngredientsResolver],
+    resolvers: [SeasonsResolver, IngredientTypesResolver, UnitsResolver, IngredientsResolver,
+      IngredientVariationResolver, BrandResolver, ShopResolver],
     validate: true
   })
 

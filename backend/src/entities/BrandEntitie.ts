@@ -1,0 +1,62 @@
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from "typeorm";
+import { Field, ID, InputType, ObjectType } from "type-graphql";
+import { Ingredient } from "./IngredientEntitie";
+import { IngredientType } from "./IngredientTypeEntitie";
+import { IngredientVariation } from "./IngredientVariationEntitie";
+import { IsUrl } from "class-validator";
+
+@Entity("brands")
+@ObjectType()
+export class Brand extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    @Field(() => ID)
+    id!: number;
+
+    @Column()
+    @Field()
+    name!: string;
+
+    @Column({ nullable: true })
+    @IsUrl({}, { message: "Image must be a valid URL" })
+    @Field({ nullable: true })
+    image!: string;
+
+    @OneToMany(() => Ingredient, (ingredient) => ingredient.brand)
+    @Field(() => [Ingredient], { nullable: true })
+    ingredients!: Ingredient[];
+
+    @OneToMany(() => IngredientType, (type) => type.brand)
+    @Field(() => [IngredientType], { nullable: true })
+    ingredientTypes!: IngredientType[];
+
+    @OneToMany(() => IngredientVariation, (variation) => variation.brand)
+    @Field(() => [IngredientVariation], { nullable: true })
+    ingredientVariations!: IngredientVariation[];
+}
+
+@InputType()
+export class BrandCreateInput {
+    @Field()
+    name!: string;
+
+    @IsUrl({}, { message: "Image must be a valid URL" })
+    @Field({ nullable: true })
+    image!: string;
+}
+
+@InputType()
+export class BrandUpdateInput {
+    @Field({ nullable: true })
+    name?: string;
+
+    @IsUrl({}, { message: "Image must be a valid URL" })
+    @Field({ nullable: true })
+    image!: string;
+}
