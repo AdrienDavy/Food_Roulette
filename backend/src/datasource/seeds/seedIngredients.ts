@@ -8,12 +8,12 @@ export async function seedIngredients() {
     const existingIngredients = await Ingredient.find();
     if (existingIngredients.length === 0) {
         const ingredientsData = [
-            { name: "carotte", image: "https://cdn.pixabay.com/photo/2015/09/29/19/17/isolated-964393_960_720.png", typeId: 1, seasonId: 1, hasIngredient: true },
-            { name: "fraise", image: "https://cdn.pixabay.com/photo/2015/08/19/17/47/strawberry-896397_960_720.jpg", typeId: 2, seasonId: 2, hasIngredient: false },
-            { name: "cannelle", image: "https://cdn.pixabay.com/photo/2024/07/01/04/13/ai-generated-8864269_960_720.png", typeId: 3, seasonId: 5, hasIngredient: true },
-            { name: "basilic", image: "https://cdn.pixabay.com/photo/2024/06/20/07/36/ai-generated-8841454_960_720.png", typeId: 4, seasonId: 1, hasIngredient: false },
-            { name: "riz", image: "https://cdn.pixabay.com/photo/2014/10/12/18/33/rice-485814_960_720.jpg", typeId: 5, seasonId: 5, hasIngredient: true },
-            { name: "poulet", image: "https://cdn.pixabay.com/photo/2021/01/06/13/42/chicken-5894448_960_720.jpg", typeId: 6, seasonId: 5, hasIngredient: true },
+            { name: "Carotte", image: "https://cdn.pixabay.com/photo/2015/09/29/19/17/isolated-964393_960_720.png", typeId: 1, seasonId: 1, hasIngredient: true },
+            { name: "Fraise", image: "https://cdn.pixabay.com/photo/2015/08/19/17/47/strawberry-896397_960_720.jpg", typeId: 2, seasonId: 2, hasIngredient: false },
+            { name: "Cannelle", image: "https://cdn.pixabay.com/photo/2024/07/01/04/13/ai-generated-8864269_960_720.png", typeId: 3, seasonId: 5, hasIngredient: true },
+            { name: "Basilic", image: "https://cdn.pixabay.com/photo/2024/06/20/07/36/ai-generated-8841454_960_720.png", typeId: 4, seasonId: 1, hasIngredient: false },
+            { name: "Riz", image: "https://cdn.pixabay.com/photo/2014/10/12/18/33/rice-485814_960_720.jpg", typeId: 5, seasonId: 5, hasIngredient: true },
+            { name: "Poulet", image: "https://cdn.pixabay.com/photo/2021/01/06/13/42/chicken-5894448_960_720.jpg", typeId: 6, seasonId: 5, hasIngredient: true },
         ];
 
         for (const data of ingredientsData) {

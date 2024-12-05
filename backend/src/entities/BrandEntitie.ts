@@ -7,7 +7,6 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ID, InputType, ObjectType } from "type-graphql";
-import { Ingredient } from "./IngredientEntitie";
 import { IngredientType } from "./IngredientTypeEntitie";
 import { IngredientVariation } from "./IngredientVariationEntitie";
 import { IsUrl } from "class-validator";
@@ -28,10 +27,6 @@ export class Brand extends BaseEntity {
     @Field({ nullable: true })
     image!: string;
 
-    @OneToMany(() => Ingredient, (ingredient) => ingredient.brand)
-    @Field(() => [Ingredient], { nullable: true })
-    ingredients!: Ingredient[];
-
     @OneToMany(() => IngredientType, (type) => type.brand)
     @Field(() => [IngredientType], { nullable: true })
     ingredientTypes!: IngredientType[];
@@ -51,7 +46,7 @@ export class BrandCreateInput {
     image!: string;
 
     @Field(() => [ID], { nullable: true })
-    ingredientIds!: number[];
+    ingredientVariationIds!: number[];
 }
 
 @InputType()
@@ -64,5 +59,5 @@ export class BrandUpdateInput {
     image!: string;
 
     @Field(() => [ID], { nullable: true })
-    ingredientIds!: number[];
+    ingredientVariationIds!: number[];
 }

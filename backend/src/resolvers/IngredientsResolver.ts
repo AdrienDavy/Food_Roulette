@@ -5,8 +5,9 @@ import { Season } from "../entities/SeasonEntitie";
 import { validate } from "class-validator";
 import { GraphQLResolveInfo } from "graphql";
 import { makeRelations } from "../utils/makeRelations";
-import { Brand } from "../entities/BrandEntitie";
 import { Shop } from "../entities/ShopEntitie";
+import { cleanAndCapitalize } from "../utils/cleanAndCapitalizeFirstLetter";
+import { In } from "typeorm";
 
 @Resolver()
 export class IngredientsResolver {
@@ -37,68 +38,48 @@ export class IngredientsResolver {
     async createIngredient(
         @Arg("data", () => IngredientCreateInput) data: IngredientCreateInput
     ): Promise<Ingredient> {
-
         // Vérifie si un ingrédient avec le même nom existe déjà
-        const existingIngredient = await Ingredient.findOneBy({ name: data.name });
+        const existingIngredient = await Ingredient.findOneBy({ name: cleanAndCapitalize(data.name) });
         if (existingIngredient) {
             throw new Error(`An ingredient with the name "${data.name}" already exists.`);
         }
 
-        // Vérifie si le type existe
-        const type = data.typeId ? await IngredientType.findOneBy({ id: data.typeId }) : null;
-        if (data.typeId && !type) {
-            throw new Error(`No ingredient type found with id "${data.typeId}".`);
-        }
-
-        // Vérifie si la saison existe
-        const season = data.seasonId ? await Season.findOneBy({ id: data.seasonId }) : null;
-        if (data.seasonId && !season) {
-            throw new Error(`No season found with id "${data.seasonId}".`);
-        }
-
-        // Vérifie si la saison existe
-        const brand = data.brandId ? await Season.findOneBy({ id: data.brandId }) : null;
-        if (data.brandId && !brand) {
-            throw new Error(`No brand found with id "${data.brandId}".`);
-        }
-
-        // Vérifie si la saison existe
-        const shop = data.shopId ? await Season.findOneBy({ id: data.shopId }) : null;
-        if (data.shopId && !shop) {
-            throw new Error(`No shop found with id "${data.shopId}".`);
-        }
-
         const newIngredient = new Ingredient();
 
+        // Associe le type si fourni
         if (data.typeId) {
             const type = await IngredientType.findOneBy({ id: data.typeId });
             if (!type) throw new Error("Invalid typeId");
             newIngredient.type = type;
         }
 
+        // Associe la saison si fournie
         if (data.seasonId) {
             const season = await Season.findOneBy({ id: data.seasonId });
             if (!season) throw new Error("Invalid seasonId");
             newIngredient.season = season;
         }
 
-        if (data.brandId) {
-            const brand = await Brand.findOneBy({ id: data.brandId });
-            if (!brand) throw new Error("Invalid brandId");
-            newIngredient.brand = brand;
+        // Associe les magasins si fournis
+        if (data.shopIds && data.shopIds.length > 0) {
+            const shops = await Shop.findBy({ id: In(data.shopIds) });
+            if (shops.length !== data.shopIds.length) {
+                throw new Error("Some shop IDs are invalid.");
+            }
+            newIngredient.shops = shops;
         }
 
-        if (data.shopId) {
-            const shop = await Shop.findOneBy({ id: data.shopId });
-            if (!shop) throw new Error("Invalid shopId");
-            newIngredient.shops = [shop];
+        // Assigne les autres champs
+        Object.assign(newIngredient, { ...data });
 
-        }
+        // Nettoie et capitalise le nom
+        newIngredient.name = cleanAndCapitalize(newIngredient.name);
 
-        Object.assign(newIngredient, data);
+        // Sauvegarde l'ingrédient
         await newIngredient.save();
         return newIngredient;
     }
+
 
     @Mutation(() => Ingredient, { nullable: true })
     async updateIngredient(
@@ -110,7 +91,6 @@ export class IngredientsResolver {
             relations: {
                 type: true,
                 season: true,
-                brand: true,
                 shops: true
             },
         });
@@ -128,11 +108,6 @@ export class IngredientsResolver {
             ingredient.season = season;
         }
 
-        if (data.brandId) {
-            const brand = await Brand.findOneBy({ id: data.brandId });
-            if (!brand) throw new Error("Invalid brandId");
-            ingredient.brand = brand;
-        }
 
         if (data.shopId) {
             const shop = await Shop.findOneBy({ id: data.shopId });

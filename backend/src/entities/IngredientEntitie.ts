@@ -13,8 +13,8 @@ import { IsNotEmpty, IsUrl, Length } from "class-validator";
 import { IngredientType } from "./IngredientTypeEntitie";
 import { Season } from "./SeasonEntitie";
 import { IngredientVariation } from "./IngredientVariationEntitie";
-import { Brand } from "./BrandEntitie";
 import { Shop } from "./ShopEntitie";
+import { Tag } from "./TagEntitie";
 
 @Entity("ingredients")
 @ObjectType()
@@ -46,14 +46,11 @@ export class Ingredient extends BaseEntity {
     @Field(() => Season, { nullable: true })
     season!: Season;
 
-    @ManyToOne(() => Brand, (brand) => brand.ingredients, { nullable: true })
-    @Field(() => Brand, { nullable: true })
-    brand!: Brand;
-
     @ManyToMany(() => Shop, (shop) => shop.ingredients)
     @JoinTable()
     @Field(() => [Shop], { nullable: true })
     shops!: Shop[];
+
 
     @Column({ default: false })
     @Field()
@@ -77,11 +74,9 @@ export class IngredientCreateInput {
     @Field(() => ID, { nullable: true })
     seasonId!: number;
 
-    @Field(() => ID, { nullable: true })
-    brandId!: number;
 
-    @Field(() => ID, { nullable: true })
-    shopId!: number;
+    @Field(() => [ID], { nullable: true })
+    shopIds!: number[];
 
     @Field({ defaultValue: false })
     hasIngredient!: boolean;
@@ -103,8 +98,6 @@ export class IngredientUpdateInput {
     @Field(() => ID, { nullable: true })
     seasonId?: number;
 
-    @Field(() => ID, { nullable: true })
-    brandId!: number;
 
     @Field(() => ID, { nullable: true })
     shopId!: number;

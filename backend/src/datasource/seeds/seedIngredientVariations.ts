@@ -7,13 +7,13 @@ export async function seedIngredientVariations() {
     const existingVariations = await IngredientVariation.find();
     if (existingVariations.length === 0) {
         const variationsData = [
-            { name: "carottes râpées", ingredientId: 1 },
-            { name: "fraise des bois", ingredientId: 2 },
-            { name: "cannelle moulue", ingredientId: 3 },
-            { name: "basilic frais", ingredientId: 4 },
-            { name: "riz basmati", ingredientId: 5 },
-            { name: "poulet fermier", ingredientId: 6 },
-            { name: "lentilles vertes", ingredientId: 7 },
+            { name: "Carottes râpées", ingredientId: 1 },
+            { name: "Fraise des bois", ingredientId: 2 },
+            { name: "Cannelle moulue", ingredientId: 3 },
+            { name: "Basilic frais", ingredientId: 4 },
+            { name: "Riz basmati", ingredientId: 5 },
+            { name: "Poulet fermier", ingredientId: 6 },
+            { name: "Lentilles vertes", ingredientId: 7 },
         ];
 
         for (const data of variationsData) {

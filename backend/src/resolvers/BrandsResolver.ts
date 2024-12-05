@@ -5,6 +5,7 @@ import { GraphQLResolveInfo } from "graphql";
 import { In } from "typeorm";
 import { cleanAndCapitalize } from "../utils/cleanAndCapitalizeFirstLetter";
 import { Ingredient } from "../entities/IngredientEntitie";
+import { IngredientVariation } from "../entities/IngredientVariationEntitie";
 
 @Resolver()
 export class BrandResolver {
@@ -51,17 +52,17 @@ export class BrandResolver {
             brand.name = cleanAndCapitalize(item.name);
             brand.image = item.image;
 
-            // Si des ingredientIds sont fournis, les associer
-            if (item.ingredientIds && item.ingredientIds.length > 0) {
-                const ingredients = await Ingredient.findBy({
-                    id: In(item.ingredientIds),
+            // Si des ingredientVariationIds sont fournis, les associer
+            if (item.ingredientVariationIds && item.ingredientVariationIds.length > 0) {
+                const ingredientVariations = await IngredientVariation.findBy({
+                    id: In(item.ingredientVariationIds),
                 });
 
-                if (ingredients.length !== item.ingredientIds.length) {
+                if (ingredientVariations.length !== item.ingredientVariationIds.length) {
                     throw new Error("Some ingredient IDs are invalid.");
                 }
 
-                brand.ingredients = ingredients;
+                brand.ingredientVariations = ingredientVariations;
             }
 
             await brand.save();
@@ -75,16 +76,37 @@ export class BrandResolver {
     @Mutation(() => Brand, { nullable: true })
     async updateBrand(
         @Arg("id", () => ID) id: number,
+        @Info() info: GraphQLResolveInfo,
         @Arg("data", () => BrandUpdateInput) data: BrandUpdateInput
     ): Promise<Brand | null> {
-        const brand = await Brand.findOneBy({ id });
+        const brand = await Brand.findOne({
+            where: { id },
+            relations: makeRelations(info, Brand), // Charge les relations existantes si nécessaire
+        });
         if (!brand) return null;
 
-        // Mise à jour des données
-        Object.assign(brand, data);
+        // Mise à jour des champs simples
+        if (data.name) brand.name = data.name;
+        if (data.image) brand.image = data.image;
+
+        // Mise à jour des ingrédients (ingredientVariationIds)
+        if (data.ingredientVariationIds) {
+            const ingredientVariations = await IngredientVariation.findBy({
+                id: In(data.ingredientVariationIds),
+            });
+
+            if (ingredientVariations.length !== data.ingredientVariationIds.length) {
+                throw new Error("Some ingredient IDs are invalid.");
+            }
+
+            // Associe les nouveaux ingrédients
+            brand.ingredientVariations = ingredientVariations;
+        }
+
         await brand.save();
         return brand;
     }
+
 
     @Mutation(() => Brand, { nullable: true })
     async deleteBrand(@Arg("id", () => ID) id: number): Promise<Brand | null> {

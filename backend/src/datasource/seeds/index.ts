@@ -6,6 +6,7 @@ import { seedIngredients } from "./seedIngredients";
 import { seedIngredientVariations } from "./seedIngredientVariations";
 import { seedBrands } from "./seedBrands";
 import { seedShops } from "./seedShops";
+import { seedRecipes } from "./seedRecipes";
 
 
 // When you init this project, run npm run seed
@@ -22,6 +23,7 @@ async function runSeeds() {
         await seedIngredientVariations()
         await seedBrands()
         await seedShops()
+        await seedRecipes()
 
         console.log("Seeds executed successfully! 🌱");
     } catch (error) {

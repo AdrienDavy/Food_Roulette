@@ -23,7 +23,7 @@ export class IngredientType extends BaseEntity {
     @Field({ nullable: true })
     image!: string;
 
-    @ManyToOne(() => Brand, (brand) => brand.ingredients, { nullable: true })
+    @ManyToOne(() => Brand, (brand) => brand.ingredientTypes, { nullable: true })
     @Field(() => Brand, { nullable: true })
     brand!: Brand;
 
