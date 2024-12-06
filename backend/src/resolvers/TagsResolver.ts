@@ -1,24 +1,20 @@
-import { Arg, ID, Mutation, Query, Resolver } from "type-graphql";
-import { Tag, TagCreateInput, TagUpdateInput } from "../entities/Tag";
+import { Arg, ID, Info, Mutation, Query, Resolver } from "type-graphql";
+import { Tag, TagCreateInput, TagUpdateInput } from "../entities/TagEntitie";
+import { makeRelations } from "../utils/makeRelations";
+import { GraphQLResolveInfo } from "graphql";
 
 @Resolver()
 export class TagsResolver {
     @Query(() => [Tag])
-    async tags(): Promise<Tag[]> {
-        const tags = await Tag.find({ relations: { ads: true } });
+    async tags(@Info() info: GraphQLResolveInfo): Promise<Tag[]> {
+        const tags = await Tag.find({ relations: makeRelations(info, Tag) });
         return tags;
     }
 
     @Query(() => Tag, { nullable: true })
-    async tag(@Arg('id', () => ID) id: number): Promise<Tag | null> {
+    async tag(@Arg('id', () => ID) id: number, @Info() info: GraphQLResolveInfo): Promise<Tag | null> {
         const tag = await Tag.findOne({
-            where: { id }, relations: {
-                ads:
-                {
-                    tags: true,
-                    category: true
-                }
-            }
+            where: { id }, relations: makeRelations(info, Tag)
         });
         if (tag) {
             return tag;

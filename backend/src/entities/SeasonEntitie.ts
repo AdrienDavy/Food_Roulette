@@ -1,14 +1,15 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ID, InputType, ObjectType, registerEnumType } from "type-graphql";
 import { IsEnum } from "class-validator";
+import { Recipe } from "./RecipeEntitie";
 
 // Définir l'énumération des saisons
 export enum SeasonName {
-    PRINTEMPS = "printemps",
-    ETE = "été",
-    AUTOMNE = "automne",
-    HIVER = "hiver",
-    TOUTE_ANNEE = "toute l/année",
+    PRINTEMPS = "Printemps",
+    ETE = "Été",
+    AUTOMNE = "Automne",
+    HIVER = "Hiver",
+    TOUTE_ANNEE = "Toute l/année",
 }
 
 // Enregistrer l'énumération pour TypeGraphQL
@@ -33,20 +34,24 @@ export class Season extends BaseEntity {
     @IsEnum(SeasonName, { message: "La saison doit être l'une des valeurs suivantes : printemps, été, automne, hiver, toute l'année" })
     name!: SeasonName;
 
+    @OneToMany(() => Recipe, (recipe) => recipe.season, { nullable: true })
+    @Field(() => [Recipe], { nullable: true })
+    recipes?: Recipe[];
+
     // Ajout d'un getter pour transformer la valeur en minuscule
     @Field(() => String)
     get seasonName(): string {
         switch (this.name) {
             case SeasonName.PRINTEMPS:
-                return "printemps";
+                return "Printemps";
             case SeasonName.ETE:
-                return "été";
+                return "Été";
             case SeasonName.AUTOMNE:
-                return "automne";
+                return "Automne";
             case SeasonName.HIVER:
-                return "hiver";
+                return "Hiver";
             case SeasonName.TOUTE_ANNEE:
-                return "toute l'année";
+                return "Toute l'année";
         }
     }
 }
