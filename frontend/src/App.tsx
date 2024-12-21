@@ -1,13 +1,11 @@
 import { Outlet } from "react-router-dom";
-import "./App.css";
 import NavBar from "./components/NavBar";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-import { ModalProvider } from "./contexts/ModalContext";
 
 const App = () => {
   return (
-    <ModalProvider>
+    <>
       <ToastContainer
         toastClassName="toast-custom"
         bodyClassName="toast-body"
@@ -24,10 +22,10 @@ const App = () => {
       <header className="header">
         <NavBar />
       </header>
-      <main className=" mt-32">
+      <main className=" bg-primary dark:bg-primary-dark">
         <Outlet />
       </main>
-    </ModalProvider>
+    </>
   );
 };
 

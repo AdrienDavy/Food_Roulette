@@ -4,7 +4,6 @@ import { makeRelations } from "../utils/makeRelations";
 import { GraphQLResolveInfo } from "graphql";
 import { In } from "typeorm";
 import { cleanAndCapitalize } from "../utils/cleanAndCapitalizeFirstLetter";
-import { Ingredient } from "../entities/IngredientEntitie";
 import { IngredientVariation } from "../entities/IngredientVariationEntitie";
 
 @Resolver()

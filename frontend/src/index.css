@@ -2,13 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-primary: #ffa41b;
-  --color-primary-hover: #f3af4a;
-  --color-secondary: #03031b;
-  --color-tertiary: #e3e3e2;
-  --color-dark: #03031b;
-  --color-light: #fffff0;
+::root {
+  --color-primary: #00807f;
+  --color-primary-hover: #1faead;
+  --color-primary-focus: #006362;
+
+  --color-primary-dark: #004d4c;
+  --color-primary-dark-hover: #007473;
+  --color-primary-dark-focus: #003333;
+
+  --color-secondary: #f5f5db;
+  --color-secondary-hover: #fffff0;
+  --color-secondary-focus: #e0e0b9;
+
+  --color-secondary-dark: #bfbf9a;
+  --color-secondary-dark-hover: #d9d9c4;
+  --color-secondary-dark-focus: #9a9a7a;
+
+  --color-tertiary: #fb8071;
+  --color-tertiary-hover: #ff9b8e;
+  --color-tertiary-focus: #e66d5e;
+
+  --color-tertiary-dark: #c46058;
+  --color-tertiary-dark-hover: #e57c70;
+  --color-tertiary-dark-focus: #9e4c45;
+
+  --color-light: #ffffff;
+  --color-light-hover: #f7f7f7;
+  --color-light-focus: #e5e5e5;
+
+  --color-light-dark: #1a1a1a;
+  --color-light-dark-hover: #333333;
+  --color-light-dark-focus: #0d0d0d;
 }
 
 * {
@@ -21,21 +46,34 @@ body {
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
-h1 {
-  @apply m-0;
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: #00807f;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #00807f;
+  border-radius: 0.5rem;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #006362;
+  cursor: -webkit-grabbing;
+  border-radius: 0.5rem;
+  transition: all 350ms ease;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #1faead;
 }
 
 @layer components {
-  .button {
-    @apply min-w-[40px] h-10 px-2 py-1 rounded-lg border-2 border-primary flex justify-center items-center gap-1 text-xs font-bold text-primary bg-light cursor-pointer transition-all duration-200 ease-in-out;
-  }
-
-  .button-primary {
-    @apply bg-primary text-light;
-  }
-
-  .text-field-with-button {
-    @apply flex flex-grow justify-center gap-1;
+  .primary-button {
+    @apply focus:outline-none text-primary bg-secondary hover:bg-secondary-hover focus:ring-4 focus:ring-secondary-focus font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-secondary-dark dark:hover:bg-secondary-dark-hover dark:focus:ring-secondary-dark-focus transition-200;
   }
 
   .Toastify__toast-container {
@@ -43,13 +81,13 @@ h1 {
   }
 
   .toast-custom {
-    background-color: var(--primary-color);
+    background-color: var(--color-primary);
     color: white;
     font-weight: bold;
   }
 
   .toast-success {
-    background-color: var(--primary-color);
+    background-color: var(--color-primary);
     color: #fff;
   }
 
@@ -68,36 +106,12 @@ h1 {
 }
 
 @layer utilities {
-  .transition {
+  .transition-200 {
     @apply transition-all duration-200 ease-in-out;
   }
 
   .custom-select {
     @apply appearance-none cursor-pointer;
-  }
-
-  /* width */
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: var(--color-tertiary);
-    border-radius: 0.5rem;
-  }
-
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: var(--color-primary);
-    cursor: -webkit-grabbing;
-    border-radius: 0.5rem;
-    transition: all 350ms ease;
-  }
-
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-primary-hover);
   }
 }
 

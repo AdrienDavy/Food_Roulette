@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./AdCard.css";
 import Cart from "../assets/cart.svg";
 import { AdType } from "../types";
-import formatDateTime from "../services/formatDateTime";
+import formatDateTime from "../utils/formatDateTime";
 
 type Props = {
   ad: AdType;

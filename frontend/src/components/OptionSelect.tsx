@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import useClickOutside from "../hooks/useClickOutside";
 
 type OptionType = {
   id: number;
-  name: string;
+  seasonName: string;
 };
 
 type OptionSelectProps = {
@@ -11,7 +10,6 @@ type OptionSelectProps = {
   onSelect: (option: OptionType) => void;
   actualOption: OptionType | null;
   defaultOption: string;
-  optionError: object | undefined;
 };
 
 const OptionSelect: React.FC<OptionSelectProps> = ({
@@ -19,7 +17,6 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   onSelect,
   actualOption,
   defaultOption,
-  optionError,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<OptionType | null>(actualOption);
@@ -35,19 +32,12 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
     if (selected && !options?.some((option) => option.id === selected.id)) {
       setSelected(null); // Réinitialiser si l'option sélectionnée n'existe plus
     }
-  }, [options, selected, optionError]);
+  }, [options, selected]);
 
   const handleSelect = (option: OptionType) => {
     setSelected(option);
     onSelect(option);
   };
-
-  const isAnimating = useClickOutside(
-    dropdownRef,
-    () => setIsOpen(false),
-    isOpen,
-    300 // Durée de l'animation
-  );
 
   return (
     <div
@@ -63,11 +53,9 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
           isOpen
             ? "rounded-tl-lg rounded-tr-lg border-2 border-b-0"
             : " rounded-lg border-2"
-        } ${
-          !optionError && "border-red-500"
-        } border-primary text-primary text-sm cursor-pointer`}
+        }  border-primary text-primary text-sm cursor-pointer`}
       >
-        {selected ? selected?.name : defaultOption}
+        {selected ? selected?.seasonName : defaultOption}
         <span
           className={`${
             isOpen ? " rotate-180" : " rotate-0"
@@ -76,13 +64,10 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
           ▼
         </span>
       </button>
-      {(isOpen || isAnimating) && (
+      {isOpen && (
         <ul
-          className={`shadow-2xl border-primary border-2 text-primary shadow-gray-500 p-0 rounded-none rounded-bl-lg rounded-br-lg absolute w-full overflow-y-scroll top-full flex-col flex justify-start bg-light custom-scrollbar transition-all duration-300 ease-in-out ${
-            isAnimating
-              ? "opacity-0 pointer-events-none max-h-0"
-              : "opacity-100 pointer-events-auto max-h-40"
-          }`}
+          className={`shadow-2xl border-primary border-2 text-primary shadow-gray-500 p-0 rounded-none rounded-bl-lg rounded-br-lg absolute w-full overflow-y-scroll top-full flex-col flex justify-start bg-light custom-scrollbar transition-all duration-300 ease-in-out
+            `}
         >
           {options?.map((option) => (
             <li
@@ -93,7 +78,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
                 setIsOpen(false);
               }}
             >
-              {option.name}
+              {option.seasonName}
             </li>
           ))}
         </ul>

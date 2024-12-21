@@ -6,15 +6,15 @@ export type AdType = {
     location: string;
     picture: string;
     owner: string;
-    category: CategoryType | CategoryHeaderType;
+    category: SeasonType | CategoryHeaderType;
     createdAt: string;
     tags?: TagType[];
 };
 
-export type CategoryType = {
+export type SeasonType = {
     id: number;
-    name: string;
-    ads: AdType[];
+    seasonName: string;
+
 };
 
 export type CategoryHeaderType = {

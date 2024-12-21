@@ -2,6 +2,7 @@ import { Matches } from "class-validator";
 import { BaseEntity, Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ID, InputType, ObjectType } from "type-graphql";
 import { Recipe } from "./RecipeEntitie";
+import { IdInput } from "./id";
 
 @Entity()
 @ObjectType()

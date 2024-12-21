@@ -8,6 +8,7 @@ import { makeRelations } from "../utils/makeRelations";
 import { Shop } from "../entities/ShopEntitie";
 import { cleanAndCapitalize } from "../utils/cleanAndCapitalizeFirstLetter";
 import { In } from "typeorm";
+import { IdInput } from "../entities/id";
 
 @Resolver()
 export class IngredientsResolver {
@@ -22,7 +23,7 @@ export class IngredientsResolver {
     }
 
     @Query(() => Ingredient, { nullable: true })
-    async ingredient(@Arg("id", () => ID) id: number, @Info() info: GraphQLResolveInfo): Promise<Ingredient | null> {
+    async ingredient(@Arg("id", () => IdInput) id: number, @Info() info: GraphQLResolveInfo): Promise<Ingredient | null> {
         const ingredient = await Ingredient.findOne({
             where: { id },
             relations: makeRelations(info, Ingredient)
@@ -69,7 +70,7 @@ export class IngredientsResolver {
             newIngredient.shops = shops;
         }
 
-       
+
 
         // Assigne les autres champs
         Object.assign(newIngredient, { ...data });
