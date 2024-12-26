@@ -8,6 +8,7 @@ import Page404 from "./pages/Page404.tsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import Recipes from "./pages/Recipes.tsx";
 import Recipe from "./pages/Recipe.tsx";
+import RecipeCreation from "./pages/RecipeCreation.tsx";
 
 const client = new ApolloClient({
   uri: "http://localhost:5000",
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "/recipes/:id",
         element: <Recipe />,
+      },
+      {
+        path: "/recipe-creation",
+        element: <RecipeCreation />,
       },
     ],
   },

@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { mutationCreateTag } from "../api/CreateTag";
+import { mutationCreateTag } from "../api/tag/CreateTag";
 import { TagType } from "../types";
-import { queryTags } from "../api/QueryTags";
+import { queryTags } from "../api/tag/QueryTags";
 import { toast } from "react-toastify";
-import { mutationDeleteTag } from "../api/DeleteTag";
+import { mutationDeleteTag } from "../api/tag/DeleteTag";
 import OptionSelect from "./OptionSelect";
 
 const TagEditor = () => {

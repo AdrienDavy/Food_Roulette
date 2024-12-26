@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
-import { queryIngredients } from "../api/QueryIngredients";
 import { useState } from "react";
+import { queryIngredients } from "../api/ingredient/QueryIngredients";
 
 const ShoppingList = () => {
   // --------------------------------STATES--------------------------------

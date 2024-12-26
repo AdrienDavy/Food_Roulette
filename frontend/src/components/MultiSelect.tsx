@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { TagType } from "../types";
 import { useQuery } from "@apollo/client";
-import { queryTags } from "../api/QueryTags";
+import { queryTags } from "../api/tag/QueryTags";
 
 type MultiSelectProps = {
   dataIds: number[] | null;

@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
-import { queryRecipe } from "../api/QueryRecipe";
 import { useQuery } from "@apollo/client";
+import { queryRecipe } from "../api/recipe/QueryRecipe";
+// Assurez-vous que `queryRecipe` est correctement défini
 
 const Recipe = () => {
   const { id } = useParams();

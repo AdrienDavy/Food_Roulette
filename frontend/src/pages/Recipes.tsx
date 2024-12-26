@@ -1,10 +1,16 @@
 import { useQuery } from "@apollo/client";
 import OptionSelect, { OptionType } from "../components/OptionSelect";
-import { querySeasons } from "../api/QuerySeasons";
+
 import { useState } from "react";
-import { queryRecipes } from "../api/QueryRecipes";
+import { queryRecipes } from "../api/recipe/QueryRecipes";
 import RecipeCard from "../components/RecipeCard";
-import { Recipe, Ingredient, IngredientVariation } from "../gql/graphql";
+import {
+  Recipe,
+  Ingredient,
+  IngredientVariation,
+  Season,
+} from "../gql/graphql";
+import { querySeasons } from "../api/season/QuerySeasons";
 
 const Recipes = () => {
   // --------------------------------STATES--------------------------------
@@ -107,7 +113,7 @@ const Recipes = () => {
             </h3>
             <div className=" w-full">
               <OptionSelect<string>
-                options={seasons.map((season) => ({
+                options={seasons.map((season: Season) => ({
                   id: Number(season.id), // Assurez-vous que `id` est un nombre
                   data: season.seasonName, // Transformez le champ `seasonName` en `data`
                 }))}

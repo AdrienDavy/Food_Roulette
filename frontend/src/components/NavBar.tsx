@@ -81,6 +81,19 @@ const NavBar = () => {
               </NavLink>
             </li>
             <li>
+              <NavLink
+                to="/recipe-creation"
+                className={({ isActive }) =>
+                  isActive
+                    ? "block py-2 px-3 md:p-0 underline text-tertiary dark:text-tertiary-dark hover:text-tertiary-hover dark:hover:text-tertiary-hover transition-200"
+                    : "block py-2 px-3 md:p-0 text-secondary dark:text-secondary-dark hover:text-secondary-hover dark:hover:text-secondary-hover transition-200"
+                }
+                aria-current="page"
+              >
+                Création de recettes
+              </NavLink>
+            </li>
+            <li>
               <ThemeSwitch />
             </li>
           </ul>
