@@ -14,13 +14,12 @@ import { IngredientType } from "./IngredientTypeEntitie";
 import { Season } from "./SeasonEntitie";
 import { IngredientVariation } from "./IngredientVariationEntitie";
 import { Shop } from "./ShopEntitie";
-import { Tag } from "./TagEntitie";
 
 @Entity("ingredients")
 @ObjectType()
 export class Ingredient extends BaseEntity {
     @PrimaryGeneratedColumn()
-    @Field(() => ID)
+    @Field(() => ID!)
     id!: number;
 
     @Column()
