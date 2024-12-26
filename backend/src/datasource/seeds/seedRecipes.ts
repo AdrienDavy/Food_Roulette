@@ -21,7 +21,7 @@ export async function seedRecipes() {
                 seasonId: 1, // Printemps
                 image: "https://cdn.pixabay.com/photo/2017/03/22/22/35/salad-2163197_960_720.jpg",
                 type: "entrée",
-                isAlcoholicDrink: false,
+                isAlcoholicDrink: true,
             },
             {
                 name: "Fraises à la crème",
@@ -33,7 +33,7 @@ export async function seedRecipes() {
                 seasonId: 2, // Été
                 image: "https://cdn.pixabay.com/photo/2016/03/05/19/02/strawberries-1239425_960_720.jpg",
                 type: "dessert",
-                isAlcoholicDrink: false,
+                isAlcoholicDrink: true,
             },
             {
                 name: "Poulet au riz",

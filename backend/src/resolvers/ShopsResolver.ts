@@ -59,7 +59,7 @@ export class ShopResolver {
     @Mutation(() => Shop, { nullable: true })
     async updateShop(
         @Arg("id", () => ID) id: number,
-        @Arg("data", () => ShopCreateInput) data: ShopCreateInput
+        @Arg("data", () => ShopUpdateInput) data: ShopUpdateInput
     ): Promise<Shop | null> {
         const shop = await Shop.findOne({
             where: { id },

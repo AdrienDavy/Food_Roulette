@@ -1,13 +1,11 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { mutationCreateCategory } from "../queries/CreateCategory";
-import { CategoryType } from "../types";
-import { queryCategories } from "../queries/QueryCategories";
+import { mutationCreateCategory } from "../api/CreateCategory";
+import { SeasonType } from "../types";
+import { querySeasons } from "../api/QuerySeasons";
 import { toast } from "react-toastify";
-import { mutationDeleteCategory } from "../queries/DeleteCategory";
+import { mutationDeleteCategory } from "../api/DeleteCategory";
 import OptionSelect from "./OptionSelect";
-import useClickOutside from "../hooks/useClickOutside";
-import { handleValidationErrors } from "../utils/handleValidationErrors";
 
 const CategoryEditor = () => {
   const [categoryId, setCategoryId] = useState<number | null>(null);
@@ -16,53 +14,29 @@ const CategoryEditor = () => {
 
   const [fieldErrors, setFieldErrors] = useState<string[]>([]);
 
-  const { data: categoriesData } = useQuery(queryCategories, { skip: !isOpen });
+  const { data: categoriesData } = useQuery(querySeasons, { skip: !isOpen });
   const categories = categoriesData?.categories;
 
   const [
     doCreateCategory,
     { loading: createCatLoading, error: createCatError },
   ] = useMutation<{
-    createCategory: CategoryType;
+    createCategory: SeasonType;
   }>(mutationCreateCategory, {
-    refetchQueries: [{ query: queryCategories }],
+    refetchQueries: [{ query: querySeasons }],
   });
 
   // Log any GraphQL errors or network error that occurred
 
   const [doDeleteCategory, { loading: deleteCatLoading }] = useMutation<{
-    deleteCategory: CategoryType;
+    deleteCategory: SeasonType;
   }>(mutationDeleteCategory, {
-    refetchQueries: [{ query: queryCategories }],
-    onError: (error) => handleValidationErrors(error, setFieldErrors),
+    refetchQueries: [{ query: querySeasons }],
   });
 
   const ModalRef = useRef(null);
-  useClickOutside(
-    ModalRef,
-    () => setIsOpen(false),
-    isOpen,
-    300 // Durée de l'animation
-  );
 
   const handleSubmit = async () => {
-    // if (
-    //   createCatError &&
-    //   createCatError.graphQLErrors?.[0]?.extensions?.validationErrors
-    // ) {
-    //   const validationErrors =
-    //     createCatError.graphQLErrors[0].extensions.validationErrors;
-
-    //   // Extraire les messages de chaque erreur de validation
-    //   const errors = await validationErrors.map((error) =>
-    //     Object.values(error.constraints || {})
-    //   );
-
-    //   if (errors.length > 0) {
-    //     setFieldErrors(errors);
-    //   }
-    // }
-
     try {
       await doCreateCategory({
         variables: {
@@ -164,7 +138,6 @@ const CategoryEditor = () => {
           onSelect={(category) => setCategoryId(category.id)}
           actualOption={null}
           defaultOption="Sélectionner une catégorie"
-          optionError={fieldErrors}
         />
         {fieldErrors && !categoryId && (
           <p className="text-red-500 py-2">{fieldErrors}</p>

@@ -3,13 +3,12 @@ import App from "./App.tsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home.tsx";
-import About from "./pages/About.tsx";
-import AdDetails from "./pages/AdDetails.tsx";
+import ShoppingList from "./pages/ShoppingList.tsx";
 import Page404 from "./pages/Page404.tsx";
-import Category from "./pages/Category.tsx";
-import AdEditor from "./pages/AdEditor.tsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-
+import Recipes from "./pages/Recipes.tsx";
+import Recipe from "./pages/Recipe.tsx";
+import RecipeCreation from "./pages/RecipeCreation.tsx";
 
 const client = new ApolloClient({
   uri: "http://localhost:5000",
@@ -25,29 +24,21 @@ const router = createBrowserRouter([
         path: "/",
         element: <Home />,
       },
-      // {
-      //   path: "*",
-      //   element: <Page404 />,
-      // },
       {
-        path: "/about",
-        element: <About />,
+        path: "/shopping-list",
+        element: <ShoppingList />,
       },
       {
-        path: "/categories/:id",
-        element: <Category />,
+        path: "/recipes",
+        element: <Recipes />,
       },
       {
-        path: "/ads/:id",
-        element: <AdDetails />,
+        path: "/recipes/:id",
+        element: <Recipe />,
       },
       {
-        path: "/ads/new",
-        element: <AdEditor />,
-      },
-      {
-        path: `ads/:id/edit`,
-        element: <AdEditor />,
+        path: "/recipe-creation",
+        element: <RecipeCreation />,
       },
     ],
   },

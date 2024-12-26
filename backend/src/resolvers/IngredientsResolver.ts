@@ -69,7 +69,7 @@ export class IngredientsResolver {
             newIngredient.shops = shops;
         }
 
-       
+
 
         // Assigne les autres champs
         Object.assign(newIngredient, { ...data });
