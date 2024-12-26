@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { mutationCreateCategory } from "../queries/CreateCategory";
+import { mutationCreateCategory } from "../api/CreateCategory";
 import { SeasonType } from "../types";
-import { querySeasons } from "../queries/QuerySeasons";
+import { querySeasons } from "../api/QuerySeasons";
 import { toast } from "react-toastify";
-import { mutationDeleteCategory } from "../queries/DeleteCategory";
+import { mutationDeleteCategory } from "../api/DeleteCategory";
 import OptionSelect from "./OptionSelect";
 
 const CategoryEditor = () => {

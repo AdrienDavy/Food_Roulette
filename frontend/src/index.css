@@ -40,6 +40,10 @@
   @apply m-0 p-0 box-border list-none no-underline;
 }
 
+html {
+  @apply transition-colors duration-200 ease-in-out;
+}
+
 body {
   @apply m-0 bg-gray-100;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,

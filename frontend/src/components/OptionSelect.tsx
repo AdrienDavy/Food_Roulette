@@ -1,42 +1,48 @@
 import { useEffect, useRef, useState } from "react";
 
-type OptionType = {
+export type OptionType<T> = {
   id: number;
-  seasonName: string;
+  data: T;
 };
 
-type OptionSelectProps = {
-  options: OptionType[] | undefined;
-  onSelect: (option: OptionType) => void;
-  actualOption: OptionType | null;
+type OptionSelectProps<T> = {
+  options: OptionType<T>[] | undefined;
+  onSelect: (option: OptionType<T>) => void;
+  actualOption: OptionType<T> | null;
   defaultOption: string;
+  getDisplayText: (data: T) => string; // Utilise le type générique pour déterminer comment afficher `data`
 };
 
-const OptionSelect: React.FC<OptionSelectProps> = ({
+const OptionSelect = <T,>({
   options,
   onSelect,
   actualOption,
   defaultOption,
-}) => {
+  getDisplayText,
+}: OptionSelectProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<OptionType | null>(actualOption);
+  const [selected, setSelected] = useState<OptionType<T> | null>(actualOption);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Mettre à jour la sélection si `actualOption` change
   useEffect(() => {
-    setSelected(actualOption);
+    // Si l'option actuelle est nulle, réinitialisez `selected` à null (option par défaut)
+    if (!actualOption) {
+      setSelected(null);
+    } else {
+      setSelected(actualOption);
+    }
   }, [actualOption]);
 
-  // Vérifier les changements dans les options et réinitialiser la sélection si nécessaire
   useEffect(() => {
     if (selected && !options?.some((option) => option.id === selected.id)) {
-      setSelected(null); // Réinitialiser si l'option sélectionnée n'existe plus
+      setSelected(null);
     }
   }, [options, selected]);
 
-  const handleSelect = (option: OptionType) => {
+  const handleSelect = (option: OptionType<T>) => {
     setSelected(option);
     onSelect(option);
+    setIsOpen(false);
   };
 
   return (
@@ -55,7 +61,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
             : " rounded-lg border-2"
         }  border-primary text-primary text-sm cursor-pointer`}
       >
-        {selected ? selected?.seasonName : defaultOption}
+        {selected ? getDisplayText(selected.data) : defaultOption}
         <span
           className={`${
             isOpen ? " rotate-180" : " rotate-0"
@@ -66,19 +72,18 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
       </button>
       {isOpen && (
         <ul
-          className={`shadow-2xl border-primary border-2 text-primary shadow-gray-500 p-0 rounded-none rounded-bl-lg rounded-br-lg absolute w-full overflow-y-scroll top-full flex-col flex justify-start bg-light custom-scrollbar transition-all duration-300 ease-in-out
-            `}
+          onClick={() => setIsOpen(false)}
+          className={` border-primary border-2 text-primary rounded-none rounded-bl-lg rounded-br-lg absolute w-full top-full flex-col flex justify-start bg-gray-50 custom-scrollbar duration-200`}
         >
           {options?.map((option) => (
             <li
               key={option.id}
-              className=" py-2 w-full hover:bg-gray-100 cursor-pointer z-10 "
+              className="p-2 hover:bg-gray-100 cursor-pointer z-10"
               onClick={() => {
                 handleSelect(option);
-                setIsOpen(false);
               }}
             >
-              {option.seasonName}
+              {getDisplayText(option.data)}
             </li>
           ))}
         </ul>

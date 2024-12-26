@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { mutationCreateTag } from "../queries/CreateTag";
+import { mutationCreateTag } from "../api/CreateTag";
 import { TagType } from "../types";
-import { queryTags } from "../queries/QueryTags";
+import { queryTags } from "../api/QueryTags";
 import { toast } from "react-toastify";
-import { mutationDeleteTag } from "../queries/DeleteTag";
+import { mutationDeleteTag } from "../api/DeleteTag";
 import OptionSelect from "./OptionSelect";
 
 const TagEditor = () => {
@@ -29,7 +29,6 @@ const TagEditor = () => {
     });
 
   const ModalRef = useRef(null);
-
 
   const handleSubmit = async () => {
     try {
