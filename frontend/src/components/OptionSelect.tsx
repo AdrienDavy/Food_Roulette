@@ -1,19 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export type OptionType<T> = {
   id: number;
   data: T;
 };
 
-type OptionSelectProps<T> = {
+type OptionSelectProps<T extends string> = {
   options: OptionType<T>[] | undefined;
   onSelect: (option: OptionType<T>) => void;
   actualOption: OptionType<T> | null;
   defaultOption: string;
-  getDisplayText: (data: T) => string; // Utilise le type générique pour déterminer comment afficher `data`
+  getDisplayText: (data: T) => string;
 };
 
-const OptionSelect = <T,>({
+const OptionSelect = <T extends string>({
   options,
   onSelect,
   actualOption,
@@ -70,17 +70,19 @@ const OptionSelect = <T,>({
           onClick={() => setIsOpen(false)}
           className={` border-primary border-2 text-primary rounded-none rounded-bl-lg rounded-br-lg absolute w-full top-full flex-col flex justify-start bg-gray-50 custom-scrollbar duration-200`}
         >
-          {options?.map((option) => (
-            <li
-              key={option.id}
-              className="p-2 hover:bg-gray-100 cursor-pointer z-10"
-              onClick={() => {
-                handleSelect(option);
-              }}
-            >
-              {getDisplayText(option.data)}
-            </li>
-          ))}
+          {options
+            ?.sort((a, b) => a.data.localeCompare(b.data))
+            .map((option) => (
+              <li
+                key={option.id}
+                className="p-2 hover:bg-gray-100 cursor-pointer z-10"
+                onClick={() => {
+                  handleSelect(option);
+                }}
+              >
+                {getDisplayText(option.data)}
+              </li>
+            ))}
         </ul>
       )}
     </div>
