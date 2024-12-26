@@ -25,7 +25,7 @@ const ShoppingList = () => {
   const pushIngredients = () => {
     if (!dataIds || !ingredients) return null;
     const selectedIngredients = ingredients.filter((ingredient) =>
-      dataIds.includes(ingredient.id)
+      dataIds.includes(Number(ingredient.id))
     );
     return (
       <div className="p-4">
@@ -59,20 +59,20 @@ const ShoppingList = () => {
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((ingredient) => (
               <li
-                key={ingredient.id}
+                key={Number(ingredient.id)}
                 className={`transition-200 flex items-center text-primary hover:text-secondary-hover dark:text-secondary-dark dark:hover:text-secondary-dark-hover justify-between p-2 px4 cursor-pointer hover:bg-primary-hover ${
-                  dataIds?.includes(ingredient.id)
+                  dataIds?.includes(Number(ingredient.id))
                     ? "text-secondary dark:text-secondary-dark bg-primary-focus dark:bg-primary-dark-focus hover:bg-primary-hover"
                     : ""
                 }`}
-                onClick={() => handleMultiSelect(ingredient.id)}
+                onClick={() => handleMultiSelect(Number(ingredient.id))}
               >
                 <span>{ingredient.name}</span>
                 <input
                   type="checkbox"
                   className="mr-2 cursor-pointer"
-                  checked={dataIds?.includes(ingredient.id)}
-                  onChange={() => handleMultiSelect(ingredient.id)}
+                  checked={dataIds?.includes(Number(ingredient.id))}
+                  onChange={() => handleMultiSelect(Number(ingredient.id))}
                 />
               </li>
             ))}

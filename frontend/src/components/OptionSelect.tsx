@@ -25,12 +25,7 @@ const OptionSelect = <T,>({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Si l'option actuelle est nulle, réinitialisez `selected` à null (option par défaut)
-    if (!actualOption) {
-      setSelected(null);
-    } else {
-      setSelected(actualOption);
-    }
+    setSelected(actualOption);
   }, [actualOption]);
 
   useEffect(() => {

@@ -4,14 +4,19 @@ import { querySeasons } from "../api/QuerySeasons";
 import { useState } from "react";
 import { queryRecipes } from "../api/QueryRecipes";
 import RecipeCard from "../components/RecipeCard";
+import { Recipe, Ingredient, IngredientVariation } from "../gql/graphql";
 
 const Recipes = () => {
   // --------------------------------STATES--------------------------------
 
-  const [seasonId, setSeasonId] = useState<string | null>(null);
+  const [seasonId, setSeasonId] = useState<number | null>(null);
   const [recipeType, setRecipeType] = useState<string | null>(null);
   const [hasIngredient, setHasIngredient] = useState<boolean | null>(false);
   const [search, setSearch] = useState<string | "">("");
+  const [selectedSeason, setSelectedSeason] =
+    useState<OptionType<string> | null>(null);
+  const [selectedRecipeType, setSelectedRecipeType] =
+    useState<OptionType<string> | null>(null);
 
   // --------------------------------QUERY--------------------------------
 
@@ -19,24 +24,28 @@ const Recipes = () => {
   const seasons = seasonsDataFromQuery?.seasons || [];
 
   const { data: recipesDataFromQuery } = useQuery(queryRecipes);
-  const recipes = recipesDataFromQuery?.recipes || [];
+  const recipes: Recipe[] = recipesDataFromQuery?.recipes || [];
 
   // -----------------------------FUNCTIONS-----------------------------------
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value.toLowerCase());
   };
   const handleSeasonChange = (option: OptionType<string>) => {
-    setSeasonId(option.id.toString()); // Convertir en string si nécessaire
+    setSeasonId(Number(option.id));
+    setSelectedSeason(option);
+  };
+  const handleRecipeTypeChange = (option: OptionType<string>) => {
+    setRecipeType(option.data);
+    setSelectedRecipeType(option);
   };
 
-  console.log(recipes);
-
-  const resetFilters = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const resetFilters = () => {
     setSeasonId(null);
     setRecipeType(null);
     setHasIngredient(false);
     setSearch("");
+    setSelectedSeason(null);
+    setSelectedRecipeType(null);
   };
   // ----------------------------------------------------------------------
 
@@ -103,7 +112,7 @@ const Recipes = () => {
                   data: season.seasonName, // Transformez le champ `seasonName` en `data`
                 }))}
                 onSelect={handleSeasonChange}
-                actualOption={null}
+                actualOption={selectedSeason}
                 defaultOption="Sélectionner une saison"
                 getDisplayText={(data) => data}
               />
@@ -119,8 +128,8 @@ const Recipes = () => {
                   id: Number(recipe.id),
                   data: recipe.recipeType,
                 }))}
-                onSelect={(option) => setRecipeType(option.data)}
-                actualOption={null}
+                onSelect={handleRecipeTypeChange}
+                actualOption={selectedRecipeType}
                 defaultOption="Sélectionner un type"
                 getDisplayText={(data) => data}
               />
@@ -156,7 +165,7 @@ const Recipes = () => {
       <div className="grid grid-cols-2 gap-4 max-w-screen-xl mx-auto py-8">
         {recipes
           .filter((recipe) =>
-            seasonId ? recipe.season?.id === seasonId : true
+            seasonId ? Number(recipe.season?.id) === seasonId : true
           )
           .filter((recipe) =>
             search ? recipe.name.toLowerCase().includes(search) : recipe
@@ -166,15 +175,16 @@ const Recipes = () => {
           )
           .filter((recipe) =>
             hasIngredient
-              ? recipe.ingredients?.some((ingredient) =>
+              ? recipe.ingredients?.some((ingredient: Ingredient) =>
                   ingredient.variations?.some(
-                    (variation) => variation.hasIngredient === true
+                    (variation: IngredientVariation) =>
+                      variation.hasIngredient === true
                   )
                 )
               : true
           )
 
-          .map((recipe) => (
+          .map((recipe: Recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
       </div>

@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
+import { Ingredient, Recipe } from "../gql/graphql";
 
-const RecipeCard = ({ recipe }) => {
+const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
   return (
     <NavLink
       to={recipe.id}
@@ -29,15 +30,22 @@ const RecipeCard = ({ recipe }) => {
       <h2 className=" font-bold text-2xl text-left text-primary dark:text-primary-dark transition-200">
         {recipe.name} - {recipe.recipeType}
       </h2>
-      <h3 className="text-primary">Saison : {recipe.season.seasonName}</h3>
+      <h3 className="text-primary">Saison : {recipe.season?.seasonName}</h3>
       <h3 className="text-primary">{recipe.cookTime} minutes</h3>
       <p className=" text-primary dark:text-primary-dark transition-200">
         Ingrédients :
-        {recipe.ingredients.map((ingredient) =>
-          ingredient.variations.map((variation) => (
+        {recipe.ingredients?.map((ingredient: Ingredient) =>
+          ingredient.variations?.map((variation) => (
             <kbd
+              title={
+                variation.hasIngredient
+                  ? "Vous avez cet ingrédient"
+                  : "Vous n'avez pas cet ingrédient"
+              }
               key={variation.id}
-              className="px-2 py-1.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500"
+              className={`px-2 py-1.5 text-xs font-semibold text-gray-800 ${
+                variation.hasIngredient ? "bg-green-300 " : "bg-red-300 "
+              } border border-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500`}
             >
               {variation.name}
             </kbd>
