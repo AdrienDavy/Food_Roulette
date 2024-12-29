@@ -1,42 +1,159 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { queryBrands } from "../../api/brand/QueryBrands";
 import { queryBrand } from "../../api/brand/QueryBrand";
 import { Brand } from "../../gql/graphql";
 import OptionSelect, { OptionType } from "../OptionSelect";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
-// import { mutationCreateBrands } from "../../api/brand/CreateBrands";
+import { mutationCreateBrand } from "../../api/brand/CreateBrand";
+import { Bounce, toast } from "react-toastify";
+import SearchBar from "../SearchBar";
+import { useVerticalPosition } from "../../utils/useVerticalPosition";
 
 const BrandManager = () => {
   // --------------------------------STATES--------------------------------
   const [selectedBrand, setSelectedBrand] = useState<OptionType<string> | null>(
     null
   );
+  const [brandId, setBrandId] = useState<number | null>(null);
+  const [brandName, setBrandName] = useState<string>("");
+  const [brandImage, setBrandImage] = useState<string>("");
+  const [errors, setErrors] = useState<string>("");
+
+  const [search, setSearch] = useState<string | "">("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  // --------------------------------REFS--------------------------------
+
+  const brandNameContainerRef = useRef<HTMLDivElement>(null);
+  const inputBrandNameRef = useRef<HTMLInputElement>(null);
+  const inputBrandUrlRef = useRef<HTMLInputElement>(null);
+  const ulBrandListRef = useRef<HTMLUListElement>(null);
 
   // --------------------------------QUERY--------------------------------
 
   const { data: brandsDataFromQuery } = useQuery(queryBrands);
   const brands = brandsDataFromQuery?.brands || [];
-  console.log(brands);
 
   const { data: brandDataFromQuery } = useQuery(queryBrand, {
-    variables: { brandId: `${1}` },
+    variables: { brandId: `${60}` },
   });
 
   const brand = brandDataFromQuery?.brand;
-  console.log(brand);
 
   // -----------------------------MUTATIONS-----------------------------------
 
-  // const [doCreateBrand] = useMutation(mutationCreateBrands, {
-  //   refetchQueries: [queryBrand],
-  // });
+  const [doCreateBrand] = useMutation(mutationCreateBrand, {
+    refetchQueries: [queryBrands],
+    onError: (error) => {
+      const validationErrors =
+        error.graphQLErrors[0]?.extensions?.validationErrors;
+      if (validationErrors) {
+        const errorMessages = Array.isArray(validationErrors)
+          ? validationErrors
+              .map(
+                (err: { constraints: { isUrl: string } }) =>
+                  err.constraints.isUrl
+              )
+              .join(", ")
+          : "Unknown error";
+        setErrors(errorMessages);
+      } else {
+        setErrors(error.message);
+      }
+    },
+  });
+
+  // -----------------------------UX-----------------------------------
+
+  const animeError = (wordToWatch: string | "") => {
+    if (errors && errors.includes(wordToWatch || "")) {
+      return `border border-red-500 animate-vibrate`;
+    } else {
+      return `border-none`;
+    }
+  };
+
+  const windowPosition = useVerticalPosition(
+    ulBrandListRef,
+    "top-full rounded-br-lg rounded-bl-lg",
+    "bottom-full rounded-tr-lg rounded-tl-lg"
+  );
 
   // -----------------------------FUNCTIONS-----------------------------------
 
   const handleBrandChange = (option: OptionType<string>) => {
     setSelectedBrand(option);
+    setIsOpen(isOpen);
+    console.log(isOpen);
+  };
+
+  const validateForm = () => {
+    if (!brandName) {
+      setErrors("Le nom de la marque est requis.");
+      return;
+    }
+    if (
+      brandImage &&
+      !brandImage.match(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
+    ) {
+      setErrors("L'url de l'image n'est pas valide.");
+      return;
+    }
+    setErrors("");
+    return true;
+  };
+
+  async function doCreate() {
+    if (!validateForm()) {
+      return;
+    }
+    try {
+      const { data } = await doCreateBrand({
+        variables: {
+          data: {
+            name: brandName,
+            image: brandImage || undefined, // Assurez-vous de définir l'image si nécessaire
+          },
+        },
+      });
+      if (data?.createBrand) {
+        toast.success(
+          `Marque ${data?.createBrand.name} créée avec succès ! 🦄`,
+          {
+            className: "toast-success bg-primary",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          }
+        );
+        setBrandName("");
+        setBrandImage("");
+      }
+
+      return data;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const handleClickBrandList = (id: number) => {
+    setBrandId(Number(id));
+    setIsOpen(!isOpen);
+    console.log("Clicked ID:", id); // Utilise directement `id` au lieu de `brandId`
+  };
+  console.log(isOpen);
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setIsOpen(value.trim() !== ""); // Ouvre la liste si la recherche contient du texte
   };
 
   return (
@@ -68,13 +185,126 @@ const BrandManager = () => {
       </div>
 
       <h2 className="text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-        Marque id 1
+        Marque id {brand?.id}
       </h2>
       {brand && (
-        <p className="text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
-          {brand.name}
-        </p>
+        <div>
+          <p className=" pb-8 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
+            {brand.name}
+          </p>
+          {brand.image ? (
+            <img
+              src={brand.image || undefined}
+              alt={`Logo de la marque ${brand.name}`}
+            />
+          ) : (
+            <svg
+              className="w-full h-64 text-gray-200 dark:text-gray-600"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 18"
+            >
+              <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+            </svg>
+          )}
+        </div>
       )}
+      <div
+        ref={brandNameContainerRef}
+        className={`${animeError(
+          ""
+        )} flex flex-col items-center justify-center bg-primary-hover p-8 rounded-lg m-8 transition-200`}
+      >
+        <h2 className=" font-bold text-2xl text-secondary">Créer une marque</h2>
+        <div className=" mt-8 relative flex flex-col items-center justify-center">
+          <input
+            autoComplete="off"
+            required
+            type="text"
+            id="brandName"
+            placeholder=" "
+            value={brandName}
+            className={`inputForm ${animeError("nom")}`}
+            ref={inputBrandNameRef}
+            onChange={(e) => setBrandName(e.target.value)}
+          />
+          <label className="labelForm" htmlFor="brandName">
+            Nom de la marque...
+          </label>
+        </div>
+        <div className="mt-8 relative flex flex-col items-center justify-center">
+          <input
+            autoComplete="off"
+            required
+            type="text"
+            id="brandImage"
+            placeholder=" "
+            value={brandImage}
+            className={`inputForm ${animeError("image")}`}
+            ref={inputBrandUrlRef}
+            onChange={(e) => setBrandImage(e.target.value)}
+          />
+          <label className="labelForm" htmlFor="brandImage">
+            Url de l'image de la marque...
+          </label>
+          <div className="mt-4 flex flex-col items-center justify-center">
+            <button
+              type="button"
+              className="primary-button "
+              onClick={doCreate}
+            >
+              Créer ma Marque
+            </button>
+            {errors && <p className=" text-red-500">{errors}</p>}
+          </div>
+        </div>
+      </div>
+      <div
+        className={`
+      
+        flex flex-col items-center justify-center bg-primary-hover p-8 rounded-lg m-8`}
+      >
+        <h2 className=" font-bold text-2xl text-secondary">
+          Mettre à jour une marque
+        </h2>
+        <div className="w-96 mx-auto mt-8 relative">
+          <SearchBar
+            setSearch={handleSearch}
+            placeholder="Rechercher une marque..."
+          />
+          {search && isOpen && (
+            <ul
+              ref={ulBrandListRef}
+              className={`${
+                brands.filter((brand) =>
+                  brand.name.toLowerCase().includes(search.toLowerCase())
+                ).length > 10
+                  ? " h-80 overflow-y-scroll"
+                  : brands.filter((brand) =>
+                      brand.name.toLowerCase().includes(search.toLowerCase())
+                    ).length === 0
+                  ? "hidden "
+                  : "h-fit"
+              } ${windowPosition} text-primary bg-secondary w-full pt-5 absolute`}
+            >
+              {brands
+                .filter((brand) =>
+                  brand.name.toLowerCase().includes(search.toLowerCase())
+                )
+                .map((brand) => (
+                  <li
+                    onClick={() => handleClickBrandList(Number(brand.id))}
+                    key={brand.id}
+                    className="px-4 py-2 hover:bg-primary-hover cursor-pointer"
+                  >
+                    {brand.name}
+                  </li>
+                ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </section>
   );
 };

@@ -54,6 +54,7 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
   background-color: #00807f;
+  border-radius: 0.5rem;
 }
 
 /* Track */
@@ -105,17 +106,29 @@ body {
   }
 }
 
-.logo {
-  @apply border-none;
-}
-
 @layer utilities {
   .transition-200 {
     @apply transition-all duration-200 ease-in-out;
   }
 
-  .custom-select {
-    @apply appearance-none cursor-pointer;
+  .inputForm {
+    @apply w-full py-2.5 px-3 rounded-lg text-primary bg-secondary focus:bg-secondary-focus focus:outline-none;
+  }
+
+  .labelForm {
+    @apply p-2 absolute left-1 top-1 text-primary dark:text-primary-dark text-sm transition-200;
+  }
+
+  .inputForm:focus + .labelForm {
+    @apply text-secondary dark:text-secondary-dark -translate-y-8 p-2 rounded-lg;
+  }
+
+  .inputForm:not(:focus):placeholder-shown + .labelForm {
+    @apply text-primary  dark:text-primary-dark;
+  }
+
+  .inputForm:not(:placeholder-shown) + .labelForm {
+    @apply text-secondary dark:text-secondary-dark  rounded-lg -translate-y-8;
   }
 }
 

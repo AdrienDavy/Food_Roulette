@@ -4,6 +4,18 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      keyframes: {
+       
+        vibrate: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "25%": { transform: "translateX(-5px)" },
+          "50%": { transform: "translateX(3px)" },
+          "75%": { transform: "translateX(-1px)" },
+        },
+      },
+      animation: {
+        vibrate: "vibrate 400ms linear forwards",
+      },
       colors: {
         primary: {
           DEFAULT: '#00807F',
@@ -38,17 +50,7 @@ module.exports = {
           'dark-focus': '#0D0D0D', // Variation sombre en sombre
         },
       },
-      keyframes: {
-        vibrate: {
-          "0%, 100%": { transform: "translateX(0) rotateZ(0)" },
-          "25%": { transform: "translateX(-1px) rotateZ(10deg)" },
-          "50%": { transform: "translateX(1px) rotateZ(-10deg)" },
-          "75%": { transform: "translateX(-1px) rotateZ(0)" },
-        },
-      },
-      animation: {
-        vibrate: "vibrate 400ms linear forwards",
-      },
+     
     },
   },
   plugins: [],

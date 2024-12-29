@@ -50,7 +50,7 @@ const OptionSelect = <T extends string>({
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex justify-between px-4 w-full py-2 z-10 bg-white transition-all duration-100 ease-in-out ${
+        className={`flex justify-between px-4 py-2 w-full  z-10 bg-secondary transition-all duration-100 ease-in-out ${
           isOpen
             ? "rounded-tl-lg rounded-tr-lg border-2 border-b-0"
             : " rounded-lg border-2"
@@ -67,15 +67,21 @@ const OptionSelect = <T extends string>({
       </button>
       {isOpen && (
         <ul
+          className={`${
+            options && options?.filter((option) => option).length > 10
+              ? " h-80 overflow-y-scroll"
+              : options?.filter((option) => option).length === 0
+              ? "hidden "
+              : "h-fit"
+          } border-primary border-x-2 text-primary rounded-none rounded-bl-lg rounded-br-lg flex-col flex justify-start bg-secondary custom-scrollbar absolute top-full w-full`}
           onClick={() => setIsOpen(false)}
-          className={` border-primary border-2 text-primary rounded-none rounded-bl-lg rounded-br-lg absolute w-full top-full flex-col flex justify-start bg-gray-50 custom-scrollbar duration-200`}
         >
           {options
             ?.sort((a, b) => a.data.localeCompare(b.data))
             .map((option) => (
               <li
                 key={option.id}
-                className="p-2 hover:bg-gray-100 cursor-pointer z-10"
+                className="p-2 hover:bg-secondary-hover cursor-pointer z-10"
                 onClick={() => {
                   handleSelect(option);
                 }}

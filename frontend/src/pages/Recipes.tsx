@@ -11,6 +11,7 @@ import {
   Season,
 } from "../gql/graphql";
 import { querySeasons } from "../api/season/QuerySeasons";
+import SearchBar from "../components/SearchBar";
 
 const Recipes = () => {
   // --------------------------------STATES--------------------------------
@@ -33,9 +34,7 @@ const Recipes = () => {
   const recipes: Recipe[] = recipesDataFromQuery?.recipes || [];
 
   // -----------------------------FUNCTIONS-----------------------------------
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value.toLowerCase());
-  };
+
   const handleSeasonChange = (option: OptionType<string>) => {
     setSeasonId(Number(option.id));
     setSelectedSeason(option);
@@ -60,48 +59,9 @@ const Recipes = () => {
       <h1 className="font-bold text-4xl text-center text-secondary dark:text-secondary-dark transition-200">
         Recettes
       </h1>
-
-      <form className="max-w-md mx-auto mt-8">
-        <label
-          htmlFor="default-search"
-          className="mb-2 text-sm font-medium text-primary sr-only dark:text-primary-dark transition-200"
-        >
-          Rechercher
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 text-primary dark:text-primary-dark transition-200"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-          </div>
-          <input
-            onChange={handleSearchChange}
-            type="search"
-            id="default-search"
-            className=" transition-200 block w-full p-4 ps-10 text-sm text-primary rounded-lg bg-gray-50 focus:outline-double focus:outline-primary-focus focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-primary-dark dark:focus:ring-primary-dark dark:focus:border-primary-dark"
-            placeholder="Boeuf Bourguinon, Tartiflette..."
-            required
-          />
-          <button
-            type="submit"
-            className="text-secondary dark:text-secondary-dark absolute end-2.5 bottom-2.5 bg-primary hover:bg-primary-hover focus:ring-1 focus:outline-none focus:ring-primary-focus font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-dark dark:hover:bg-primary-dark-hover dark:focus:bg-primary-dark-focus transition-200"
-          >
-            Rechercher
-          </button>
-        </div>
-      </form>
+      <div className="max-w-xl mx-auto mt-8">
+        <SearchBar setSearch={setSearch} placeholder="Rechercher une recette" />
+      </div>
       <div className="max-w-xl mx-auto mt-8 z-10 bg-secondary dark:bg-gray-800 rounded-lg p-4">
         <h2 className=" pb-4 font-bold text-2xl text-center text-primary dark:text-primary-dark transition-200">
           Filtrer par

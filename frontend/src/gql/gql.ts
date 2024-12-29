@@ -14,6 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
+    "\nmutation CreateBrand($data: BrandCreateInput!) {\n  createBrand(data: $data) {\n    id\n    name\n    image\n  }\n}\n": types.CreateBrandDocument,
     "\nmutation DeleteBrand($id: ID!) {\n  deleteBrand(id: $id) {\n    id\n  }\n}\n": types.DeleteBrandDocument,
     "\nquery QueryBrand($brandId: ID!) { \n  brand(id: $brandId) {    \n    id\n    name\n    image\n  }\n}\n": types.QueryBrandDocument,
     "\nquery QueryBrands {\n  brands {\n    id\n    name\n    image   \n  }\n}\n": types.QueryBrandsDocument,
@@ -72,6 +73,10 @@ const documents = {
  */
 export function gql(source: string): unknown;
 
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nmutation CreateBrand($data: BrandCreateInput!) {\n  createBrand(data: $data) {\n    id\n    name\n    image\n  }\n}\n"): (typeof documents)["\nmutation CreateBrand($data: BrandCreateInput!) {\n  createBrand(data: $data) {\n    id\n    name\n    image\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

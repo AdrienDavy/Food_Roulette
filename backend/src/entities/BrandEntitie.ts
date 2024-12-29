@@ -9,13 +9,13 @@ import {
 import { Field, ID, InputType, ObjectType } from "type-graphql";
 import { IngredientType } from "./IngredientTypeEntitie";
 import { IngredientVariation } from "./IngredientVariationEntitie";
-import { IsUrl } from "class-validator";
+import { IsOptional, IsUrl } from "class-validator";
 
 @Entity("brands")
 @ObjectType()
 export class Brand extends BaseEntity {
     @PrimaryGeneratedColumn()
-    @Field(() => ID)
+    @Field(() => ID!)
     id!: number;
 
     @Column()
@@ -38,9 +38,11 @@ export class Brand extends BaseEntity {
 
 @InputType()
 export class BrandCreateInput {
-    @Field()
+
+    @Field({ nullable: false })
     name!: string;
 
+    @IsOptional()
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image!: string;
@@ -51,9 +53,10 @@ export class BrandCreateInput {
 
 @InputType()
 export class BrandUpdateInput {
-    @Field({ nullable: true })
+    @Field()
     name?: string;
 
+    @IsOptional()
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image!: string;
