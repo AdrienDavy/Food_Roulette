@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { mutationCreateBrand } from "../../api/brand/CreateBrand";
 import { Bounce, toast } from "react-toastify";
-import SearchBar from "../SearchBar";
 import { useVerticalPosition } from "../../utils/useVerticalPosition";
 import { mutationUpdateBrand } from "../../api/brand/UpdateBrand";
 
@@ -19,7 +18,6 @@ const BrandManager = () => {
   );
   const [brandId, setBrandId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string | "">("");
 
   // -------------------------CREATE--------------------------------
   const [createBrandName, setCreateBrandName] = useState<string>("");
@@ -44,6 +42,7 @@ const BrandManager = () => {
 
   const { data: brandDataFromQuery } = useQuery(queryBrand, {
     variables: { brandId: `${brandId}` },
+    fetchPolicy: "cache-and-network",
   });
 
   const brand = brandDataFromQuery?.brand;
@@ -124,7 +123,9 @@ const BrandManager = () => {
     }
     if (
       createBrandImage &&
-      !createBrandImage.match(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
+      !createBrandImage.match(
+        /(http(s?):)([/|.|\w|\s|-]|%[0-9a-fA-F]{2})+\.(?:jpg|gif|png|svg)/g
+      )
     ) {
       setCreateErrors("L'url de l'image n'est pas valide.");
       return;
@@ -173,10 +174,14 @@ const BrandManager = () => {
   }
   // -----------------------------UPDATE--------------------------
   const validateUpdateForm = () => {
+    if (!updateBrandName) {
+      setUpdateErrors("Le nom de la marque est requis.");
+      return;
+    }
     if (
       updateBrandImage &&
       !updateBrandImage.match(
-        /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|svg)/g
+        /(http(s?):)([/|.|\w|\s|-]|%[0-9a-fA-F]{2})+\.(?:jpg|jpeg|gif|png|svg)/g
       )
     ) {
       setUpdateErrors("L'url de l'image n'est pas valide.");
@@ -229,8 +234,9 @@ const BrandManager = () => {
           }
         );
       }
-      setUpdateBrandName(brand?.name || "");
-      setUpdateBrandImage("");
+      setUpdateBrandName(updateBrandName);
+      setUpdateBrandImage(updateBrandImage);
+      setIsOpen(false);
 
       return data?.updateBrand;
     } catch (err) {
@@ -246,9 +252,9 @@ const BrandManager = () => {
     setUpdateBrandImage("");
   };
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    setIsOpen(value.trim() !== ""); // Ouvre la liste si la recherche contient du texte
+  const handleSearchBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateBrandName(e.target.value);
+    setIsOpen(e.target.value.trim() !== ""); // Ouvre la liste si la recherche contient du texte
   };
 
   return (
@@ -331,54 +337,18 @@ const BrandManager = () => {
         </div>
       </div>
       <div
-        className={`
-      
-        flex flex-col items-center justify-center bg-primary-hover p-8 rounded-lg m-8`}
+        className={`flex flex-col items-center justify-center bg-primary-hover p-8 rounded-lg m-8`}
       >
         <h2 className=" font-bold text-2xl text-secondary">
           Mettre à jour une marque
         </h2>
         <div className="w-96 mx-auto mt-8 relative">
-          <SearchBar
-            setSearch={handleSearch}
-            placeholder="Rechercher une marque..."
-          />
-          {search && isOpen && (
-            <ul
-              ref={ulBrandListRef}
-              className={`${
-                brands.filter((brand) =>
-                  brand.name.toLowerCase().includes(search.toLowerCase())
-                ).length > 10
-                  ? " h-80 overflow-y-scroll"
-                  : brands.filter((brand) =>
-                      brand.name.toLowerCase().includes(search.toLowerCase())
-                    ).length === 0
-                  ? "hidden "
-                  : "h-fit"
-              } ${windowPosition} bg-secondary dark:bg-secondary-dark w-full pt-5 absolute z-10`}
-            >
-              {brands
-                .filter((brand) =>
-                  brand.name.toLowerCase().includes(search.toLowerCase())
-                )
-                .map((brand) => (
-                  <li
-                    onClick={() => handleClickBrandList(Number(brand.id))}
-                    key={brand.id}
-                    className="px-4 py-2 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover cursor-pointer"
-                  >
-                    {brand.name}
-                  </li>
-                ))}
-            </ul>
-          )}
           <div
             // ref={brandUpdateContainerRef}
             className={`${animeError(
               "",
               updateErrors
-            )} flex flex-col items-center justify-center bg-primary-hover p-8 rounded-lg m-8 transition-200`}
+            )} flex flex-col items-center justify-center bg-primary-hover  rounded-lg  transition-200`}
           >
             <h2 className=" font-bold text-2xl text-secondary">
               Modifier une marque
@@ -412,35 +382,75 @@ const BrandManager = () => {
             )}
             <div className=" mt-8 relative flex flex-col items-center justify-center">
               <input
-                onClick={() => setUpdateBrandName(brand?.name || "")}
+                onClick={() => setUpdateBrandName(brand?.name ?? "")}
                 autoComplete="off"
                 required
                 type="text"
                 id="updateBrandName"
                 placeholder=" "
-                value={updateBrandName ? updateBrandName : brand?.name}
+                value={updateBrandName}
                 className={`inputForm ${animeError("nom", updateErrors)}`}
                 ref={inputBrandNameRef}
-                onChange={(e) => setUpdateBrandName(e.target.value)}
+                onChange={handleSearchBrand}
               />
               <label className="labelForm" htmlFor="updateBrandName">
-                {brandId && brand?.name ? brand?.name : "Nom de la marque..."}
+                Nom de la marque...
               </label>
+              {updateBrandName && isOpen && (
+                <ul
+                  ref={ulBrandListRef}
+                  className={`${
+                    brands.filter((brand) =>
+                      brand.name
+                        .toLowerCase()
+                        .includes(updateBrandName.toLowerCase())
+                    ).length > 10
+                      ? " h-80 overflow-y-scroll"
+                      : brands.filter((brand) =>
+                          brand.name
+                            .toLowerCase()
+                            .includes(updateBrandName.toLowerCase())
+                        ).length === 0
+                      ? "hidden "
+                      : "h-fit"
+                  } ${windowPosition} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
+                >
+                  <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
+                    Marques
+                  </p>
+                  {brands
+                    .filter((brand) =>
+                      brand.name
+                        .toLowerCase()
+                        .includes(updateBrandName.toLowerCase())
+                    )
+                    .map((brand) => (
+                      <li
+                        onClick={() => handleClickBrandList(Number(brand.id))}
+                        key={brand.id}
+                        className="px-4 py-2 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover cursor-pointer"
+                      >
+                        {brand.name}
+                      </li>
+                    ))}
+                </ul>
+              )}
             </div>
             <div className="mt-8 relative flex flex-col items-center justify-center">
               <input
+                onClick={() => setUpdateBrandImage(brand?.image ?? "")}
                 autoComplete="off"
                 required
                 type="text"
                 id="updateBrandImage"
                 placeholder=" "
-                value={updateBrandImage ? updateBrandImage : brand?.image ?? ""}
+                value={updateBrandImage}
                 className={`inputForm ${animeError("image", updateErrors)}`}
                 ref={inputBrandUrlRef}
                 onChange={(e) => setUpdateBrandImage(e.target.value)}
               />
               <label className="labelForm" htmlFor="updateBrandImage">
-                {brandId && brand?.image ? brand?.image : "Url de l'image..."}
+                Url de l'image...
               </label>
               <div className="mt-4 flex flex-col items-center justify-center">
                 <button
