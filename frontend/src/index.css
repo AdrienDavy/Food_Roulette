@@ -112,11 +112,11 @@ body {
   }
 
   .inputForm {
-    @apply w-full py-2.5 px-3 rounded-lg text-primary bg-secondary focus:bg-secondary-focus focus:outline-none;
+    @apply w-full py-2.5 px-3 rounded-lg text-primary bg-secondary focus:bg-secondary-focus focus:outline-none truncate;
   }
 
   .labelForm {
-    @apply p-2 absolute left-1 top-1 text-primary dark:text-primary-dark text-sm transition-200;
+    @apply p-2 absolute left-1 top-1 text-primary dark:text-primary-dark text-sm transition-200 truncate w-full;
   }
 
   .inputForm:focus + .labelForm {
@@ -124,11 +124,11 @@ body {
   }
 
   .inputForm:not(:focus):placeholder-shown + .labelForm {
-    @apply text-primary  dark:text-primary-dark;
+    @apply text-primary  dark:text-primary-dark truncate;
   }
 
   .inputForm:not(:placeholder-shown) + .labelForm {
-    @apply text-secondary dark:text-secondary-dark  rounded-lg -translate-y-8;
+    @apply text-secondary dark:text-secondary-dark  rounded-lg -translate-y-8 truncate;
   }
 }
 
