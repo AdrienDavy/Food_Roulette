@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-export type PositionClass = "top-full" | "bottom-full";
-
 export const useDropdownPosition = <T extends HTMLElement>(
   triggerRef: React.RefObject<T>,
-  dropdownRef: React.RefObject<HTMLUListElement>
-): PositionClass => {
-  const [position, setPosition] = useState<PositionClass>("top-full");
+  dropdownRef: React.RefObject<HTMLUListElement>,
+  positionClassTop: string,
+  positionClassBottom: string
+): string => {
+  const [classes, setClasses] = useState(positionClassTop); // Default to top position classes
 
   useEffect(() => {
     const updatePosition = () => {
@@ -19,9 +19,14 @@ export const useDropdownPosition = <T extends HTMLElement>(
       const fitsBelow = triggerRect.bottom + dropdownHeight <= viewportHeight;
       const fitsAbove = triggerRect.top - dropdownHeight >= 0;
 
-      setPosition(
-        fitsBelow ? "top-full" : fitsAbove ? "bottom-full" : "top-full"
-      );
+      if (fitsBelow) {
+        setClasses(positionClassTop);
+      } else if (fitsAbove) {
+        setClasses(positionClassBottom);
+      } else {
+        // Fallback to default if neither fits
+        setClasses(positionClassTop);
+      }
     };
 
     updatePosition();
@@ -32,7 +37,7 @@ export const useDropdownPosition = <T extends HTMLElement>(
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition);
     };
-  }, [triggerRef, dropdownRef]);
+  }, [triggerRef, dropdownRef, positionClassTop, positionClassBottom]);
 
-  return position;
+  return classes;
 };

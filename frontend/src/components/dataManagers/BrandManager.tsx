@@ -26,7 +26,12 @@ const BrandManager = () => {
   const inputBrandUrlRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
-  const position = useDropdownPosition(triggerRef, dropdownRef);
+  const classes = useDropdownPosition(
+    triggerRef,
+    dropdownRef,
+    "top-full rounded-bl-lg rounded-br-lg", // Classes pour la position "top"
+    "bottom-full rounded-tl-lg rounded-tr-lg" // Classes pour la position "bottom"
+  );
 
   // -------------------------CREATE--------------------------------
   const [createBrandName, setCreateBrandName] = useState<string>("");
@@ -415,7 +420,7 @@ const BrandManager = () => {
                         ).length === 0
                       ? "hidden "
                       : "h-fit"
-                  } ${position} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
+                  } ${classes} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
                 >
                   <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
                     Marques
