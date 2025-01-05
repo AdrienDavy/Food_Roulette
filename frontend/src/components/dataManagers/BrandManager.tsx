@@ -10,6 +10,7 @@ import { mutationCreateBrand } from "../../api/brand/CreateBrand";
 import { Bounce, toast } from "react-toastify";
 import { useDropdownPosition } from "../../utils/useDropdownPosition";
 import { mutationUpdateBrand } from "../../api/brand/UpdateBrand";
+import { mutationDeleteBrand } from "../../api/brand/DeleteBrand";
 
 const BrandManager = () => {
   // --------------------------------STATES--------------------------------
@@ -47,6 +48,8 @@ const BrandManager = () => {
   const [updateBrandName, setUpdateBrandName] = useState<string>("");
   const [updateBrandImage, setUpdateBrandImage] = useState<string>("");
   const [updateErrors, setUpdateErrors] = useState<string>("");
+  // -------------------------UPDATE--------------------------------
+  const [deleteErrors, setDeleteErrors] = useState<string>("");
 
   // --------------------------------QUERY--------------------------------
 
@@ -104,6 +107,29 @@ const BrandManager = () => {
     },
   });
 
+  const [doDeleteBrand] = useMutation(mutationDeleteBrand, {
+    refetchQueries: [queryBrands, queryBrand],
+    onError: (error) => {
+      const validationErrors =
+        error.graphQLErrors[0]?.extensions?.validationErrors;
+      if (validationErrors) {
+        interface ValidationError {
+          constraints: { [key: string]: string };
+        }
+        const errorMessages = Array.isArray(validationErrors)
+          ? validationErrors
+              .map((err: ValidationError) =>
+                Object.values(err.constraints).join(", ")
+              )
+              .join(", ")
+          : "Unknown error";
+        setUpdateErrors(errorMessages);
+      } else {
+        setUpdateErrors(error.message);
+      }
+    },
+  });
+
   // -----------------------------UX-----------------------------------
 
   const animeError = (wordToWatch: string | "", errors: string) => {
@@ -115,12 +141,6 @@ const BrandManager = () => {
   };
 
   // -----------------------------FUNCTIONS-----------------------------------
-
-  const handleBrandChange = (option: OptionType<string>) => {
-    setSelectedBrand(option);
-    setIsOpen(isOpen);
-    console.log(isOpen);
-  };
 
   // -----------------------------CREATE--------------------------
   const validateCreateForm = () => {
@@ -179,7 +199,9 @@ const BrandManager = () => {
       console.error(err);
     }
   }
+
   // -----------------------------UPDATE--------------------------
+
   const validateUpdateForm = () => {
     if (!updateBrandName) {
       setUpdateErrors("Le nom de la marque est requis.");
@@ -251,12 +273,73 @@ const BrandManager = () => {
     }
   }
 
+  // -----------------------------DELETE--------------------------
+
+  const validateDeleteForm = () => {
+    if (!updateBrandName) {
+      setDeleteErrors("Le nom de la marque est requis.");
+      return;
+    }
+    setDeleteErrors("");
+    return true;
+  };
+
+  async function doDelete() {
+    if (!brandId) {
+      setDeleteErrors("Veuillez sélectionner une marque.");
+      return;
+    }
+    if (!validateDeleteForm()) {
+      return;
+    }
+
+    try {
+      const { data } = await doDeleteBrand({
+        variables: {
+          id: `${brandId}`,
+        },
+      });
+      if (data?.deleteBrand) {
+        toast.success(
+          `Marque ${data?.deleteBrand.name} supprimée avec succès ! 🦄`,
+          {
+            className: "toast-success bg-primary",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          }
+        );
+      }
+      setUpdateBrandName("");
+      setUpdateBrandImage("");
+      setIsOpen(false);
+
+      return data?.deleteBrand;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // -----------------------------HANDLES--------------------------
+
+  const handleBrandChange = (option: OptionType<string>) => {
+    setSelectedBrand(option);
+    setIsOpen(isOpen);
+    console.log(isOpen);
+  };
+
   const handleClickBrandList = (id: number) => {
     setBrandId(Number(id));
-    setIsOpen(!isOpen);
-    setUpdateErrors("");
     setUpdateBrandName("");
     setUpdateBrandImage("");
+    setIsOpen(!isOpen);
+    setUpdateErrors("");
   };
 
   const handleSearchBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -266,7 +349,6 @@ const BrandManager = () => {
 
   return (
     <section className="flex flex-col items-center justify-center">
-      <div className="h-[800px]"></div>
       <h1 className=" mb-4 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
         Gestionnaire de marque
       </h1>
@@ -303,6 +385,7 @@ const BrandManager = () => {
         <h2 className=" font-bold text-2xl text-secondary">Créer une marque</h2>
         <div className=" mt-8 relative flex flex-col items-center justify-center">
           <input
+            onClick={() => setCreateErrors("")}
             autoComplete="off"
             required
             type="text"
@@ -322,6 +405,7 @@ const BrandManager = () => {
         </div>
         <div className="mt-8 relative flex flex-col items-center justify-center">
           <input
+            onClick={() => setCreateErrors("")}
             autoComplete="off"
             required
             type="text"
@@ -396,16 +480,20 @@ const BrandManager = () => {
             )}
             <div className=" mt-8 relative flex flex-col items-center justify-center">
               <input
-                onClick={() => setUpdateBrandName(brand?.name ?? "")}
+                onClick={() => {
+                  setUpdateBrandName(brand?.name ?? "");
+                  setUpdateErrors("");
+                }}
                 autoComplete="off"
                 required
                 type="text"
                 id="updateBrandName"
                 placeholder=" "
                 value={updateBrandName}
-                className={`inputForm ${animeError("nom", updateErrors)} ${
-                  isOpen ? triggerClasses : "rounded-lg"
-                }`}
+                className={`inputForm ${animeError(
+                  "",
+                  updateErrors || deleteErrors
+                )} ${isOpen ? triggerClasses : "rounded-lg"}`}
                 ref={triggerRef}
                 onChange={handleSearchBrand}
               />
@@ -454,13 +542,16 @@ const BrandManager = () => {
             </div>
             <div className="mt-8 relative flex flex-col items-center justify-center">
               <input
-                onClick={() => setUpdateBrandImage(brand?.image ?? "")}
+                onClick={() => {
+                  setUpdateBrandImage(brand?.image ?? "");
+                  setUpdateErrors("");
+                }}
                 autoComplete="off"
                 required
                 type="text"
                 id="updateBrandImage"
                 placeholder=" "
-                value={updateBrandImage}
+                value={updateBrandImage || ""}
                 className={`inputForm rounded-lg ${animeError(
                   "image",
                   updateErrors
@@ -483,9 +574,65 @@ const BrandManager = () => {
                   <p className=" text-red-500">{updateErrors}</p>
                 )}
               </div>
+              <div className="mt-4 flex flex-col items-center justify-center">
+                <button
+                  type="button"
+                  className="primary-button "
+                  onClick={doDelete}
+                >
+                  Supprimer ma Marque
+                </button>
+                {deleteErrors && (
+                  <p className=" text-red-500">{deleteErrors}</p>
+                )}
+              </div>
             </div>
           </div>
-          <div className="h-[800px] bg-primary"></div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center justify-center">
+        <h2 className="text-4xl uppercase font-bold text-center text-secondary dark:text-secondary-dark transition-200">
+          Toutes les Marques
+        </h2>
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-4  items-center justify-center my-8">
+          {brands
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((brand: Brand) => (
+              <div
+                key={brand.id}
+                className="flex flex-col justify-between items-center h-80 rounded-lg bg-primary-hover rounded-lgtransition-200"
+              >
+                <div className="h-1/2 p-4 aspect-video">
+                  {brand.image ? (
+                    <img
+                      className="w-full h-full object-contain"
+                      src={brand.image}
+                      alt={`Logo de la marque ${brand.name}`}
+                    />
+                  ) : (
+                    <svg
+                      className="w-full h-full  text-gray-200 dark:text-gray-600"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 20 18"
+                    >
+                      <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+                    </svg>
+                  )}
+                </div>
+                <div>
+                  <h2 className=" font-bold text-2xl text-secondary">
+                    Marque id {brand.id}
+                  </h2>
+                  <p className=" pb-8 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
+                    {brand.name}
+                  </p>
+                </div>
+              </div>
+            ))}
         </div>
       </div>
     </section>

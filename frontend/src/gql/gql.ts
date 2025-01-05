@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\nmutation CreateBrand($data: BrandCreateInput!) {\n  createBrand(data: $data) {\n    id\n    name\n    image\n  }\n}\n": types.CreateBrandDocument,
-    "\nmutation DeleteBrand($id: ID!) {\n  deleteBrand(id: $id) {\n    id\n  }\n}\n": types.DeleteBrandDocument,
+    "\nmutation DeleteBrand($id: ID!) {\n  deleteBrand(id: $id) {\n    id\n    name\n  }\n}\n": types.DeleteBrandDocument,
     "\nquery QueryBrand($brandId: ID!) { \n  brand(id: $brandId) {    \n    id\n    name\n    image\n  }\n}\n": types.QueryBrandDocument,
     "\nquery QueryBrands {\n  brands {\n    id\n    name\n    image   \n  }\n}\n": types.QueryBrandsDocument,
     "\nmutation UpdateBrand($data: BrandUpdateInput!, $id:ID!) {\n  updateBrand(data: $data, id:$id) {\n    id\n    name\n  }\n}\n": types.UpdateBrandDocument,
@@ -80,7 +80,7 @@ export function gql(source: "\nmutation CreateBrand($data: BrandCreateInput!) {\
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation DeleteBrand($id: ID!) {\n  deleteBrand(id: $id) {\n    id\n  }\n}\n"): (typeof documents)["\nmutation DeleteBrand($id: ID!) {\n  deleteBrand(id: $id) {\n    id\n  }\n}\n"];
+export function gql(source: "\nmutation DeleteBrand($id: ID!) {\n  deleteBrand(id: $id) {\n    id\n    name\n  }\n}\n"): (typeof documents)["\nmutation DeleteBrand($id: ID!) {\n  deleteBrand(id: $id) {\n    id\n    name\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
