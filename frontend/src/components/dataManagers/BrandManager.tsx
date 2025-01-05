@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { mutationCreateBrand } from "../../api/brand/CreateBrand";
 import { Bounce, toast } from "react-toastify";
-import { useVerticalPosition } from "../../utils/useVerticalPosition";
+import { useDropdownPosition } from "../../utils/useDropdownPosition";
 import { mutationUpdateBrand } from "../../api/brand/UpdateBrand";
 
 const BrandManager = () => {
@@ -19,6 +19,15 @@ const BrandManager = () => {
   const [brandId, setBrandId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  // --------------------------------REFS--------------------------------
+
+  const brandCreateContainerRef = useRef<HTMLDivElement>(null);
+  const inputBrandNameRef = useRef<HTMLInputElement>(null);
+  const inputBrandUrlRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLUListElement>(null);
+  const position = useDropdownPosition(triggerRef, dropdownRef);
+
   // -------------------------CREATE--------------------------------
   const [createBrandName, setCreateBrandName] = useState<string>("");
   const [createBrandImage, setCreateBrandImage] = useState<string>("");
@@ -27,13 +36,6 @@ const BrandManager = () => {
   const [updateBrandName, setUpdateBrandName] = useState<string>("");
   const [updateBrandImage, setUpdateBrandImage] = useState<string>("");
   const [updateErrors, setUpdateErrors] = useState<string>("");
-
-  // --------------------------------REFS--------------------------------
-
-  const brandCreateContainerRef = useRef<HTMLDivElement>(null);
-  const inputBrandNameRef = useRef<HTMLInputElement>(null);
-  const inputBrandUrlRef = useRef<HTMLInputElement>(null);
-  const ulBrandListRef = useRef<HTMLUListElement>(null);
 
   // --------------------------------QUERY--------------------------------
 
@@ -101,11 +103,11 @@ const BrandManager = () => {
     }
   };
 
-  const windowPosition = useVerticalPosition(
-    ulBrandListRef,
-    "top-full rounded-br-lg rounded-bl-lg",
-    "bottom-full rounded-tr-lg rounded-tl-lg"
-  );
+  // const windowPosition = useVerticalPosition(
+  //   ulBrandListRef,
+  //   "top-full rounded-br-lg rounded-bl-lg",
+  //   "bottom-full rounded-tr-lg rounded-tl-lg"
+  // );
 
   // -----------------------------FUNCTIONS-----------------------------------
 
@@ -390,7 +392,7 @@ const BrandManager = () => {
                 placeholder=" "
                 value={updateBrandName}
                 className={`inputForm ${animeError("nom", updateErrors)}`}
-                ref={inputBrandNameRef}
+                ref={triggerRef}
                 onChange={handleSearchBrand}
               />
               <label className="labelForm" htmlFor="updateBrandName">
@@ -398,7 +400,7 @@ const BrandManager = () => {
               </label>
               {updateBrandName && isOpen && (
                 <ul
-                  ref={ulBrandListRef}
+                  ref={dropdownRef}
                   className={`${
                     brands.filter((brand) =>
                       brand.name
@@ -413,7 +415,7 @@ const BrandManager = () => {
                         ).length === 0
                       ? "hidden "
                       : "h-fit"
-                  } ${windowPosition} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
+                  } ${position} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
                 >
                   <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
                     Marques
@@ -466,6 +468,7 @@ const BrandManager = () => {
               </div>
             </div>
           </div>
+          <div className="h-[800px] bg-primary"></div>
         </div>
       </div>
     </section>
