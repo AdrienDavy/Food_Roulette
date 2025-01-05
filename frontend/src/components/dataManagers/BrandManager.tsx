@@ -3,7 +3,7 @@ import { queryBrands } from "../../api/brand/QueryBrands";
 import { queryBrand } from "../../api/brand/QueryBrand";
 import { Brand } from "../../gql/graphql";
 import OptionSelect, { OptionType } from "../OptionSelect";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { mutationCreateBrand } from "../../api/brand/CreateBrand";
@@ -19,6 +19,8 @@ const BrandManager = () => {
   );
   const [brandId, setBrandId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const [progress, setProgress] = useState(0);
 
   // --------------------------------REFS--------------------------------
 
@@ -53,7 +55,11 @@ const BrandManager = () => {
 
   // --------------------------------QUERY--------------------------------
 
-  const { data: brandsDataFromQuery } = useQuery(queryBrands);
+  const {
+    data: brandsDataFromQuery,
+    error: brandsDataError,
+    loading: brandsDataLoading,
+  } = useQuery(queryBrands);
   const brands = brandsDataFromQuery?.brands || [];
 
   const { data: brandDataFromQuery } = useQuery(queryBrand, {
@@ -139,6 +145,18 @@ const BrandManager = () => {
       return `border-none`;
     }
   };
+
+  useEffect(() => {
+    if (brandsDataLoading) {
+      const interval = setInterval(() => {
+        setProgress((prev) => (prev < 80 ? prev + 5 : prev));
+      }, 100);
+      return () => clearInterval(interval);
+    } else if (brandsDataFromQuery) {
+      setProgress(100);
+      setTimeout(() => setProgress(0), 500); // Réinitialiser la barre après le chargement
+    }
+  }, [brandsDataLoading, brandsDataFromQuery]);
 
   // -----------------------------FUNCTIONS-----------------------------------
 
@@ -355,6 +373,11 @@ const BrandManager = () => {
       <h2 className=" mb-4 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
         Marques
       </h2>
+      {brandsDataError && (
+        <p className="bg-red-500 p-2 rounded-lg text-light my-4">
+          Erreur lors du chargement des marques
+        </p>
+      )}
       <div className="mb-4  w-80 flex items-center justify-between">
         <OptionSelect<string>
           options={brands.map((brand: Brand) => ({
@@ -595,45 +618,64 @@ const BrandManager = () => {
         <h2 className="text-4xl uppercase font-bold text-center text-secondary dark:text-secondary-dark transition-200">
           Toutes les Marques
         </h2>
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-4  items-center justify-center my-8">
-          {brands
-            .slice()
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((brand: Brand) => (
+
+        {brandsDataError ? (
+          <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
+            Erreur lors du chargement des marques
+          </p>
+        ) : brandsDataLoading ? (
+          <div className="w-full my-16">
+            <p className=" text-center py-2 animate-pulse text-light dark:text-primary-hover">
+              Chargement des marques...
+            </p>
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 ">
               <div
-                key={brand.id}
-                className="flex flex-col justify-between items-center h-80 rounded-lg bg-primary-hover rounded-lgtransition-200"
-              >
-                <div className="h-1/2 p-4 aspect-video">
-                  {brand.image ? (
-                    <img
-                      className="w-full h-full object-contain"
-                      src={brand.image}
-                      alt={`Logo de la marque ${brand.name}`}
-                    />
-                  ) : (
-                    <svg
-                      className="w-full h-full  text-gray-200 dark:text-gray-600"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 20 18"
-                    >
-                      <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
-                    </svg>
-                  )}
+                className=" bg-primary-hover dark:bg-primary-dark-hover h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-4 grid-cols-2 md:grid-cols-4  items-center justify-center my-8 transition-200">
+            {brands
+              .slice()
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((brand: Brand) => (
+                <div
+                  key={brand.id}
+                  className="flex flex-col justify-between items-center h-80 rounded-lg bg-primary-hover overflow-hidden"
+                >
+                  <div className="h-1/2 p-4 w-full bg-light">
+                    {brand.image ? (
+                      <img
+                        className="w-full h-full object-contain"
+                        src={brand.image}
+                        alt={`Logo de la marque ${brand.name}`}
+                      />
+                    ) : (
+                      <svg
+                        className="w-full h-full  text-gray-200 dark:text-gray-600"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 20 18"
+                      >
+                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="h-1/2 p-4 text-center">
+                    <h2 className=" font-bold text-xl text-secondary">
+                      Marque id {brand.id}
+                    </h2>
+                    <p className=" pb-8 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
+                      {brand.name}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className=" font-bold text-2xl text-secondary">
-                    Marque id {brand.id}
-                  </h2>
-                  <p className=" pb-8 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
-                    {brand.name}
-                  </p>
-                </div>
-              </div>
-            ))}
-        </div>
+              ))}
+          </div>
+        )}
       </div>
     </section>
   );
