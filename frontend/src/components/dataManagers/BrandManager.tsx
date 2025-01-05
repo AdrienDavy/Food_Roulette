@@ -26,12 +26,18 @@ const BrandManager = () => {
   const inputBrandUrlRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
-  const classes = useDropdownPosition(
-    triggerRef,
-    dropdownRef,
-    "top-full rounded-bl-lg rounded-br-lg", // Classes pour la position "top"
-    "bottom-full rounded-tl-lg rounded-tr-lg" // Classes pour la position "bottom"
-  );
+
+  const { dropdownPosition, triggerClasses, dropdownClasses } =
+    useDropdownPosition(
+      triggerRef,
+      dropdownRef,
+      "rounded-tl-lg rounded-tr-lg", // Classes pour le trigger en bas
+      "rounded-bl-lg rounded-br-lg", // Classes pour le trigger en haut
+      "top-full", // Position pour le dropdown en bas
+      "rounded-bl-lg rounded-br-lg shadow-lg", // Classes pour le dropdown en bas
+      "bottom-full", // Position pour le dropdown en haut
+      "rounded-tl-lg rounded-tr-lg" // Classes pour le dropdown en haut
+    );
 
   // -------------------------CREATE--------------------------------
   const [createBrandName, setCreateBrandName] = useState<string>("");
@@ -107,12 +113,6 @@ const BrandManager = () => {
       return `border-none`;
     }
   };
-
-  // const windowPosition = useVerticalPosition(
-  //   ulBrandListRef,
-  //   "top-full rounded-br-lg rounded-bl-lg",
-  //   "bottom-full rounded-tr-lg rounded-tl-lg"
-  // );
 
   // -----------------------------FUNCTIONS-----------------------------------
 
@@ -266,6 +266,7 @@ const BrandManager = () => {
 
   return (
     <section className="flex flex-col items-center justify-center">
+      <div className="h-[800px]"></div>
       <h1 className=" mb-4 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
         Gestionnaire de marque
       </h1>
@@ -308,7 +309,10 @@ const BrandManager = () => {
             id="createBrandName"
             placeholder=" "
             value={createBrandName}
-            className={`inputForm ${animeError("nom", createErrors)}`}
+            className={`inputForm rounded-lg ${animeError(
+              "nom",
+              createErrors
+            )}`}
             ref={inputBrandNameRef}
             onChange={(e) => setCreateBrandName(e.target.value)}
           />
@@ -324,7 +328,10 @@ const BrandManager = () => {
             id="createBrandImage"
             placeholder=" "
             value={createBrandImage}
-            className={`inputForm ${animeError("image", createErrors)}`}
+            className={`inputForm rounded-lg ${animeError(
+              "image",
+              createErrors
+            )}`}
             ref={inputBrandUrlRef}
             onChange={(e) => setCreateBrandImage(e.target.value)}
           />
@@ -355,7 +362,7 @@ const BrandManager = () => {
             className={`${animeError(
               "",
               updateErrors
-            )} flex flex-col items-center justify-center bg-primary-hover  rounded-lg  transition-200`}
+            )} flex flex-col items-center justify-center bg-primary-hover rounded-lg transition-200`}
           >
             <h2 className=" font-bold text-2xl text-secondary">
               Modifier une marque
@@ -396,7 +403,9 @@ const BrandManager = () => {
                 id="updateBrandName"
                 placeholder=" "
                 value={updateBrandName}
-                className={`inputForm ${animeError("nom", updateErrors)}`}
+                className={`inputForm ${animeError("nom", updateErrors)} ${
+                  isOpen ? triggerClasses : "rounded-lg"
+                }`}
                 ref={triggerRef}
                 onChange={handleSearchBrand}
               />
@@ -420,7 +429,7 @@ const BrandManager = () => {
                         ).length === 0
                       ? "hidden "
                       : "h-fit"
-                  } ${classes} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
+                  } ${dropdownPosition} ${dropdownClasses} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
                 >
                   <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
                     Marques
@@ -452,7 +461,10 @@ const BrandManager = () => {
                 id="updateBrandImage"
                 placeholder=" "
                 value={updateBrandImage}
-                className={`inputForm ${animeError("image", updateErrors)}`}
+                className={`inputForm rounded-lg ${animeError(
+                  "image",
+                  updateErrors
+                )}`}
                 ref={inputBrandUrlRef}
                 onChange={(e) => setUpdateBrandImage(e.target.value)}
               />
