@@ -5,6 +5,7 @@ export const mutationCreateIngredient = gql(`
 mutation CreateIngredient($data: IngredientCreateInput!) {
   createIngredient(data: $data) {
     id
+    name
   }
 }
 `);

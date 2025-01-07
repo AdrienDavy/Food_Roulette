@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useDropdownPosition } from "../utils/useDropdownPosition";
 
 export type OptionType<T> = {
   id: number;
@@ -22,7 +23,8 @@ const OptionSelect = <T extends string>({
 }: OptionSelectProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<OptionType<T> | null>(actualOption);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     setSelected(actualOption);
@@ -40,20 +42,30 @@ const OptionSelect = <T extends string>({
     setIsOpen(false);
   };
 
+  const { dropdownPosition, triggerClasses, dropdownClasses } =
+    useDropdownPosition(
+      triggerRef,
+      dropdownRef,
+      "rounded-tl-lg rounded-tr-lg", // Classes pour le trigger en bas
+      "rounded-bl-lg rounded-br-lg", // Classes pour le trigger en haut
+      "top-full", // Position pour le dropdown en bas
+      "rounded-bl-lg rounded-br-lg shadow-lg", // Classes pour le dropdown en bas
+      "bottom-full", // Position pour le dropdown en haut
+      "rounded-tl-lg rounded-tr-lg" // Classes pour le dropdown en haut
+    );
+
   return (
     <div
       className="relative w-full z-10"
-      ref={dropdownRef}
+      ref={triggerRef}
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex justify-between px-4 w-full py-2 z-10 bg-white transition-all duration-100 ease-in-out ${
-          isOpen
-            ? "rounded-tl-lg rounded-tr-lg border-2 border-b-0"
-            : " rounded-lg border-2"
+        className={`flex justify-between px-4 py-2 w-full  z-10 bg-secondary transition-all duration-100 ease-in-out ${
+          isOpen ? triggerClasses : "rounded-lg"
         }  border-primary text-primary text-sm cursor-pointer`}
       >
         {selected ? getDisplayText(selected.data) : defaultOption}
@@ -67,15 +79,22 @@ const OptionSelect = <T extends string>({
       </button>
       {isOpen && (
         <ul
+          ref={dropdownRef}
+          className={`${
+            options && options?.filter((option) => option).length > 10
+              ? " h-80 overflow-y-scroll"
+              : options?.filter((option) => option).length === 0
+              ? "hidden "
+              : "h-fit"
+          } border-primary  text-primary flex-col flex justify-start bg-secondary custom-scrollbar absolute ${dropdownPosition} ${dropdownClasses} w-full`}
           onClick={() => setIsOpen(false)}
-          className={` border-primary border-2 text-primary rounded-none rounded-bl-lg rounded-br-lg absolute w-full top-full flex-col flex justify-start bg-gray-50 custom-scrollbar duration-200`}
         >
           {options
             ?.sort((a, b) => a.data.localeCompare(b.data))
             .map((option) => (
               <li
                 key={option.id}
-                className="p-2 hover:bg-gray-100 cursor-pointer z-10"
+                className="p-2 hover:bg-secondary-hover cursor-pointer z-10"
                 onClick={() => {
                   handleSelect(option);
                 }}

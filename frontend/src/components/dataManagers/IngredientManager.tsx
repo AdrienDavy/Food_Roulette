@@ -1,32 +1,31 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { queryBrands } from "../../api/brand/QueryBrands";
-import { queryBrand } from "../../api/brand/QueryBrand";
-import { Brand } from "../../gql/graphql";
+import { queryIngredients } from "../../api/ingredient/QueryIngredients";
+import { queryIngredient } from "../../api/ingredient/QueryIngredient";
+import { Ingredient } from "../../gql/graphql";
 import OptionSelect, { OptionType } from "../OptionSelect";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
-import { mutationCreateBrand } from "../../api/brand/CreateBrand";
+import { mutationCreateIngredient } from "../../api/ingredient/CreateIngredient";
 import { Bounce, toast } from "react-toastify";
 import { useDropdownPosition } from "../../utils/useDropdownPosition";
-import { mutationUpdateBrand } from "../../api/brand/UpdateBrand";
-import { mutationDeleteBrand } from "../../api/brand/DeleteBrand";
+import { mutationUpdateIngredient } from "../../api/ingredient/UpdateIngredient";
+import { mutationDeleteIngredient } from "../../api/ingredient/DeleteIngredient";
 
-const BrandManager = () => {
+const IngredientManager = () => {
   // --------------------------------STATES--------------------------------
-  const [selectedBrand, setSelectedBrand] = useState<OptionType<string> | null>(
-    null
-  );
-  const [brandId, setBrandId] = useState<number | null>(null);
+  const [selectedIngredient, setSelectedIngredient] =
+    useState<OptionType<string> | null>(null);
+  const [ingredientId, setIngredientId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [progress, setProgress] = useState(0);
 
   // --------------------------------REFS--------------------------------
 
-  const brandCreateContainerRef = useRef<HTMLDivElement>(null);
-  const inputBrandNameRef = useRef<HTMLInputElement>(null);
-  const inputBrandUrlRef = useRef<HTMLInputElement>(null);
+  const ingredientCreateContainerRef = useRef<HTMLDivElement>(null);
+  const inputIngredientNameRef = useRef<HTMLInputElement>(null);
+  const inputIngredientUrlRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
@@ -43,12 +42,14 @@ const BrandManager = () => {
     );
 
   // -------------------------CREATE--------------------------------
-  const [createBrandName, setCreateBrandName] = useState<string>("");
-  const [createBrandImage, setCreateBrandImage] = useState<string>("");
+  const [createIngredientName, setCreateIngredientName] = useState<string>("");
+  const [createIngredientImage, setCreateIngredientImage] =
+    useState<string>("");
   const [createErrors, setCreateErrors] = useState<string>("");
   // -------------------------UPDATE--------------------------------
-  const [updateBrandName, setUpdateBrandName] = useState<string>("");
-  const [updateBrandImage, setUpdateBrandImage] = useState<string>("");
+  const [updateIngredientName, setUpdateIngredientName] = useState<string>("");
+  const [updateIngredientImage, setUpdateIngredientImage] =
+    useState<string>("");
   const [updateErrors, setUpdateErrors] = useState<string>("");
   // -------------------------UPDATE--------------------------------
   const [deleteErrors, setDeleteErrors] = useState<string>("");
@@ -56,23 +57,23 @@ const BrandManager = () => {
   // --------------------------------QUERY--------------------------------
 
   const {
-    data: brandsDataFromQuery,
-    error: brandsDataError,
-    loading: brandsDataLoading,
-  } = useQuery(queryBrands);
-  const brands = brandsDataFromQuery?.brands || [];
+    data: ingredientsDataFromQuery,
+    error: ingredientsDataError,
+    loading: ingredientsDataLoading,
+  } = useQuery(queryIngredients);
+  const ingredients = ingredientsDataFromQuery?.ingredients || [];
 
-  const { data: brandDataFromQuery } = useQuery(queryBrand, {
-    variables: { brandId: `${brandId}` },
+  const { data: ingredientDataFromQuery } = useQuery(queryIngredient, {
+    variables: { ingredientId: `${ingredientId}` },
     fetchPolicy: "cache-and-network",
   });
 
-  const brand = brandDataFromQuery?.brand;
+  const ingredient = ingredientDataFromQuery?.ingredient;
 
   // -----------------------------MUTATIONS-----------------------------------
 
-  const [doCreateBrand] = useMutation(mutationCreateBrand, {
-    refetchQueries: [queryBrands],
+  const [doCreateIngredient] = useMutation(mutationCreateIngredient, {
+    refetchQueries: [queryIngredients],
     onError: (error) => {
       const validationErrors =
         error.graphQLErrors[0]?.extensions?.validationErrors;
@@ -92,8 +93,8 @@ const BrandManager = () => {
     },
   });
 
-  const [doUpdateBrand] = useMutation(mutationUpdateBrand, {
-    refetchQueries: [queryBrands, queryBrand],
+  const [doUpdateIngredient] = useMutation(mutationUpdateIngredient, {
+    refetchQueries: [queryIngredients, queryIngredient],
     onError: (error) => {
       const validationErrors =
         error.graphQLErrors[0]?.extensions?.validationErrors;
@@ -113,8 +114,8 @@ const BrandManager = () => {
     },
   });
 
-  const [doDeleteBrand] = useMutation(mutationDeleteBrand, {
-    refetchQueries: [queryBrands, queryBrand],
+  const [doDeleteIngredient] = useMutation(mutationDeleteIngredient, {
+    refetchQueries: [queryIngredients, queryIngredient],
     onError: (error) => {
       const validationErrors =
         error.graphQLErrors[0]?.extensions?.validationErrors;
@@ -147,28 +148,28 @@ const BrandManager = () => {
   };
 
   useEffect(() => {
-    if (brandsDataLoading) {
+    if (ingredientsDataLoading) {
       const interval = setInterval(() => {
         setProgress((prev) => (prev < 80 ? prev + 5 : prev));
       }, 100);
       return () => clearInterval(interval);
-    } else if (brandsDataFromQuery) {
+    } else if (ingredientsDataFromQuery) {
       setProgress(100);
       setTimeout(() => setProgress(0), 500); // Réinitialiser la barre après le chargement
     }
-  }, [brandsDataLoading, brandsDataFromQuery]);
+  }, [ingredientsDataLoading, ingredientsDataFromQuery]);
 
   // -----------------------------FUNCTIONS-----------------------------------
 
   // -----------------------------CREATE--------------------------
   const validateCreateForm = () => {
-    if (!createBrandName) {
-      setCreateErrors("Le nom de la marque est requis.");
+    if (!createIngredientName) {
+      setCreateErrors("Le nom de l'ingrédient est requis.");
       return;
     }
     if (
-      createBrandImage &&
-      !createBrandImage.match(
+      createIngredientImage &&
+      !createIngredientImage.match(
         /(http(s?):)([/|.|\w|\s|-]|%[0-9a-fA-F]{2})+\.(?:jpg|gif|png|svg)/g
       )
     ) {
@@ -184,17 +185,17 @@ const BrandManager = () => {
       return;
     }
     try {
-      const { data } = await doCreateBrand({
+      const { data } = await doCreateIngredient({
         variables: {
           data: {
-            name: createBrandName,
-            image: createBrandImage || undefined, // Assurez-vous de définir l'image si nécessaire
+            name: createIngredientName,
+            image: createIngredientImage || undefined, // Assurez-vous de définir l'image si nécessaire
           },
         },
       });
-      if (data?.createBrand) {
+      if (data?.createIngredient) {
         toast.success(
-          `Marque ${data?.createBrand.name} créée avec succès ! 🦄`,
+          `Ingrédient ${data?.createIngredient.name} créé avec succès ! 🦄`,
           {
             className: "toast-success bg-primary",
             position: "top-right",
@@ -208,8 +209,8 @@ const BrandManager = () => {
             transition: Bounce,
           }
         );
-        setCreateBrandName("");
-        setCreateBrandImage("");
+        setCreateIngredientName("");
+        setCreateIngredientImage("");
       }
 
       return data;
@@ -221,13 +222,13 @@ const BrandManager = () => {
   // -----------------------------UPDATE--------------------------
 
   const validateUpdateForm = () => {
-    if (!updateBrandName) {
-      setUpdateErrors("Le nom de la marque est requis.");
+    if (!updateIngredientName) {
+      setUpdateErrors("Le nom de l'ingrédient est requis.");
       return;
     }
     if (
-      updateBrandImage &&
-      !updateBrandImage.match(
+      updateIngredientImage &&
+      !updateIngredientImage.match(
         /(http(s?):)([/|.|\w|\s|-]|%[0-9a-fA-F]{2})+\.(?:jpg|jpeg|gif|png|svg)/g
       )
     ) {
@@ -239,34 +240,34 @@ const BrandManager = () => {
   };
 
   async function doUpdate() {
-    if (!brandId) {
-      setUpdateErrors("Veuillez sélectionner une marque.");
+    if (!ingredientId) {
+      setUpdateErrors("Veuillez sélectionner un ingrédient.");
       return;
     }
     if (!validateUpdateForm()) {
       return;
     }
 
-    if (updateBrandName === brand?.name) {
-      setUpdateBrandName(brand?.name);
+    if (updateIngredientName === ingredient?.name) {
+      setUpdateIngredientName(ingredient?.name);
     }
-    if (updateBrandImage === brand?.image) {
-      setUpdateBrandImage(brand?.image || "");
+    if (updateIngredientImage === ingredient?.image) {
+      setUpdateIngredientImage(ingredient?.image || "");
     }
 
     try {
-      const { data } = await doUpdateBrand({
+      const { data } = await doUpdateIngredient({
         variables: {
-          id: `${brandId}`,
+          id: `${ingredientId}`,
           data: {
-            name: updateBrandName,
-            image: updateBrandImage || undefined, // Assurez-vous de définir l'image si nécessaire
+            name: updateIngredientName,
+            image: updateIngredientImage || undefined, // Assurez-vous de définir l'image si nécessaire
           },
         },
       });
-      if (data?.updateBrand) {
+      if (data?.updateIngredient) {
         toast.success(
-          `Marque ${data?.updateBrand.name} modifiée avec succès ! 🦄`,
+          `Ingrédient ${data?.updateIngredient.name} modifiée avec succès ! 🦄`,
           {
             className: "toast-success bg-primary",
             position: "top-right",
@@ -281,11 +282,11 @@ const BrandManager = () => {
           }
         );
       }
-      setUpdateBrandName(updateBrandName);
-      setUpdateBrandImage(updateBrandImage);
+      setUpdateIngredientName(updateIngredientName);
+      setUpdateIngredientImage(updateIngredientImage);
       setIsOpen(false);
 
-      return data?.updateBrand;
+      return data?.updateIngredient;
     } catch (err) {
       console.error(err);
     }
@@ -294,8 +295,8 @@ const BrandManager = () => {
   // -----------------------------DELETE--------------------------
 
   const validateDeleteForm = () => {
-    if (!updateBrandName) {
-      setDeleteErrors("Le nom de la marque est requis.");
+    if (!updateIngredientName) {
+      setDeleteErrors("Le nom de l'ingrédient est requis.");
       return;
     }
     setDeleteErrors("");
@@ -303,8 +304,8 @@ const BrandManager = () => {
   };
 
   async function doDelete() {
-    if (!brandId) {
-      setDeleteErrors("Veuillez sélectionner une marque.");
+    if (!ingredientId) {
+      setDeleteErrors("Veuillez sélectionner un ingrédient.");
       return;
     }
     if (!validateDeleteForm()) {
@@ -312,14 +313,14 @@ const BrandManager = () => {
     }
 
     try {
-      const { data } = await doDeleteBrand({
+      const { data } = await doDeleteIngredient({
         variables: {
-          id: `${brandId}`,
+          id: `${ingredientId}`,
         },
       });
-      if (data?.deleteBrand) {
+      if (data?.deleteIngredient) {
         toast.success(
-          `Marque ${data?.deleteBrand.name} supprimée avec succès ! 🦄`,
+          `Ingrédient ${data?.deleteIngredient.name} supprimée avec succès ! 🦄`,
           {
             className: "toast-success bg-primary",
             position: "top-right",
@@ -334,11 +335,11 @@ const BrandManager = () => {
           }
         );
       }
-      setUpdateBrandName("");
-      setUpdateBrandImage("");
+      setUpdateIngredientName("");
+      setUpdateIngredientImage("");
       setIsOpen(false);
 
-      return data?.deleteBrand;
+      return data?.deleteIngredient;
     } catch (err) {
       console.error(err);
     }
@@ -346,56 +347,56 @@ const BrandManager = () => {
 
   // -----------------------------HANDLES--------------------------
 
-  const handleBrandChange = (option: OptionType<string>) => {
-    setSelectedBrand(option);
+  const handleIngredientChange = (option: OptionType<string>) => {
+    setSelectedIngredient(option);
     setIsOpen(isOpen);
     console.log(isOpen);
   };
 
-  const handleClickBrandList = (id: number) => {
-    setBrandId(Number(id));
-    setUpdateBrandName("");
-    setUpdateBrandImage("");
+  const handleClickIngredientList = (id: number) => {
+    setIngredientId(Number(id));
+    setUpdateIngredientName("");
+    setUpdateIngredientImage("");
     setIsOpen(!isOpen);
     setUpdateErrors("");
   };
 
-  const handleSearchBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUpdateBrandName(e.target.value);
+  const handleSearchIngredient = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateIngredientName(e.target.value);
     setIsOpen(e.target.value.trim() !== ""); // Ouvre la liste si la recherche contient du texte
   };
 
   return (
     <>
       <section
-        id="brands"
+        id="ingredients"
         className="flex flex-col items-center justify-center bg-primary-hover p-8 mb-8 rounded-lg max-w-5xl mx-auto transition-200"
       >
         <h1 className=" mb-4 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
-          Gestionnaire de marques
+          Gestionnaire d'ingrédients
         </h1>
         <h2 className=" mb-4 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-          Marques
+          Ingrédients
         </h2>
-        {brandsDataError && (
+        {ingredientsDataError && (
           <p className="bg-red-500 p-2 rounded-lg text-light my-4">
-            Erreur lors du chargement des marques
+            Erreur lors du chargement des ingrédients
           </p>
         )}
         <div className="mb-4  w-80 flex items-center justify-between">
           <OptionSelect<string>
-            options={brands.map((brand: Brand) => ({
-              id: Number(brand.id),
-              data: brand.name,
+            options={ingredients.map((ingredient: Ingredient) => ({
+              id: Number(ingredient.id),
+              data: ingredient.name,
             }))}
-            onSelect={handleBrandChange}
-            actualOption={selectedBrand}
-            defaultOption="Sélectionner une marque"
+            onSelect={handleIngredientChange}
+            actualOption={selectedIngredient}
+            defaultOption="Sélectionner un ingrédient"
             getDisplayText={(data) => data}
           />
           <button
-            onClick={() => setSelectedBrand(null)}
-            title="Réinitialiser la marque"
+            onClick={() => setSelectedIngredient(null)}
+            title="Réinitialiser l'ingrédient"
             className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.4rem] px-[0.6rem] rounded-lg transition-200"
           >
             <FontAwesomeIcon icon={faRotateLeft} />
@@ -403,14 +404,14 @@ const BrandManager = () => {
         </div>
 
         <div
-          ref={brandCreateContainerRef}
+          ref={ingredientCreateContainerRef}
           className={`${animeError(
             "",
             createErrors
-          )} flex flex-col items-center justify-center bg-primary p-8 rounded-lg m-8 transition-200`}
+          )} flex flex-col items-center justify-center bg-primary-focus p-8 rounded-lg m-8 transition-200`}
         >
           <h2 className=" font-bold text-2xl text-secondary">
-            Ajouter une marque
+            Ajouter un ingrédient
           </h2>
           <div className=" mt-8 relative flex flex-col items-center justify-center">
             <input
@@ -418,18 +419,18 @@ const BrandManager = () => {
               autoComplete="off"
               required
               type="text"
-              id="createBrandName"
+              id="createIngredientName"
               placeholder=" "
-              value={createBrandName}
+              value={createIngredientName}
               className={`inputForm rounded-lg ${animeError(
                 "nom",
                 createErrors
               )}`}
-              ref={inputBrandNameRef}
-              onChange={(e) => setCreateBrandName(e.target.value)}
+              ref={inputIngredientNameRef}
+              onChange={(e) => setCreateIngredientName(e.target.value)}
             />
-            <label className="labelForm" htmlFor="createBrandName">
-              Nom de la marque...
+            <label className="labelForm" htmlFor="createIngredientName">
+              Nom de l'ingrédient...
             </label>
           </div>
           <div className="mt-8 relative flex flex-col items-center justify-center">
@@ -438,18 +439,18 @@ const BrandManager = () => {
               autoComplete="off"
               required
               type="text"
-              id="createBrandImage"
+              id="createIngredientImage"
               placeholder=" "
-              value={createBrandImage}
+              value={createIngredientImage}
               className={`inputForm rounded-lg ${animeError(
                 "image",
                 createErrors
               )}`}
-              ref={inputBrandUrlRef}
-              onChange={(e) => setCreateBrandImage(e.target.value)}
+              ref={inputIngredientUrlRef}
+              onChange={(e) => setCreateIngredientImage(e.target.value)}
             />
-            <label className="labelForm" htmlFor="createBrandImage">
-              Url de l'image de la marque...
+            <label className="labelForm" htmlFor="createIngredientImage">
+              Url de l'image de l'ingrédient...
             </label>
             <div className="mt-4 flex flex-col items-center justify-center">
               <button
@@ -457,9 +458,9 @@ const BrandManager = () => {
                 className="primary-button "
                 onClick={doCreate}
               >
-                Ajouter ma Marque
+                Ajouter un ingrédient
               </button>
-              {createErrors && <p className=" text-red-500">{createErrors}</p>}
+              {createErrors && <p className=" text-red-400">{createErrors}</p>}
             </div>
           </div>
         </div>
@@ -467,32 +468,32 @@ const BrandManager = () => {
           className={`flex flex-col items-center justify-center bg-primary-focus p-8 rounded-lg m-8`}
         >
           <h2 className=" font-bold text-2xl text-secondary">
-            Mettre à jour une marque
+            Mettre à jour un ingrédient
           </h2>
           <div className="w-96 mx-auto mt-8 relative">
             <div
-              // ref={brandUpdateContainerRef}
+              // ref={ingredientUpdateContainerRef}
               className={`${animeError(
                 "",
                 updateErrors
               )} flex flex-col items-center justify-center bg-primary-hover p-4 rounded-lg transition-200`}
             >
               <h2 className=" font-bold text-2xl text-secondary">
-                Modifier une marque
+                Modifier un ingrédient
               </h2>
 
               <h2 className="text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-                Marque id {brand?.id}
+                Ingrédient id {ingredient?.id}
               </h2>
-              {brand && (
-                <div className="p-4">
+              {ingredient && (
+                <div>
                   <p className=" pb-8 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
-                    {brand.name}
+                    {ingredient.name}
                   </p>
-                  {brand.image ? (
+                  {ingredient.image ? (
                     <img
-                      src={brand.image || undefined}
-                      alt={`Logo de la marque ${brand.name}`}
+                      src={ingredient.image || undefined}
+                      alt={`Ingrédient ${ingredient.name}`}
                     />
                   ) : (
                     <svg
@@ -510,61 +511,63 @@ const BrandManager = () => {
               <div className=" mt-8 relative flex flex-col items-center justify-center">
                 <input
                   onClick={() => {
-                    setUpdateBrandName(brand?.name ?? "");
+                    setUpdateIngredientName(ingredient?.name ?? "");
                     setUpdateErrors("");
                     setDeleteErrors("");
                   }}
                   autoComplete="off"
                   required
                   type="text"
-                  id="updateBrandName"
+                  id="updateIngredientName"
                   placeholder=" "
-                  value={updateBrandName}
+                  value={updateIngredientName}
                   className={`inputForm ${animeError(
                     "",
                     updateErrors || deleteErrors
                   )} ${isOpen ? triggerClasses : "rounded-lg"}`}
                   ref={triggerRef}
-                  onChange={handleSearchBrand}
+                  onChange={handleSearchIngredient}
                 />
-                <label className="labelForm" htmlFor="updateBrandName">
-                  Nom de la marque...
+                <label className="labelForm" htmlFor="updateIngredientName">
+                  Nom de l'ingrédient...
                 </label>
-                {updateBrandName && isOpen && (
+                {updateIngredientName && isOpen && (
                   <ul
                     ref={dropdownRef}
                     className={`${
-                      brands.filter((brand) =>
-                        brand.name
+                      ingredients.filter((ingredient) =>
+                        ingredient.name
                           .toLowerCase()
-                          .includes(updateBrandName.toLowerCase())
+                          .includes(updateIngredientName.toLowerCase())
                       ).length > 10
                         ? " h-80 overflow-y-scroll"
-                        : brands.filter((brand) =>
-                            brand.name
+                        : ingredients.filter((ingredient) =>
+                            ingredient.name
                               .toLowerCase()
-                              .includes(updateBrandName.toLowerCase())
+                              .includes(updateIngredientName.toLowerCase())
                           ).length === 0
                         ? "hidden "
                         : "h-fit"
                     } ${dropdownPosition} ${dropdownClasses} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
                   >
                     <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
-                      Marques
+                      Ingrédients
                     </p>
-                    {brands
-                      .filter((brand) =>
-                        brand.name
+                    {ingredients
+                      .filter((ingredient) =>
+                        ingredient.name
                           .toLowerCase()
-                          .includes(updateBrandName.toLowerCase())
+                          .includes(updateIngredientName.toLowerCase())
                       )
-                      .map((brand) => (
+                      .map((ingredient) => (
                         <li
-                          onClick={() => handleClickBrandList(Number(brand.id))}
-                          key={brand.id}
+                          onClick={() =>
+                            handleClickIngredientList(Number(ingredient.id))
+                          }
+                          key={ingredient.id}
                           className="px-4 py-2 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover cursor-pointer"
                         >
-                          {brand.name}
+                          {ingredient.name}
                         </li>
                       ))}
                   </ul>
@@ -573,24 +576,24 @@ const BrandManager = () => {
               <div className="mt-8 relative flex flex-col items-center justify-center">
                 <input
                   onClick={() => {
-                    setUpdateBrandImage(brand?.image ?? "");
+                    setUpdateIngredientImage(ingredient?.image ?? "");
                     setUpdateErrors("");
                     setDeleteErrors("");
                   }}
                   autoComplete="off"
                   required
                   type="text"
-                  id="updateBrandImage"
+                  id="updateIngredientImage"
                   placeholder=" "
-                  value={updateBrandImage || ""}
+                  value={updateIngredientImage || ""}
                   className={`inputForm rounded-lg ${animeError(
                     "image",
                     updateErrors
                   )}`}
-                  ref={inputBrandUrlRef}
-                  onChange={(e) => setUpdateBrandImage(e.target.value)}
+                  ref={inputIngredientUrlRef}
+                  onChange={(e) => setUpdateIngredientImage(e.target.value)}
                 />
-                <label className="labelForm" htmlFor="updateBrandImage">
+                <label className="labelForm" htmlFor="updateIngredientImage">
                   Url de l'image...
                 </label>
                 <div className="mt-4 flex flex-col items-center justify-center">
@@ -599,7 +602,7 @@ const BrandManager = () => {
                     className="primary-button "
                     onClick={doUpdate}
                   >
-                    Mettre à jour une marque
+                    Modifier un ingrédient
                   </button>
                   {updateErrors && (
                     <p className=" text-red-500">{updateErrors}</p>
@@ -611,7 +614,7 @@ const BrandManager = () => {
                     className="primary-button "
                     onClick={doDelete}
                   >
-                    Supprimer une Marque
+                    Supprimer un Ingrédient
                   </button>
                   {deleteErrors && (
                     <p className=" text-red-500">{deleteErrors}</p>
@@ -623,18 +626,18 @@ const BrandManager = () => {
         </div>
 
         <div className="flex flex-col items-center justify-center">
-          <h2 className="text-4xl uppercase font-bold text-center mt-8 text-secondary dark:text-secondary-dark transition-200">
-            Toutes les Marques
+          <h2 className="text-4xl uppercase font-bold text-center text-secondary dark:text-secondary-dark transition-200">
+            Tous les Ingrédients
           </h2>
 
-          {brandsDataError ? (
+          {ingredientsDataError ? (
             <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
-              Erreur lors du chargement des marques
+              Erreur lors du chargement des ingrédients
             </p>
-          ) : brandsDataLoading ? (
+          ) : ingredientsDataLoading ? (
             <div className="w-full my-16">
               <p className=" text-center py-2 animate-pulse text-light dark:text-primary-hover">
-                Chargement des marques...
+                Chargement des ingrédients...
               </p>
               <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 ">
                 <div
@@ -644,21 +647,21 @@ const BrandManager = () => {
               </div>
             </div>
           ) : (
-            <div className="grid gap-4 grid-cols-2 md:grid-cols-4  items-center justify-center mt-8 transition-200">
-              {brands
+            <div className="grid gap-4 grid-cols-2 md:grid-cols-4  items-center justify-center my-8 transition-200">
+              {ingredients
                 .slice()
                 .sort((a, b) => a.name.localeCompare(b.name))
-                .map((brand: Brand) => (
+                .map((ingredient: Ingredient) => (
                   <div
-                    key={brand.id}
-                    className="flex flex-col justify-between items-center h-60 rounded-lg bg-primary-focus overflow-hidden"
+                    key={ingredient.id}
+                    className="flex flex-col justify-between items-center h-80 rounded-lg bg-primary-focus overflow-hidden"
                   >
-                    <div className="h-1/2 p-4 w-full bg-light">
-                      {brand.image ? (
+                    <div className="h-1/2 w-full bg-light">
+                      {ingredient.image ? (
                         <img
-                          className="w-full h-full object-contain"
-                          src={brand.image}
-                          alt={`Logo de la marque ${brand.name}`}
+                          className="w-full h-full object-cover"
+                          src={ingredient.image}
+                          alt={`Ingrédient ${ingredient.name}`}
                         />
                       ) : (
                         <svg
@@ -674,10 +677,10 @@ const BrandManager = () => {
                     </div>
                     <div className="h-1/2 p-4 text-center">
                       <h2 className=" font-bold text-xl text-secondary">
-                        Marque id {brand.id}
+                        Ingrédient id {ingredient.id}
                       </h2>
                       <p className=" pb-8 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-                        {brand.name}
+                        {ingredient.name}
                       </p>
                     </div>
                   </div>
@@ -690,4 +693,4 @@ const BrandManager = () => {
   );
 };
 
-export default BrandManager;
+export default IngredientManager;

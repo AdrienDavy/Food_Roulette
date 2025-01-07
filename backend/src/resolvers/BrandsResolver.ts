@@ -23,52 +23,22 @@ export class BrandResolver {
         });
     }
 
-    @Mutation(() => [Brand])
-    async createBrands(
-        @Arg("data", () => [BrandCreateInput]) data: BrandCreateInput[]
-    ): Promise<Brand[]> {
-        // Déduplique les noms
-        const uniqueNames = [...new Set(data.map((brand) => cleanAndCapitalize(brand.name)))];
-
-        // Vérifie les doublons existants
-        const existingBrands = await Brand.find({
-            where: {
-                name: In(uniqueNames),
-            },
-        });
-
-        if (existingBrands.length > 0) {
-            const existingNames = existingBrands.map((b) => b.name).join(", ");
-            throw new Error(
-                `The following brands already exist: ${existingNames}`
-            );
+    @Mutation(() => Brand, { nullable: true })
+    async createBrand(
+        @Arg("data", () => BrandCreateInput) data: BrandCreateInput
+    ): Promise<Brand> {
+        // Vérifie si un ingrédient avec le même nom existe déjà
+        const existingBrand = await Brand.findOneBy({ name: cleanAndCapitalize(data.name) });
+        if (existingBrand) {
+            throw new Error(`La marque "${data.name}" existe déjà !`);
         }
 
-        // Crée les nouvelles marques
-        const brands: Brand[] = [];
-        for (const item of data) {
-            const brand = new Brand();
-            brand.name = cleanAndCapitalize(item.name);
-            brand.image = item.image;
+        const newBrand = new Brand();
 
-            // Si des ingredientVariationIds sont fournis, les associer
-            if (item.ingredientVariationIds && item.ingredientVariationIds.length > 0) {
-                const ingredientVariations = await IngredientVariation.findBy({
-                    id: In(item.ingredientVariationIds),
-                });
-
-                if (ingredientVariations.length !== item.ingredientVariationIds.length) {
-                    throw new Error("Some ingredient IDs are invalid.");
-                }
-
-                brand.ingredientVariations = ingredientVariations;
-            }
-
-            await brand.save();
-            brands.push(brand);
-        }
-
-        return brands;
+        Object.assign(newBrand, { ...data });
+        newBrand.name = cleanAndCapitalize(data.name);
+        await newBrand.save();
+        return newBrand;
     }
 
 
