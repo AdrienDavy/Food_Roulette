@@ -1,7 +1,6 @@
 import BrandManager from "../components/dataManagers/BrandManager";
 import IngredientManager from "../components/dataManagers/IngredientManager";
 import Image from "../components/Image";
-import Upload from "../components/Upload";
 import { handleScrollToElement } from "../utils/handleScrollToElement";
 
 const Creation = () => {
@@ -40,8 +39,6 @@ const Creation = () => {
           loading="lazy"
           lqip={{ active: true, quality: 20 }}
         />
-
-        <Upload useUniqueFileName />
       </div>
 
       <BrandManager />

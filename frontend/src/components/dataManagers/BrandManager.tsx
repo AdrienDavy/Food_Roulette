@@ -11,6 +11,7 @@ import { Bounce, toast } from "react-toastify";
 import { useDropdownPosition } from "../../utils/useDropdownPosition";
 import { mutationUpdateBrand } from "../../api/brand/UpdateBrand";
 import { mutationDeleteBrand } from "../../api/brand/DeleteBrand";
+import Upload from "../Upload";
 
 const BrandManager = () => {
   // --------------------------------STATES--------------------------------
@@ -21,6 +22,8 @@ const BrandManager = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [progress, setProgress] = useState(0);
+
+  const [imageUrl, setImageUrl] = useState("");
 
   // --------------------------------REFS--------------------------------
 
@@ -188,7 +191,7 @@ const BrandManager = () => {
         variables: {
           data: {
             name: createBrandName,
-            image: createBrandImage || undefined, // Assurez-vous de définir l'image si nécessaire
+            image: createBrandImage || imageUrl || undefined, // Assurez-vous de définir l'image si nécessaire
           },
         },
       });
@@ -210,7 +213,9 @@ const BrandManager = () => {
         );
         setCreateBrandName("");
         setCreateBrandImage("");
+        setImageUrl("");
       }
+      console.log(" Brand created successfully:", data);
 
       return data;
     } catch (err) {
@@ -365,6 +370,10 @@ const BrandManager = () => {
     setIsOpen(e.target.value.trim() !== ""); // Ouvre la liste si la recherche contient du texte
   };
 
+  const handleUrlChange = (url: string) => {
+    setImageUrl(url); // Stocke l'URL pour utilisation
+  };
+
   return (
     <>
       <section
@@ -433,24 +442,43 @@ const BrandManager = () => {
             </label>
           </div>
           <div className="mt-8 relative flex flex-col items-center justify-center">
-            <input
-              onClick={() => setCreateErrors("")}
-              autoComplete="off"
-              required
-              type="text"
-              id="createBrandImage"
-              placeholder=" "
-              value={createBrandImage}
-              className={`inputForm rounded-lg ${animeError(
-                "image",
-                createErrors
-              )}`}
-              ref={inputBrandUrlRef}
-              onChange={(e) => setCreateBrandImage(e.target.value)}
-            />
-            <label className="labelForm" htmlFor="createBrandImage">
-              Url de l'image de la marque...
-            </label>
+            <div className="flex">
+              <input
+                onClick={() => setCreateErrors("")}
+                autoComplete="off"
+                required
+                type="text"
+                id="createBrandImage"
+                placeholder=" "
+                value={imageUrl ? imageUrl : createBrandImage}
+                className={`inputForm rounded-lg ${animeError(
+                  "image",
+                  createErrors
+                )}`}
+                ref={inputBrandUrlRef}
+                onChange={(e) => setCreateBrandImage(e.target.value)}
+              />
+              <label className="labelForm" htmlFor="createBrandImage">
+                Url de l'image de la marque...
+              </label>
+              {(createBrandImage || imageUrl) && (
+                <button
+                  title="Effacer le champs"
+                  className="-ml-7 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover"
+                >
+                  <FontAwesomeIcon
+                    icon={faRotateLeft}
+                    onClick={() => {
+                      setImageUrl("");
+                      setCreateBrandImage("");
+                    }}
+                  />
+                </button>
+              )}
+            </div>
+            <div className="mt-4 flex flex-col items-center justify-center">
+              <Upload useUniqueFileName onUrlChange={handleUrlChange} />
+            </div>
             <div className="mt-4 flex flex-col items-center justify-center">
               <button
                 type="button"
@@ -459,7 +487,9 @@ const BrandManager = () => {
               >
                 Ajouter ma Marque
               </button>
-              {createErrors && <p className=" text-red-500">{createErrors}</p>}
+              {createErrors && (
+                <p className="relative text-red-500">{createErrors}</p>
+              )}
             </div>
           </div>
         </div>
@@ -602,7 +632,7 @@ const BrandManager = () => {
                     Mettre à jour une marque
                   </button>
                   {updateErrors && (
-                    <p className=" text-red-500">{updateErrors}</p>
+                    <p className="relative text-red-500">{updateErrors}</p>
                   )}
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-center">
@@ -614,7 +644,7 @@ const BrandManager = () => {
                     Supprimer une Marque
                   </button>
                   {deleteErrors && (
-                    <p className=" text-red-500">{deleteErrors}</p>
+                    <p className="relative text-red-500">{deleteErrors}</p>
                   )}
                 </div>
               </div>
