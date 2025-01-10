@@ -23,7 +23,8 @@ const BrandManager = () => {
 
   const [progress, setProgress] = useState(0);
 
-  const [imageUrl, setImageUrl] = useState("");
+  const [createImageUrl, setCreateImageUrl] = useState("");
+  const [updateImageUrl, setUpdateImageUrl] = useState("");
 
   // --------------------------------REFS--------------------------------
 
@@ -191,7 +192,7 @@ const BrandManager = () => {
         variables: {
           data: {
             name: createBrandName,
-            image: createBrandImage || imageUrl || undefined, // Assurez-vous de définir l'image si nécessaire
+            image: createBrandImage || createImageUrl || undefined, // Assurez-vous de définir l'image si nécessaire
           },
         },
       });
@@ -213,7 +214,7 @@ const BrandManager = () => {
         );
         setCreateBrandName("");
         setCreateBrandImage("");
-        setImageUrl("");
+        setCreateImageUrl("");
       }
       console.log(" Brand created successfully:", data);
 
@@ -265,7 +266,7 @@ const BrandManager = () => {
           id: `${brandId}`,
           data: {
             name: updateBrandName,
-            image: updateBrandImage || undefined, // Assurez-vous de définir l'image si nécessaire
+            image: updateBrandImage || updateImageUrl || undefined, // Assurez-vous de définir l'image si nécessaire
           },
         },
       });
@@ -371,7 +372,19 @@ const BrandManager = () => {
   };
 
   const handleUrlChange = (url: string) => {
-    setImageUrl(url); // Stocke l'URL pour utilisation
+    setCreateImageUrl(url); // Stocke l'URL pour utilisation
+  };
+
+  interface ChosenBrand {
+    id: string;
+    name: string;
+    image?: string | null;
+  }
+
+  const handleClickChosenBrand = (chosenBrand: ChosenBrand) => {
+    setBrandId(Number(chosenBrand.id));
+    setUpdateBrandName(chosenBrand.name);
+    setUpdateBrandImage(chosenBrand.image || "");
   };
 
   return (
@@ -450,7 +463,7 @@ const BrandManager = () => {
                 type="text"
                 id="createBrandImage"
                 placeholder=" "
-                value={imageUrl ? imageUrl : createBrandImage}
+                value={createImageUrl ? createImageUrl : createBrandImage}
                 className={`inputForm rounded-lg ${animeError(
                   "image",
                   createErrors
@@ -461,7 +474,7 @@ const BrandManager = () => {
               <label className="labelForm" htmlFor="createBrandImage">
                 Url de l'image de la marque...
               </label>
-              {(createBrandImage || imageUrl) && (
+              {(createBrandImage || createImageUrl) && (
                 <button
                   title="Effacer le champs"
                   className="-ml-7 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover"
@@ -469,7 +482,7 @@ const BrandManager = () => {
                   <FontAwesomeIcon
                     icon={faRotateLeft}
                     onClick={() => {
-                      setImageUrl("");
+                      setCreateImageUrl("");
                       setCreateBrandImage("");
                     }}
                   />
@@ -601,29 +614,48 @@ const BrandManager = () => {
                 )}
               </div>
               <div className="mt-8 relative flex flex-col items-center justify-center">
-                <input
-                  onClick={() => {
-                    setUpdateBrandImage(brand?.image ?? "");
-                    setUpdateErrors("");
-                    setDeleteErrors("");
-                  }}
-                  autoComplete="off"
-                  required
-                  type="text"
-                  id="updateBrandImage"
-                  placeholder=" "
-                  value={updateBrandImage || ""}
-                  className={`inputForm rounded-lg ${animeError(
-                    "image",
-                    updateErrors
-                  )}`}
-                  ref={inputBrandUrlRef}
-                  onChange={(e) => setUpdateBrandImage(e.target.value)}
-                />
-                <label className="labelForm" htmlFor="updateBrandImage">
-                  Url de l'image...
-                </label>
+                <div className="flex">
+                  <input
+                    onClick={() => {
+                      setUpdateBrandImage(brand?.image ?? "");
+                      setUpdateErrors("");
+                      setDeleteErrors("");
+                    }}
+                    autoComplete="off"
+                    required
+                    type="text"
+                    id="updateBrandImage"
+                    placeholder=" "
+                    value={
+                      updateImageUrl ? updateImageUrl : updateBrandImage || ""
+                    }
+                    className={`inputForm rounded-lg ${animeError(
+                      "image",
+                      updateErrors
+                    )}`}
+                    ref={inputBrandUrlRef}
+                    onChange={(e) => setUpdateBrandImage(e.target.value)}
+                  />
+                  <label className="labelForm" htmlFor="updateBrandImage">
+                    Url de l'image...
+                  </label>
+                  {(updateBrandImage || updateImageUrl) && (
+                    <button
+                      title="Effacer le champs"
+                      className="-ml-7 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover"
+                    >
+                      <FontAwesomeIcon
+                        icon={faRotateLeft}
+                        onClick={() => {
+                          setUpdateImageUrl("");
+                          setUpdateBrandImage("");
+                        }}
+                      />
+                    </button>
+                  )}
+                </div>
                 <div className="mt-4 flex flex-col items-center justify-center">
+                  <Upload useUniqueFileName onUrlChange={handleUrlChange} />
                   <button
                     type="button"
                     className="primary-button "
@@ -681,7 +713,8 @@ const BrandManager = () => {
                 .map((brand: Brand) => (
                   <div
                     key={brand.id}
-                    className="flex flex-col justify-between items-center h-60 rounded-lg bg-primary-focus overflow-hidden"
+                    className="flex flex-col justify-between items-center h-60 rounded-lg hover:bg-primary-dark-hover shadow-xl hover:shadow-2xl bg-primary-focus overflow-hidden cursor-pointer"
+                    onClick={() => handleClickChosenBrand(brand)}
                   >
                     <div className="h-1/2 p-4 w-full bg-light">
                       {brand.image ? (
