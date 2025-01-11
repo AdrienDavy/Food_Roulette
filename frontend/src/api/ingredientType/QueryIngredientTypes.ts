@@ -7,6 +7,16 @@ query QueryIngredientTypes {
     id
     name
     image
+    shops {
+      id
+      name
+      image
+    }
+    brand {
+      id
+      name
+      image
+    }
   }
 }
 `);

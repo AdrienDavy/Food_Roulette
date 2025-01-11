@@ -394,7 +394,7 @@ const BrandManager = () => {
 
   return (
     <>
-      <section className="flex flex-col items-center justify-center bg-primary-hover mb-8 rounded-lg max-w-5xl mx-auto transition-200 overflow-hidden">
+      <section className="flex flex-col items-center justify-center bg-primary-hover mb-8 rounded-lg max-w-5xl mx-auto transition-200 overflow-hidden shadow-2xl">
         <div
           className=" bg-primary-focus flex items-center justify-center w-full p-4 mb-8 cursor-pointer"
           onClick={() => setIsManagerOpen(!isManagerOpen)}
@@ -415,7 +415,7 @@ const BrandManager = () => {
           </h1>
         </div>
         {isManagerOpen && (
-          <div className="flex flex-col items-center justify-center rounded-lg">
+          <div className="flex flex-col p-8 items-center justify-center rounded-lg">
             <h2 className=" mb-4 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
               Marques
             </h2>
@@ -424,7 +424,7 @@ const BrandManager = () => {
                 Erreur lors du chargement des marques
               </p>
             )}
-            <div className="mb-4  w-80 flex items-center justify-between">
+            <div className="mb-4 w-full flex items-center justify-between">
               <OptionSelect<string>
                 options={brands.map((brand: Brand) => ({
                   id: Number(brand.id),
@@ -449,12 +449,12 @@ const BrandManager = () => {
               className={`${animeError(
                 "",
                 createErrors
-              )} flex flex-col items-center justify-center bg-primary p-8 rounded-lg m-8 transition-200`}
+              )} flex flex-col items-center justify-center w-full bg-primary p-8 rounded-lg m-8 transition-200`}
             >
               <h2 className=" font-bold text-2xl text-secondary">
                 Ajouter une marque
               </h2>
-              <div className=" mt-8 relative flex flex-col items-center justify-center">
+              <div className=" mt-8 w-full px-8 relative flex flex-col items-center justify-center">
                 <input
                   onClick={() => setCreateErrors("")}
                   autoComplete="off"
@@ -474,8 +474,8 @@ const BrandManager = () => {
                   Nom de la marque...
                 </label>
               </div>
-              <div className="mt-8 relative flex flex-col items-center justify-center">
-                <div className="flex">
+              <div className="mt-8 w-full relative flex flex-col items-center justify-center">
+                <div className="flex w-full justify-center items-center  px-8">
                   <input
                     onClick={() => setCreateErrors("")}
                     autoComplete="off"
@@ -484,7 +484,7 @@ const BrandManager = () => {
                     id="createBrandImage"
                     placeholder=" "
                     value={createImageUrl ? createImageUrl : createBrandImage}
-                    className={`inputForm rounded-lg ${animeError(
+                    className={`inputForm h-fit rounded-lg ${animeError(
                       "image",
                       createErrors
                     )}`}
@@ -508,11 +508,11 @@ const BrandManager = () => {
                       />
                     </button>
                   )}
+                  <div className="ml-4 text-nowrap flex flex-col items-center justify-center">
+                    <Upload useUniqueFileName onUrlChange={handleUrlChange} />
+                  </div>
                 </div>
-                <div className="mt-4 flex flex-col items-center justify-center">
-                  <Upload useUniqueFileName onUrlChange={handleUrlChange} />
-                </div>
-                <div className="mt-4 flex flex-col items-center justify-center">
+                <div className="mt-16 flex flex-col items-center justify-center">
                   <button
                     type="button"
                     className="primary-button "
@@ -521,20 +521,19 @@ const BrandManager = () => {
                     Ajouter ma Marque
                   </button>
                   {createErrors && (
-                    <p className="relative text-red-500">{createErrors}</p>
+                    <p className="relative my-4 text-red-500">{createErrors}</p>
                   )}
                 </div>
               </div>
             </div>
             <div
-              className={`flex flex-col items-center justify-center bg-primary-focus p-8 rounded-lg m-8`}
+              className={`flex flex-col items-center justify-center bg-primary w-full p-8 rounded-lg m-8`}
             >
               <h2 className=" font-bold text-2xl text-secondary">
                 Mettre à jour une marque
               </h2>
-              <div className="w-96 mx-auto mt-8 relative">
+              <div className="w-full mx-auto mt-8 relative">
                 <div
-                  // ref={brandUpdateContainerRef}
                   className={`${animeError(
                     "",
                     updateErrors
@@ -544,11 +543,11 @@ const BrandManager = () => {
                     Modifier une marque
                   </h2>
 
-                  <h2 className="text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-                    Marque id {brand?.id}
-                  </h2>
                   {brand && (
                     <div className="p-4">
+                      <h2 className="text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
+                        Marque id {brand?.id}
+                      </h2>
                       <p className=" pb-8 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
                         {brand.name}
                       </p>
@@ -570,7 +569,7 @@ const BrandManager = () => {
                       )}
                     </div>
                   )}
-                  <div className=" mt-8 relative flex flex-col items-center justify-center">
+                  <div className="w-full px-8 mt-8 relative flex flex-col items-center justify-center">
                     <input
                       onClick={() => {
                         setUpdateBrandName(brand?.name ?? "");
@@ -610,7 +609,7 @@ const BrandManager = () => {
                               ).length === 0
                             ? "hidden "
                             : "h-fit"
-                        } ${dropdownPosition} ${dropdownClasses} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
+                        } ${dropdownPosition} ${dropdownClasses} bg-secondary dark:bg-secondary-dark w-12/12 inset-8 absolute z-10`}
                       >
                         <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
                           Marques
@@ -635,9 +634,10 @@ const BrandManager = () => {
                       </ul>
                     )}
                   </div>
-                  <div className="mt-8 relative flex flex-col items-center justify-center">
-                    <div className="flex">
+                  <div className=" w-full mt-8 relative flex flex-col items-center justify-center">
+                    <div className="flex justify-center items-center w-full px-8">
                       <input
+                        disabled={!brandId}
                         onClick={() => {
                           setUpdateBrandImage(brand?.image ?? "");
                           setUpdateErrors("");
@@ -653,14 +653,19 @@ const BrandManager = () => {
                             ? updateImageUrl
                             : updateBrandImage || ""
                         }
-                        className={`inputForm rounded-lg ${animeError(
+                        className={`inputForm h-fit rounded-lg ${animeError(
                           "image",
                           updateErrors
-                        )}`}
+                        )} disabled:bg-slate-400 disabled:text-gray-100 disabled:cursor-not-allowed`}
+                        title={`${
+                          brandId
+                            ? "Modifier l'image"
+                            : "Sélectionnez une marque pour modifier l'image"
+                        }`}
                         ref={inputBrandUrlRef}
                         onChange={(e) => setUpdateBrandImage(e.target.value)}
                       />
-                      <label className="labelForm" htmlFor="updateBrandImage">
+                      <label className="labelForm" htmlFor="updateBrandImage ">
                         Url de l'image...
                       </label>
                       {(updateBrandImage || updateImageUrl) && (
@@ -677,9 +682,15 @@ const BrandManager = () => {
                           />
                         </button>
                       )}
+                      <div className="ml-4 text-nowrap flex flex-col items-center justify-center">
+                        <Upload
+                          disabled={!brandId}
+                          useUniqueFileName
+                          onUrlChange={handleUrlChange}
+                        />
+                      </div>
                     </div>
-                    <div className="mt-4 flex flex-col items-center justify-center">
-                      <Upload useUniqueFileName onUrlChange={handleUrlChange} />
+                    <div className="mt-8 flex items-center w-full px-8 justify-between">
                       <button
                         type="button"
                         className="primary-button "
@@ -690,15 +701,19 @@ const BrandManager = () => {
                       {updateErrors && (
                         <p className="relative text-red-500">{updateErrors}</p>
                       )}
-                    </div>
-                    <div className="mt-4 flex flex-col items-center justify-center">
+
                       <button
                         type="button"
-                        className="primary-button "
+                        className="delete-button "
                         onClick={doDelete}
                       >
                         Supprimer une Marque
                       </button>
+                    </div>
+                    <div className="errors my-4">
+                      {updateErrors && (
+                        <p className="relative text-red-500">{updateErrors}</p>
+                      )}
                       {deleteErrors && (
                         <p className="relative text-red-500">{deleteErrors}</p>
                       )}

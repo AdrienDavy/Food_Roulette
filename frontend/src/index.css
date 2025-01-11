@@ -78,10 +78,10 @@ body {
 
 @layer components {
   .primary-button {
-    @apply focus:outline-none text-primary bg-secondary hover:bg-secondary-hover focus:ring-4 focus:ring-secondary-focus font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-secondary-dark dark:hover:bg-secondary-dark-hover dark:focus:ring-secondary-dark-focus transition-200;
+    @apply focus:outline-none text-primary bg-secondary hover:bg-secondary-hover focus:ring-4 focus:ring-secondary-focus font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-secondary-dark dark:hover:bg-secondary-dark-hover dark:focus:ring-secondary-dark-focus disabled:bg-slate-400 disabled:text-gray-100 disabled:cursor-not-allowed transition-200;
   }
   .delete-button {
-    @apply focus:outline-none text-secondary dark:text-primary-dark bg-red-400 hover:bg-red-500 focus:ring-4 focus:ring-secondary-focus font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-300 dark:hover:bg-red-200 dark:focus:ring-secondary-dark-focus transition-200;
+    @apply focus:outline-none text-secondary dark:text-primary-dark bg-red-400 hover:bg-red-500 focus:ring-4 focus:ring-secondary-focus font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-300 dark:hover:bg-red-200 dark:focus:ring-secondary-dark-focus disabled:bg-slate-400 disabled:text-gray-100 disabled:cursor-not-allowed transition-200;
   }
 
   .Toastify__toast-container {
@@ -119,7 +119,7 @@ body {
   }
 
   .labelForm {
-    @apply p-2 absolute left-8 top-1 text-primary dark:text-primary-dark text-sm transition-200 truncate w-full;
+    @apply p-2 absolute left-8 top-1 text-primary dark:text-primary-dark text-sm transition-200 truncate;
   }
 
   .inputForm:focus + .labelForm {

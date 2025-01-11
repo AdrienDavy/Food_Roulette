@@ -7,6 +7,7 @@ export type OptionType<T> = {
 };
 
 type OptionSelectProps<T extends string> = {
+  disabledOption?: boolean;
   onClickFunctionProps?: () => void;
   options: OptionType<T>[] | undefined;
   onSelect: (option: OptionType<T>) => void;
@@ -16,6 +17,7 @@ type OptionSelectProps<T extends string> = {
 };
 
 const OptionSelect = <T extends string>({
+  disabledOption,
   onClickFunctionProps,
   options,
   onSelect,
@@ -58,7 +60,7 @@ const OptionSelect = <T extends string>({
 
   return (
     <div
-      className="relative w-full"
+      className="relative w-full disabled:bg-slate-400 disabled:text-gray-100 disabled:cursor-not-allowed"
       ref={triggerRef}
       onClick={(e) => {
         onClickFunctionProps?.();
@@ -66,6 +68,7 @@ const OptionSelect = <T extends string>({
       }}
     >
       <button
+        disabled={disabledOption}
         onClick={() => setIsOpen(!isOpen)}
         className={`flex justify-between px-4 py-3 w-full bg-secondary transition-all duration-100 ease-in-out ${
           isOpen ? triggerClasses : "rounded-lg"

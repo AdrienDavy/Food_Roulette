@@ -11,6 +11,7 @@ import { convertSizeInKB, convertSizeInMB } from "../utils/convertImageSize";
 type IKUploadType = React.ComponentProps<typeof IKUpload>;
 
 interface UploadProps {
+  disabled?: boolean;
   fileName?: string;
   useUniqueFileName?: boolean;
   tags?: string[];
