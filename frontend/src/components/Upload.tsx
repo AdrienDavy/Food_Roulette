@@ -154,7 +154,10 @@ const Upload: React.FC<UploadProps> = ({ onUrlChange, ...props }) => {
         <div className="relative w-fit h-14 items-center justify-center flex flex-col">
           <button
             className="primary-button relative"
-            onClick={() => ikUploadRef.current?.click()}
+            onClick={() => {
+              ikUploadRef.current?.click();
+              setError("");
+            }}
           >
             <div
               className={` ${

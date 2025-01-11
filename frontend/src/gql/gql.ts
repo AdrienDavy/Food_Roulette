@@ -19,11 +19,11 @@ const documents = {
     "\nquery QueryBrand($brandId: ID!) { \n  brand(id: $brandId) {    \n    id\n    name\n    image\n  }\n}\n": types.QueryBrandDocument,
     "\nquery QueryBrands {\n  brands {\n    id\n    name\n    image   \n  }\n}\n": types.QueryBrandsDocument,
     "\nmutation UpdateBrand($data: BrandUpdateInput!, $id:ID!) {\n  updateBrand(data: $data, id:$id) {\n    id\n    name\n  }\n}\n": types.UpdateBrandDocument,
-    "\nmutation CreateIngredient($data: IngredientCreateInput!) {\n  createIngredient(data: $data) {\n    id\n    name\n  }\n}\n": types.CreateIngredientDocument,
+    "\nmutation CreateIngredient($data: IngredientCreateInput!) {\n  createIngredient(data: $data) {\n    id\n    name\n    type {\n      id\n      name\n      image\n      }\n  }\n}\n": types.CreateIngredientDocument,
     "\nmutation DeleteIngredient($id: ID!) {\n  deleteIngredient(id: $id) {\n    id\n    name\n  }\n}\n": types.DeleteIngredientDocument,
-    "\nquery QueryIngredient($ingredientId: ID!) { \n  ingredient(id: $ingredientId) {    \n    id\n    name\n    image\n  }\n}\n": types.QueryIngredientDocument,
-    "\nquery QueryIngredients {\n  ingredients {\n    id\n    name\n    image\n  }\n}\n": types.QueryIngredientsDocument,
-    "\nmutation UpdateIngredient($data: IngredientUpdateInput!, $id:ID!) {\n  updateIngredient(data: $data, id:$id) {\n    id\n    name\n  }\n}\n": types.UpdateIngredientDocument,
+    "\nquery QueryIngredient($ingredientId: ID!) { \n  ingredient(id: $ingredientId) {    \n    id\n    name\n    image\n    hasIngredient\n    type {\n      id\n      name\n      image\n    }\n    variations {\n      id\n      name\n      image\n      hasIngredient\n      brand {\n        id\n        name\n        image\n      }\n      shops {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n": types.QueryIngredientDocument,
+    "\nquery QueryIngredients {\n  ingredients {\n    id\n    name\n    image\n    hasIngredient\n    type {\n      id\n      name\n      image\n    }\n    variations {\n      id\n      name\n      image\n      hasIngredient\n      brand {\n        id\n        name\n        image\n      }\n      shops {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n": types.QueryIngredientsDocument,
+    "\nmutation UpdateIngredient($data: IngredientUpdateInput!, $id:ID!) {\n  updateIngredient(data: $data, id:$id) {\n    id\n    name\n    type {\n      id\n      name\n      image\n      }\n  }\n}\n": types.UpdateIngredientDocument,
     "\nmutation CreateIngredientType($data: IngredientTypeCreateInput!) {\n  createIngredientType(data: $data) {\n    id\n  }\n}\n": types.CreateIngredientTypeDocument,
     "\nmutation DeleteIngredientType($id: ID!) {\n  deleteIngredientType(id: $id) {\n    id\n  }\n}\n": types.DeleteIngredientTypeDocument,
     "\nquery QueryIngredientType($ingredientTypeId: ID!) { \n  ingredientType(id: $ingredientTypeId) {    \n    id\n    name\n    image\n  }\n}\n": types.QueryIngredientTypeDocument,
@@ -96,7 +96,7 @@ export function gql(source: "\nmutation UpdateBrand($data: BrandUpdateInput!, $i
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation CreateIngredient($data: IngredientCreateInput!) {\n  createIngredient(data: $data) {\n    id\n    name\n  }\n}\n"): (typeof documents)["\nmutation CreateIngredient($data: IngredientCreateInput!) {\n  createIngredient(data: $data) {\n    id\n    name\n  }\n}\n"];
+export function gql(source: "\nmutation CreateIngredient($data: IngredientCreateInput!) {\n  createIngredient(data: $data) {\n    id\n    name\n    type {\n      id\n      name\n      image\n      }\n  }\n}\n"): (typeof documents)["\nmutation CreateIngredient($data: IngredientCreateInput!) {\n  createIngredient(data: $data) {\n    id\n    name\n    type {\n      id\n      name\n      image\n      }\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -104,15 +104,15 @@ export function gql(source: "\nmutation DeleteIngredient($id: ID!) {\n  deleteIn
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nquery QueryIngredient($ingredientId: ID!) { \n  ingredient(id: $ingredientId) {    \n    id\n    name\n    image\n  }\n}\n"): (typeof documents)["\nquery QueryIngredient($ingredientId: ID!) { \n  ingredient(id: $ingredientId) {    \n    id\n    name\n    image\n  }\n}\n"];
+export function gql(source: "\nquery QueryIngredient($ingredientId: ID!) { \n  ingredient(id: $ingredientId) {    \n    id\n    name\n    image\n    hasIngredient\n    type {\n      id\n      name\n      image\n    }\n    variations {\n      id\n      name\n      image\n      hasIngredient\n      brand {\n        id\n        name\n        image\n      }\n      shops {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n"): (typeof documents)["\nquery QueryIngredient($ingredientId: ID!) { \n  ingredient(id: $ingredientId) {    \n    id\n    name\n    image\n    hasIngredient\n    type {\n      id\n      name\n      image\n    }\n    variations {\n      id\n      name\n      image\n      hasIngredient\n      brand {\n        id\n        name\n        image\n      }\n      shops {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nquery QueryIngredients {\n  ingredients {\n    id\n    name\n    image\n  }\n}\n"): (typeof documents)["\nquery QueryIngredients {\n  ingredients {\n    id\n    name\n    image\n  }\n}\n"];
+export function gql(source: "\nquery QueryIngredients {\n  ingredients {\n    id\n    name\n    image\n    hasIngredient\n    type {\n      id\n      name\n      image\n    }\n    variations {\n      id\n      name\n      image\n      hasIngredient\n      brand {\n        id\n        name\n        image\n      }\n      shops {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n"): (typeof documents)["\nquery QueryIngredients {\n  ingredients {\n    id\n    name\n    image\n    hasIngredient\n    type {\n      id\n      name\n      image\n    }\n    variations {\n      id\n      name\n      image\n      hasIngredient\n      brand {\n        id\n        name\n        image\n      }\n      shops {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation UpdateIngredient($data: IngredientUpdateInput!, $id:ID!) {\n  updateIngredient(data: $data, id:$id) {\n    id\n    name\n  }\n}\n"): (typeof documents)["\nmutation UpdateIngredient($data: IngredientUpdateInput!, $id:ID!) {\n  updateIngredient(data: $data, id:$id) {\n    id\n    name\n  }\n}\n"];
+export function gql(source: "\nmutation UpdateIngredient($data: IngredientUpdateInput!, $id:ID!) {\n  updateIngredient(data: $data, id:$id) {\n    id\n    name\n    type {\n      id\n      name\n      image\n      }\n  }\n}\n"): (typeof documents)["\nmutation UpdateIngredient($data: IngredientUpdateInput!, $id:ID!) {\n  updateIngredient(data: $data, id:$id) {\n    id\n    name\n    type {\n      id\n      name\n      image\n      }\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

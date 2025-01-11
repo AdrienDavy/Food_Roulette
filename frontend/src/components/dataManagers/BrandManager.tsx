@@ -5,7 +5,10 @@ import { Brand } from "../../gql/graphql";
 import OptionSelect, { OptionType } from "../OptionSelect";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronCircleDown,
+  faRotateLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import { mutationCreateBrand } from "../../api/brand/CreateBrand";
 import { Bounce, toast } from "react-toastify";
 import { useDropdownPosition } from "../../utils/useDropdownPosition";
@@ -25,6 +28,8 @@ const BrandManager = () => {
 
   const [createImageUrl, setCreateImageUrl] = useState("");
   const [updateImageUrl, setUpdateImageUrl] = useState("");
+
+  const [isManagerOpen, setIsManagerOpen] = useState<boolean>(false);
 
   // --------------------------------REFS--------------------------------
 
@@ -389,257 +394,107 @@ const BrandManager = () => {
 
   return (
     <>
-      <section
-        id="brands"
-        className="flex flex-col items-center justify-center bg-primary-hover p-8 mb-8 rounded-lg max-w-5xl mx-auto transition-200"
-      >
-        <h1 className=" mb-4 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
-          Gestionnaire de marques
-        </h1>
-        <h2 className=" mb-4 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-          Marques
-        </h2>
-        {brandsDataError && (
-          <p className="bg-red-500 p-2 rounded-lg text-light my-4">
-            Erreur lors du chargement des marques
-          </p>
-        )}
-        <div className="mb-4  w-80 flex items-center justify-between">
-          <OptionSelect<string>
-            options={brands.map((brand: Brand) => ({
-              id: Number(brand.id),
-              data: brand.name,
-            }))}
-            onSelect={handleBrandChange}
-            actualOption={selectedBrand}
-            defaultOption="Sélectionner une marque"
-            getDisplayText={(data) => data}
-          />
-          <button
-            onClick={() => setSelectedBrand(null)}
-            title="Réinitialiser la marque"
-            className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.4rem] px-[0.6rem] rounded-lg transition-200"
-          >
-            <FontAwesomeIcon icon={faRotateLeft} />
-          </button>
-        </div>
-
+      <section className="flex flex-col items-center justify-center bg-primary-hover mb-8 rounded-lg max-w-5xl mx-auto transition-200 overflow-hidden">
         <div
-          ref={brandCreateContainerRef}
-          className={`${animeError(
-            "",
-            createErrors
-          )} flex flex-col items-center justify-center bg-primary p-8 rounded-lg m-8 transition-200`}
+          className=" bg-primary-focus flex items-center justify-center w-full p-4 mb-8 cursor-pointer"
+          onClick={() => setIsManagerOpen(!isManagerOpen)}
         >
-          <h2 className=" font-bold text-2xl text-secondary">
-            Ajouter une marque
-          </h2>
-          <div className=" mt-8 relative flex flex-col items-center justify-center">
-            <input
-              onClick={() => setCreateErrors("")}
-              autoComplete="off"
-              required
-              type="text"
-              id="createBrandName"
-              placeholder=" "
-              value={createBrandName}
-              className={`inputForm rounded-lg ${animeError(
-                "nom",
-                createErrors
-              )}`}
-              ref={inputBrandNameRef}
-              onChange={(e) => setCreateBrandName(e.target.value)}
+          <button>
+            <FontAwesomeIcon
+              icon={faChevronCircleDown}
+              className={`${
+                isManagerOpen ? " rotate-180" : " rotate-0"
+              } text-3xl text-white`}
             />
-            <label className="labelForm" htmlFor="createBrandName">
-              Nom de la marque...
-            </label>
-          </div>
-          <div className="mt-8 relative flex flex-col items-center justify-center">
-            <div className="flex">
-              <input
-                onClick={() => setCreateErrors("")}
-                autoComplete="off"
-                required
-                type="text"
-                id="createBrandImage"
-                placeholder=" "
-                value={createImageUrl ? createImageUrl : createBrandImage}
-                className={`inputForm rounded-lg ${animeError(
-                  "image",
-                  createErrors
-                )}`}
-                ref={inputBrandUrlRef}
-                onChange={(e) => setCreateBrandImage(e.target.value)}
-              />
-              <label className="labelForm" htmlFor="createBrandImage">
-                Url de l'image de la marque...
-              </label>
-              {(createBrandImage || createImageUrl) && (
-                <button
-                  title="Effacer le champs"
-                  className="-ml-7 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover"
-                >
-                  <FontAwesomeIcon
-                    icon={faRotateLeft}
-                    onClick={() => {
-                      setCreateImageUrl("");
-                      setCreateBrandImage("");
-                    }}
-                  />
-                </button>
-              )}
-            </div>
-            <div className="mt-4 flex flex-col items-center justify-center">
-              <Upload useUniqueFileName onUrlChange={handleUrlChange} />
-            </div>
-            <div className="mt-4 flex flex-col items-center justify-center">
-              <button
-                type="button"
-                className="primary-button "
-                onClick={doCreate}
-              >
-                Ajouter ma Marque
-              </button>
-              {createErrors && (
-                <p className="relative text-red-500">{createErrors}</p>
-              )}
-            </div>
-          </div>
+          </button>
+          <h1
+            id="brands"
+            className="w-full text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200"
+          >
+            Gestionnaire de Marques
+          </h1>
         </div>
-        <div
-          className={`flex flex-col items-center justify-center bg-primary-focus p-8 rounded-lg m-8`}
-        >
-          <h2 className=" font-bold text-2xl text-secondary">
-            Mettre à jour une marque
-          </h2>
-          <div className="w-96 mx-auto mt-8 relative">
+        {isManagerOpen && (
+          <div className="flex flex-col items-center justify-center rounded-lg">
+            <h2 className=" mb-4 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
+              Marques
+            </h2>
+            {brandsDataError && (
+              <p className="bg-red-500 p-2 rounded-lg text-light my-4">
+                Erreur lors du chargement des marques
+              </p>
+            )}
+            <div className="mb-4  w-80 flex items-center justify-between">
+              <OptionSelect<string>
+                options={brands.map((brand: Brand) => ({
+                  id: Number(brand.id),
+                  data: brand.name,
+                }))}
+                onSelect={handleBrandChange}
+                actualOption={selectedBrand}
+                defaultOption="Sélectionner une marque"
+                getDisplayText={(data) => data}
+              />
+              <button
+                onClick={() => setSelectedBrand(null)}
+                title="Réinitialiser la marque"
+                className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.4rem] px-[0.6rem] rounded-lg transition-200"
+              >
+                <FontAwesomeIcon icon={faRotateLeft} />
+              </button>
+            </div>
+
             <div
-              // ref={brandUpdateContainerRef}
+              ref={brandCreateContainerRef}
               className={`${animeError(
                 "",
-                updateErrors
-              )} flex flex-col items-center justify-center bg-primary-hover p-4 rounded-lg transition-200`}
+                createErrors
+              )} flex flex-col items-center justify-center bg-primary p-8 rounded-lg m-8 transition-200`}
             >
               <h2 className=" font-bold text-2xl text-secondary">
-                Modifier une marque
+                Ajouter une marque
               </h2>
-
-              <h2 className="text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-                Marque id {brand?.id}
-              </h2>
-              {brand && (
-                <div className="p-4">
-                  <p className=" pb-8 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
-                    {brand.name}
-                  </p>
-                  {brand.image ? (
-                    <img
-                      src={brand.image || undefined}
-                      alt={`Logo de la marque ${brand.name}`}
-                    />
-                  ) : (
-                    <svg
-                      className="w-full h-64 text-gray-200 dark:text-gray-600"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 20 18"
-                    >
-                      <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
-                    </svg>
-                  )}
-                </div>
-              )}
               <div className=" mt-8 relative flex flex-col items-center justify-center">
                 <input
-                  onClick={() => {
-                    setUpdateBrandName(brand?.name ?? "");
-                    setUpdateErrors("");
-                    setDeleteErrors("");
-                  }}
+                  onClick={() => setCreateErrors("")}
                   autoComplete="off"
                   required
                   type="text"
-                  id="updateBrandName"
+                  id="createBrandName"
                   placeholder=" "
-                  value={updateBrandName}
-                  className={`inputForm ${animeError(
-                    "",
-                    updateErrors || deleteErrors
-                  )} ${isOpen ? triggerClasses : "rounded-lg"}`}
-                  ref={triggerRef}
-                  onChange={handleSearchBrand}
+                  value={createBrandName}
+                  className={`inputForm rounded-lg ${animeError(
+                    "nom",
+                    createErrors
+                  )}`}
+                  ref={inputBrandNameRef}
+                  onChange={(e) => setCreateBrandName(e.target.value)}
                 />
-                <label className="labelForm" htmlFor="updateBrandName">
+                <label className="labelForm" htmlFor="createBrandName">
                   Nom de la marque...
                 </label>
-                {updateBrandName && isOpen && (
-                  <ul
-                    ref={dropdownRef}
-                    className={`${
-                      brands.filter((brand) =>
-                        brand.name
-                          .toLowerCase()
-                          .includes(updateBrandName.toLowerCase())
-                      ).length > 10
-                        ? " h-80 overflow-y-scroll"
-                        : brands.filter((brand) =>
-                            brand.name
-                              .toLowerCase()
-                              .includes(updateBrandName.toLowerCase())
-                          ).length === 0
-                        ? "hidden "
-                        : "h-fit"
-                    } ${dropdownPosition} ${dropdownClasses} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
-                  >
-                    <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
-                      Marques
-                    </p>
-                    {brands
-                      .filter((brand) =>
-                        brand.name
-                          .toLowerCase()
-                          .includes(updateBrandName.toLowerCase())
-                      )
-                      .map((brand) => (
-                        <li
-                          onClick={() => handleClickBrandList(Number(brand.id))}
-                          key={brand.id}
-                          className="px-4 py-2 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover cursor-pointer"
-                        >
-                          {brand.name}
-                        </li>
-                      ))}
-                  </ul>
-                )}
               </div>
               <div className="mt-8 relative flex flex-col items-center justify-center">
                 <div className="flex">
                   <input
-                    onClick={() => {
-                      setUpdateBrandImage(brand?.image ?? "");
-                      setUpdateErrors("");
-                      setDeleteErrors("");
-                    }}
+                    onClick={() => setCreateErrors("")}
                     autoComplete="off"
                     required
                     type="text"
-                    id="updateBrandImage"
+                    id="createBrandImage"
                     placeholder=" "
-                    value={
-                      updateImageUrl ? updateImageUrl : updateBrandImage || ""
-                    }
+                    value={createImageUrl ? createImageUrl : createBrandImage}
                     className={`inputForm rounded-lg ${animeError(
                       "image",
-                      updateErrors
+                      createErrors
                     )}`}
                     ref={inputBrandUrlRef}
-                    onChange={(e) => setUpdateBrandImage(e.target.value)}
+                    onChange={(e) => setCreateBrandImage(e.target.value)}
                   />
-                  <label className="labelForm" htmlFor="updateBrandImage">
-                    Url de l'image...
+                  <label className="labelForm" htmlFor="createBrandImage">
+                    Url de l'image de la marque...
                   </label>
-                  {(updateBrandImage || updateImageUrl) && (
+                  {(createBrandImage || createImageUrl) && (
                     <button
                       title="Effacer le champs"
                       className="-ml-7 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover"
@@ -647,8 +502,8 @@ const BrandManager = () => {
                       <FontAwesomeIcon
                         icon={faRotateLeft}
                         onClick={() => {
-                          setUpdateImageUrl("");
-                          setUpdateBrandImage("");
+                          setCreateImageUrl("");
+                          setCreateBrandImage("");
                         }}
                       />
                     </button>
@@ -656,76 +511,55 @@ const BrandManager = () => {
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-center">
                   <Upload useUniqueFileName onUrlChange={handleUrlChange} />
-                  <button
-                    type="button"
-                    className="primary-button "
-                    onClick={doUpdate}
-                  >
-                    Mettre à jour une marque
-                  </button>
-                  {updateErrors && (
-                    <p className="relative text-red-500">{updateErrors}</p>
-                  )}
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-center">
                   <button
                     type="button"
                     className="primary-button "
-                    onClick={doDelete}
+                    onClick={doCreate}
                   >
-                    Supprimer une Marque
+                    Ajouter ma Marque
                   </button>
-                  {deleteErrors && (
-                    <p className="relative text-red-500">{deleteErrors}</p>
+                  {createErrors && (
+                    <p className="relative text-red-500">{createErrors}</p>
                   )}
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-4xl uppercase font-bold text-center mt-8 text-secondary dark:text-secondary-dark transition-200">
-            Toutes les Marques
-          </h2>
-
-          {brandsDataError ? (
-            <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
-              Erreur lors du chargement des marques
-            </p>
-          ) : brandsDataLoading ? (
-            <div className="w-full my-16">
-              <p className=" text-center py-2 animate-pulse text-light dark:text-primary-hover">
-                Chargement des marques...
-              </p>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 ">
+            <div
+              className={`flex flex-col items-center justify-center bg-primary-focus p-8 rounded-lg m-8`}
+            >
+              <h2 className=" font-bold text-2xl text-secondary">
+                Mettre à jour une marque
+              </h2>
+              <div className="w-96 mx-auto mt-8 relative">
                 <div
-                  className=" bg-primary-focus dark:bg-primary-dark-hover h-2.5 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-            </div>
-          ) : (
-            <div className="grid gap-4 grid-cols-2 md:grid-cols-4  items-center justify-center mt-8 transition-200">
-              {brands
-                .slice()
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((brand: Brand) => (
-                  <div
-                    key={brand.id}
-                    className="flex flex-col justify-between items-center h-60 rounded-lg hover:bg-primary-dark-hover shadow-xl hover:shadow-2xl bg-primary-focus overflow-hidden cursor-pointer"
-                    onClick={() => handleClickChosenBrand(brand)}
-                  >
-                    <div className="h-1/2 p-4 w-full bg-light">
+                  // ref={brandUpdateContainerRef}
+                  className={`${animeError(
+                    "",
+                    updateErrors
+                  )} flex flex-col items-center justify-center bg-primary-hover p-4 rounded-lg transition-200`}
+                >
+                  <h2 className=" font-bold text-2xl text-secondary">
+                    Modifier une marque
+                  </h2>
+
+                  <h2 className="text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
+                    Marque id {brand?.id}
+                  </h2>
+                  {brand && (
+                    <div className="p-4">
+                      <p className=" pb-8 text-center font-bold text-4xl text-secondary dark:text-secondary-dark transition-200">
+                        {brand.name}
+                      </p>
                       {brand.image ? (
                         <img
-                          className="w-full h-full object-contain"
-                          src={brand.image}
+                          src={brand.image || undefined}
                           alt={`Logo de la marque ${brand.name}`}
                         />
                       ) : (
                         <svg
-                          className="w-full h-full  text-gray-200 dark:text-gray-600"
+                          className="w-full h-64 text-gray-200 dark:text-gray-600"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="currentColor"
@@ -735,19 +569,211 @@ const BrandManager = () => {
                         </svg>
                       )}
                     </div>
-                    <div className="h-1/2 p-4 text-center">
-                      <h2 className=" font-bold text-xl text-secondary">
-                        Marque id {brand.id}
-                      </h2>
-                      <p className=" pb-8 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
-                        {brand.name}
-                      </p>
+                  )}
+                  <div className=" mt-8 relative flex flex-col items-center justify-center">
+                    <input
+                      onClick={() => {
+                        setUpdateBrandName(brand?.name ?? "");
+                        setUpdateErrors("");
+                        setDeleteErrors("");
+                      }}
+                      autoComplete="off"
+                      required
+                      type="text"
+                      id="updateBrandName"
+                      placeholder=" "
+                      value={updateBrandName}
+                      className={`inputForm ${animeError(
+                        "",
+                        updateErrors || deleteErrors
+                      )} ${isOpen ? triggerClasses : "rounded-lg"}`}
+                      ref={triggerRef}
+                      onChange={handleSearchBrand}
+                    />
+                    <label className="labelForm" htmlFor="updateBrandName">
+                      Nom de la marque...
+                    </label>
+                    {updateBrandName && isOpen && (
+                      <ul
+                        ref={dropdownRef}
+                        className={`${
+                          brands.filter((brand) =>
+                            brand.name
+                              .toLowerCase()
+                              .includes(updateBrandName.toLowerCase())
+                          ).length > 10
+                            ? " h-80 overflow-y-scroll"
+                            : brands.filter((brand) =>
+                                brand.name
+                                  .toLowerCase()
+                                  .includes(updateBrandName.toLowerCase())
+                              ).length === 0
+                            ? "hidden "
+                            : "h-fit"
+                        } ${dropdownPosition} ${dropdownClasses} bg-secondary dark:bg-secondary-dark w-full absolute z-10`}
+                      >
+                        <p className="px-4 py-2 text-primary dark:text-primary-dark text-xl font-bold">
+                          Marques
+                        </p>
+                        {brands
+                          .filter((brand) =>
+                            brand.name
+                              .toLowerCase()
+                              .includes(updateBrandName.toLowerCase())
+                          )
+                          .map((brand) => (
+                            <li
+                              onClick={() =>
+                                handleClickBrandList(Number(brand.id))
+                              }
+                              key={brand.id}
+                              className="px-4 py-2 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover cursor-pointer"
+                            >
+                              {brand.name}
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                  </div>
+                  <div className="mt-8 relative flex flex-col items-center justify-center">
+                    <div className="flex">
+                      <input
+                        onClick={() => {
+                          setUpdateBrandImage(brand?.image ?? "");
+                          setUpdateErrors("");
+                          setDeleteErrors("");
+                        }}
+                        autoComplete="off"
+                        required
+                        type="text"
+                        id="updateBrandImage"
+                        placeholder=" "
+                        value={
+                          updateImageUrl
+                            ? updateImageUrl
+                            : updateBrandImage || ""
+                        }
+                        className={`inputForm rounded-lg ${animeError(
+                          "image",
+                          updateErrors
+                        )}`}
+                        ref={inputBrandUrlRef}
+                        onChange={(e) => setUpdateBrandImage(e.target.value)}
+                      />
+                      <label className="labelForm" htmlFor="updateBrandImage">
+                        Url de l'image...
+                      </label>
+                      {(updateBrandImage || updateImageUrl) && (
+                        <button
+                          title="Effacer le champs"
+                          className="-ml-7 text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover"
+                        >
+                          <FontAwesomeIcon
+                            icon={faRotateLeft}
+                            onClick={() => {
+                              setUpdateImageUrl("");
+                              setUpdateBrandImage("");
+                            }}
+                          />
+                        </button>
+                      )}
+                    </div>
+                    <div className="mt-4 flex flex-col items-center justify-center">
+                      <Upload useUniqueFileName onUrlChange={handleUrlChange} />
+                      <button
+                        type="button"
+                        className="primary-button "
+                        onClick={doUpdate}
+                      >
+                        Mettre à jour une marque
+                      </button>
+                      {updateErrors && (
+                        <p className="relative text-red-500">{updateErrors}</p>
+                      )}
+                    </div>
+                    <div className="mt-4 flex flex-col items-center justify-center">
+                      <button
+                        type="button"
+                        className="primary-button "
+                        onClick={doDelete}
+                      >
+                        Supprimer une Marque
+                      </button>
+                      {deleteErrors && (
+                        <p className="relative text-red-500">{deleteErrors}</p>
+                      )}
                     </div>
                   </div>
-                ))}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-4xl uppercase font-bold text-center mt-8 text-secondary dark:text-secondary-dark transition-200">
+                Toutes les Marques
+              </h2>
+
+              {brandsDataError ? (
+                <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
+                  Erreur lors du chargement des marques
+                </p>
+              ) : brandsDataLoading ? (
+                <div className="w-full my-16">
+                  <p className=" text-center py-2 animate-pulse text-light dark:text-primary-hover">
+                    Chargement des marques...
+                  </p>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 ">
+                    <div
+                      className=" bg-primary-focus dark:bg-primary-dark-hover h-2.5 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid gap-4 grid-cols-2 md:grid-cols-4  items-center justify-center mt-8 transition-200">
+                  {brands
+                    .slice()
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((brand: Brand) => (
+                      <div
+                        key={brand.id}
+                        className="flex flex-col justify-between items-center h-60 rounded-lg hover:bg-primary-dark-hover shadow-xl hover:shadow-2xl bg-primary-focus overflow-hidden cursor-pointer"
+                        onClick={() => handleClickChosenBrand(brand)}
+                      >
+                        <div className="h-1/2 p-4 w-full bg-light">
+                          {brand.image ? (
+                            <img
+                              className="w-full h-full object-contain"
+                              src={brand.image}
+                              alt={`Logo de la marque ${brand.name}`}
+                            />
+                          ) : (
+                            <svg
+                              className="w-full h-full  text-gray-200 dark:text-gray-600"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 20 18"
+                            >
+                              <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="h-1/2 p-4 text-center">
+                          <h2 className=" font-bold text-xl text-secondary">
+                            Marque id {brand.id}
+                          </h2>
+                          <p className=" pb-8 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
+                            {brand.name}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </section>
     </>
   );
