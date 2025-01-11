@@ -1,6 +1,7 @@
 import BrandManager from "../components/dataManagers/BrandManager";
 import IngredientManager from "../components/dataManagers/IngredientManager";
 import IngredientTypeManager from "../components/dataManagers/IngredientTypeManager";
+import IngredientVariationManager from "../components/dataManagers/IngredientVariationManager";
 import Image from "../components/Image";
 import { handleScrollToElement } from "../utils/handleScrollToElement";
 
@@ -13,7 +14,7 @@ const Creation = () => {
 
   return (
     <div className="creation  flex flex-col items-center justify-center  py-16 ">
-      <div className=" backdrop-blur-lg bg-gradient-to-tr from-[rgba(255,255,255,0.3)] max-w-5xl mx-auto p-2 rounded-lg flex justify-between sticky top-4 z-20">
+      <div className=" backdrop-blur-lg bg-gradient-to-tr from-[rgba(255,255,255,0.3)] w-full max-w-5xl mx-auto p-2 rounded-lg flex justify-between sticky top-4 z-20">
         <a
           className="text-secondary bg-[rgba(66,119,133,0.5)] hover:bg-primary p-2 rounded-lg dark:text-secondary-dark hover:text-secondary-hover dark:hover:text-secondary-dark-hover cursor-pointer"
           onClick={(event) => handleScrollToElement(event, "ingredientTypes")}
@@ -49,6 +50,7 @@ const Creation = () => {
         />
       </div>
       <div className=" w-full max-w-5xl mx-auto">
+        <IngredientVariationManager />
         <IngredientTypeManager />
         <IngredientManager />
         <BrandManager />

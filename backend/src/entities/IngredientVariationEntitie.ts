@@ -12,6 +12,8 @@ import { Ingredient } from "./IngredientEntitie";
 import { IsNotEmpty, IsUrl, Length } from "class-validator";
 import { Brand } from "./BrandEntitie";
 import { Shop } from "./ShopEntitie";
+import { Season } from "./SeasonEntitie";
+import { IngredientType } from "./IngredientTypeEntitie";
 
 @Entity("ingredient_variations")
 @ObjectType()
@@ -44,6 +46,13 @@ export class IngredientVariation extends BaseEntity {
     @Field(() => Ingredient)
     ingredient!: Ingredient;
 
+    @ManyToOne(() => IngredientType, { nullable: true })
+    @Field(() => IngredientType, { nullable: true })
+    type!: IngredientType;
+
+    @ManyToOne(() => Season, { nullable: true })
+    @Field(() => Season, { nullable: true })
+    season!: Season;
 
     @Column({ default: false })
     @Field()
@@ -51,19 +60,32 @@ export class IngredientVariation extends BaseEntity {
 }
 
 @InputType()
-export class IngredientVariationCreateManyInput {
-    @Field(() => [String])
-    names!: string[]; // Tableau de noms des variations
+export class IngredientVariationCreateInput {
+    @Field(() => String)
+    name!: string; // Tableau de noms des variations
 
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image!: string;
 
     @Field(() => ID)
+    brandId!: number; // ID de la marque parent
+
+    @Field(() => ID)
     ingredientId!: number; // ID de l'ingrédient parent
+
+    @Field(() => ID, { nullable: true })
+    typeId!: number;
+
+    @Field(() => ID, { nullable: true })
+    seasonId!: number;
+
+    @Field(() => [ID], { nullable: true })
+    shopIds!: number[];
 
     @Field({ defaultValue: false })
     hasIngredient!: boolean;
+
 }
 
 
@@ -77,9 +99,22 @@ export class IngredientVariationUpdateInput {
     @Field({ nullable: true })
     image!: string;
 
+    @Field(() => ID)
+    brandId!: number; // ID de la marque parent
+
     @Field(() => ID, { nullable: true })
     ingredientId?: number;
 
+    @Field(() => ID, { nullable: true })
+    typeId!: number;
+
+    @Field(() => ID, { nullable: true })
+    seasonId!: number;
+
+    @Field(() => [ID], { nullable: true })
+    shopIds!: number[];
+
     @Field({ defaultValue: false })
     hasIngredient!: boolean;
+
 }

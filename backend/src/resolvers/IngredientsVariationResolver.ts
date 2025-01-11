@@ -1,9 +1,14 @@
 import { Arg, ID, Info, Mutation, Query, Resolver } from "type-graphql";
 import { Ingredient } from "../entities/IngredientEntitie";
-import { IngredientVariation, IngredientVariationCreateManyInput, IngredientVariationUpdateInput } from "../entities/IngredientVariationEntitie";
+import { IngredientVariation, IngredientVariationCreateInput, IngredientVariationUpdateInput } from "../entities/IngredientVariationEntitie";
 import { makeRelations } from "../utils/makeRelations";
 import { GraphQLResolveInfo } from "graphql";
 import { In } from "typeorm";
+import { cleanAndCapitalize } from "../utils/cleanAndCapitalizeFirstLetter";
+import { IngredientType } from "../entities/IngredientTypeEntitie";
+import { Season } from "../entities/SeasonEntitie";
+import { Shop } from "../entities/ShopEntitie";
+import { Brand } from "../entities/BrandEntitie";
 
 @Resolver()
 export class IngredientVariationResolver {
@@ -23,49 +28,66 @@ export class IngredientVariationResolver {
         });
     }
 
-    @Mutation(() => [IngredientVariation])
-    async createIngredientVariations(
-        @Arg("data", () => IngredientVariationCreateManyInput) data: IngredientVariationCreateManyInput
-    ): Promise<IngredientVariation[]> {
-        // Vérifie que l'ingrédient parent existe
-        const ingredient = await Ingredient.findOneBy({ id: data.ingredientId });
-        if (!ingredient) {
-            throw new Error("Invalid ingredientId");
+    @Mutation(() => IngredientVariation)
+    async createIngredientVariation(
+        @Arg("data", () => IngredientVariationCreateInput) data: IngredientVariationCreateInput): Promise<IngredientVariation> {
+        // Vérifie si un ingrédient avec le même nom existe déjà
+        const existingIngredientVariation = await IngredientVariation.findOneBy({ name: cleanAndCapitalize(data.name) });
+        if (existingIngredientVariation) {
+            throw new Error(`An ingredient with the name "${data.name}" already exists.`);
         }
 
-        // Déduplique les noms dans le tableau
-        const uniqueNames = [...new Set(data.names)];
+        const newIngredientVariation = new IngredientVariation();
 
-        // Vérifie s'il y a des doublons déjà existants dans la base de données
-        const existingVariations = await IngredientVariation.find({
-            where: {
-                name: In(uniqueNames),
-                ingredient: { id: data.ingredientId },
-            },
-            relations: ["ingredient"],
-        });
-
-        if (existingVariations.length > 0) {
-            const existingNames = existingVariations.map((v) => v.name).join(", ");
-            throw new Error(
-                `The following variations already exist for this ingredient: ${existingNames}`
-            );
+        // Associe le type si fourni
+        if (data.ingredientId) {
+            const ingredient = await Ingredient.findOneBy({ id: data.ingredientId });
+            if (!ingredient) throw new Error("Invalid ingredientId");
+            newIngredientVariation.ingredient = ingredient;
         }
 
-        // Crée les nouvelles variations
-        const variations: IngredientVariation[] = [];
-        for (const name of uniqueNames) {
-            const variation = new IngredientVariation();
-            variation.name = name;
-            variation.ingredient = ingredient;
-            await variation.save();
-            variations.push(variation);
+        // Associe le type si fourni
+        if (data.brandId) {
+            const brand = await Brand.findOneBy({ id: data.brandId });
+            if (!brand) throw new Error("Invalid brandId");
+            newIngredientVariation.brand = brand;
         }
 
-        return variations;
+        // Associe le type si fourni
+        if (data.typeId) {
+            const type = await IngredientType.findOneBy({ id: data.typeId });
+            if (!type) throw new Error("Invalid typeId");
+            newIngredientVariation.type = type;
+        }
+
+        // Associe la saison si fournie
+        if (data.seasonId) {
+            const season = await Season.findOneBy({ id: data.seasonId });
+            if (!season) throw new Error("Invalid seasonId");
+            newIngredientVariation.season = season;
+        }
+
+        // Associe les magasins si fournis
+        if (data.shopIds && data.shopIds.length > 0) {
+            const shops = await Shop.findBy({ id: In(data.shopIds) });
+            if (shops.length !== data.shopIds.length) {
+                throw new Error("Some shop IDs are invalid.");
+            }
+            newIngredientVariation.shops = shops;
+        }
+
+
+
+        // Assigne les autres champs
+        Object.assign(newIngredientVariation, { ...data });
+
+        // Nettoie et capitalise le nom
+        newIngredientVariation.name = cleanAndCapitalize(newIngredientVariation.name);
+
+        // Sauvegarde l'ingrédient
+        await newIngredientVariation.save();
+        return newIngredientVariation;
     }
-
-
 
     @Mutation(() => IngredientVariation, { nullable: true })
     async updateIngredientVariation(
