@@ -252,7 +252,7 @@ const IngredientVariationManager = () => {
 
   const animeError = (wordToWatch: string | "", errors: string) => {
     if (errors && errors.includes(wordToWatch || "")) {
-      return `border border-red-500 animate-vibrate`;
+      return `border border-red-500 animate-vibrate shadow-md shadow-red-400`;
     } else {
       return `border-none`;
     }
@@ -294,6 +294,16 @@ const IngredientVariationManager = () => {
       setCreateErrors("Le nom de la variation d'ingrédient est requis.");
       return;
     }
+    if (
+      ingredientVariations.find(
+        (ingredientVariation) =>
+          createIngredientVariationName.toLocaleLowerCase() ===
+          ingredientVariation?.name.toLocaleLowerCase()
+      )
+    ) {
+      setCreateErrors("La variation d'ingrédient existe déjà.");
+      return;
+    }
 
     if (
       createIngredientVariationImage &&
@@ -333,7 +343,7 @@ const IngredientVariationManager = () => {
             name: createIngredientVariationName,
             image:
               createIngredientVariationImage || createImageUrl || undefined, // Assurez-vous de définir l'image si nécessaire
-            brandId: `${selectedBrand?.id}`,
+            brandId: `${selectedBrand?.id || ""}`,
             ingredientId: `${selectedIngredient?.id}`,
             typeId: `${selectedType?.id}`,
             seasonId: `${selectedSeason?.id}`,
@@ -697,7 +707,7 @@ const IngredientVariationManager = () => {
                     placeholder=" "
                     value={createIngredientVariationName}
                     className={`inputForm rounded-lg ${animeError(
-                      "nom",
+                      "variation d'ingrédient",
                       createErrors
                     )}`}
                     ref={inputIngredientVariationNameRef}
@@ -711,9 +721,20 @@ const IngredientVariationManager = () => {
                   >
                     Nom de la variation d'ingrédient...
                   </label>
+                  {createErrors.includes("variation d'ingrédient") &&
+                    createErrors && (
+                      <p className="absolute top-full text-red-500">
+                        {createErrors}
+                      </p>
+                    )}
+                  {createErrors.includes("existe") && createErrors && (
+                    <p className="absolute top-full text-red-500">
+                      {createErrors}
+                    </p>
+                  )}
                 </div>
                 <div className=" mb-8 w-full relative flex flex-col items-center justify-center">
-                  <div className="flex mb-4 justify-center items-center w-full px-8">
+                  <div className="relative flex mb-4 justify-center items-center w-full px-8">
                     <input
                       onClick={() => setCreateErrors("")}
                       autoComplete="off"
@@ -758,17 +779,21 @@ const IngredientVariationManager = () => {
                     <div className=" ml-4 text-nowrap">
                       <Upload useUniqueFileName onUrlChange={handleUrlChange} />
                     </div>
+                    {createErrors.includes("image") && createErrors && (
+                      <p className="absolute top-full text-red-500">
+                        {createErrors}
+                      </p>
+                    )}
                   </div>
-
-                  {/* ----------------------------BRANDSELECT-------------------------------- */}
-                  {brandsDataError ? (
+                  {/* ----------------------------SEASONSELECT-------------------------------- */}
+                  {seasonsDataError ? (
                     <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
-                      Erreur lors du chargement des Marques
+                      Erreur lors du chargement des saisons
                     </p>
-                  ) : brandsDataLoading ? (
+                  ) : seasonsDataLoading ? (
                     <div className="w-full my-16">
                       <p className=" text-center py-2 animate-pulse text-light dark:text-primary-hover">
-                        Chargement des Marques...
+                        Chargement des saisons...
                       </p>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 ">
                         <div
@@ -778,27 +803,32 @@ const IngredientVariationManager = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="my-4 px-8 w-full flex items-center justify-between">
+                    <div className="relative my-4 px-8 w-full flex items-center justify-between">
                       <OptionSelect<string>
-                        options={brands.map((brand) => ({
-                          id: Number(brand.id),
-                          data: brand.name,
+                        classError={animeError("saison", createErrors)}
+                        options={seasons.map((season) => ({
+                          id: Number(season.id),
+                          data: season.seasonName,
                         }))}
                         onSelect={(option) =>
-                          handleOptionChange("brand", option)
+                          handleOptionChange("season", option)
                         }
-                        actualOption={selectedBrand}
-                        defaultOption="Sélectionner une marque"
+                        actualOption={selectedSeason}
+                        defaultOption="Sélectionner une saison"
                         getDisplayText={(data) => data}
                       />
-
                       <button
-                        onClick={() => setSelectedBrand(null)}
-                        title="Réinitialiser la Marque"
+                        onClick={() => setSelectedSeason(null)}
+                        title="Réinitialiser la saison"
                         className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
                       </button>
+                      {createErrors.includes("saison") && createErrors && (
+                        <p className="absolute left-1/2 -translate-x-1/2 top-full text-red-500">
+                          {createErrors}
+                        </p>
+                      )}
                     </div>
                   )}
                   {/* ----------------------------INGREDIENTSELECT-------------------------------- */}
@@ -819,8 +849,12 @@ const IngredientVariationManager = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="my-4 px-8 w-full flex items-center justify-between">
+                    <div className="relative my-4 px-8 w-full flex items-center justify-between">
                       <OptionSelect<string>
+                        classError={animeError(
+                          "famille de l'ingrédient",
+                          createErrors
+                        )}
                         options={ingredients.map((ingredient) => ({
                           id: Number(ingredient.id),
                           data: ingredient.name,
@@ -839,6 +873,12 @@ const IngredientVariationManager = () => {
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
                       </button>
+                      {createErrors.includes("famille de l'ingrédient") &&
+                        createErrors && (
+                          <p className="absolute left-1/2 -translate-x-1/2 top-full text-red-500">
+                            {createErrors}
+                          </p>
+                        )}
                     </div>
                   )}
                   {/* ----------------------------TYPESELECT-------------------------------- */}
@@ -859,8 +899,9 @@ const IngredientVariationManager = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="my-4 px-8 w-full flex items-center justify-between">
+                    <div className="relative my-4 px-8 w-full flex items-center justify-between">
                       <OptionSelect<string>
+                        classError={animeError("type", createErrors)}
                         options={types.map((type) => ({
                           id: Number(type.id),
                           data: type.name,
@@ -879,17 +920,23 @@ const IngredientVariationManager = () => {
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
                       </button>
+                      {createErrors.includes("type") && createErrors && (
+                        <p className="absolute left-1/2 -translate-x-1/2 top-full text-red-500">
+                          {createErrors}
+                        </p>
+                      )}
                     </div>
                   )}
-                  {/* ----------------------------SEASONSELECT-------------------------------- */}
-                  {seasonsDataError ? (
+
+                  {/* ----------------------------BRANDSELECT-------------------------------- */}
+                  {brandsDataError ? (
                     <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
-                      Erreur lors du chargement des saisons
+                      Erreur lors du chargement des Marques
                     </p>
-                  ) : seasonsDataLoading ? (
+                  ) : brandsDataLoading ? (
                     <div className="w-full my-16">
                       <p className=" text-center py-2 animate-pulse text-light dark:text-primary-hover">
-                        Chargement des saisons...
+                        Chargement des Marques...
                       </p>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 ">
                         <div
@@ -899,28 +946,36 @@ const IngredientVariationManager = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="my-4 px-8 w-full flex items-center justify-between">
+                    <div className="relative my-4 px-8 w-full flex items-center justify-between">
                       <OptionSelect<string>
-                        options={seasons.map((season) => ({
-                          id: Number(season.id),
-                          data: season.seasonName,
+                        classError={animeError("marque", createErrors)}
+                        options={brands.map((brand) => ({
+                          id: Number(brand.id),
+                          data: brand.name,
                         }))}
                         onSelect={(option) =>
-                          handleOptionChange("season", option)
+                          handleOptionChange("brand", option)
                         }
-                        actualOption={selectedSeason}
-                        defaultOption="Sélectionner une saison"
+                        actualOption={selectedBrand}
+                        defaultOption="Sélectionner une marque"
                         getDisplayText={(data) => data}
                       />
+
                       <button
-                        onClick={() => setSelectedSeason(null)}
-                        title="Réinitialiser la saison"
+                        onClick={() => setSelectedBrand(null)}
+                        title="Réinitialiser la Marque"
                         className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
                       </button>
+                      {createErrors.includes("marque") && createErrors && (
+                        <p className="absolute left-1/2 -translate-x-1/2 top-full text-red-500">
+                          {createErrors}
+                        </p>
+                      )}
                     </div>
                   )}
+
                   {/* ----------------------------SHOPSSELECT-------------------------------- */}
                   {shopsDataError ? (
                     <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
@@ -939,7 +994,7 @@ const IngredientVariationManager = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="my-4 px-8 w-full flex items-center justify-between">
+                    <div className="relative my-4 px-8 w-full flex items-center justify-between">
                       <MultiSelect
                         selectionDefaultValue="Sélectionner les magasins"
                         dataIds={createIngredientVariationShopsIds}
@@ -956,6 +1011,11 @@ const IngredientVariationManager = () => {
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
                       </button>
+                      {createErrors.includes("magasin") && createErrors && (
+                        <p className="absolute left-1/2 -translate-x-1/2 top-full text-red-500">
+                          {createErrors}
+                        </p>
+                      )}
                     </div>
                   )}
                   <div className="mt-16 flex flex-col items-center justify-center">
@@ -966,11 +1026,6 @@ const IngredientVariationManager = () => {
                     >
                       Ajouter une variation d'ingrédient
                     </button>
-                    {createErrors && (
-                      <p className="mt-4 relative text-red-500">
-                        {createErrors}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -1096,34 +1151,6 @@ const IngredientVariationManager = () => {
                       </ul>
                     )}
                   </div>
-                  {/* SHOP ET BRAND <div className=" w-full px-8 flex items-center justify-between">
-                    <OptionSelect<string>
-                      onClickFunctionProps={() => setUpdateErrors("")}
-                      options={ingredientVariations.map((ingredientVariation) => ({
-                        id: Number(ingredientVariation?.id),
-                        data: ingredientVariation?.name,
-                      }))}
-                      onSelect={handleUpdateIngredientVariationChange}
-                      actualOption={selectedIngredientVariation}
-                      defaultOption={
-                        ingredientVariation && ingredientVariation?.type?.name
-                          ? ingredientVariation?.type?.name
-                          : "Sélectionner une variation d'ingrédient"
-                      }
-                      getDisplayText={(data) => data}
-                    />
-                    <button
-                      onClick={() => {
-                        setSelectedIngredientVariation(null);
-                        setUpdateErrors("");
-                        setUpdateIngredientVariationId("");
-                      }}
-                      title="Réinitialiser la variation d'ingrédient"
-                      className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
-                    >
-                      <FontAwesomeIcon icon={faRotateLeft} />
-                    </button>
-                  </div> */}
                   <div className=" my-8 w-full relative flex flex-col items-center justify-center">
                     <div className="flex justify-center items-center w-full px-8">
                       <input

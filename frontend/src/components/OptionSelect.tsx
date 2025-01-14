@@ -7,6 +7,7 @@ export type OptionType<T> = {
 };
 
 type OptionSelectProps<T extends string> = {
+  classError?: string;
   disabledOption?: boolean;
   onClickFunctionProps?: () => void;
   options: OptionType<T>[] | undefined;
@@ -17,6 +18,7 @@ type OptionSelectProps<T extends string> = {
 };
 
 const OptionSelect = <T extends string>({
+  classError,
   disabledOption,
   onClickFunctionProps,
   options,
@@ -72,7 +74,7 @@ const OptionSelect = <T extends string>({
         onClick={() => setIsOpen(!isOpen)}
         className={`flex justify-between px-4 py-3 w-full bg-secondary transition-all duration-100 ease-in-out ${
           isOpen ? triggerClasses : "rounded-lg"
-        }  border-primary text-primary text-sm cursor-pointer`}
+        }  border-primary text-primary text-sm cursor-pointer ${classError}`}
       >
         {selected ? getDisplayText(selected.data) : defaultOption}
         <span
