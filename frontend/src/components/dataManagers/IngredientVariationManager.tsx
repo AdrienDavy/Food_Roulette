@@ -101,6 +101,8 @@ const IngredientVariationManager = () => {
     useState<OptionType<string> | null>(null);
   const [selectedUpdateIngredientType, setSelectedUpdateIngredientType] =
     useState<OptionType<string> | null>(null);
+  const [selectedUpdateBrand, setSelectedUpdateBrand] =
+    useState<OptionType<string> | null>(null);
 
   const [updateErrors, setUpdateErrors] = useState<string>("");
   const [deleteErrors, setDeleteErrors] = useState<string>("");
@@ -403,7 +405,7 @@ const IngredientVariationManager = () => {
             seasonId: `${selectedUpdateSeason?.id}`,
             ingredientId: `${selectedUpdateIngredientFamily?.id}`,
             typeId: `${selectedUpdateIngredientType?.id}`,
-            brandId: `${selectedCreateBrand?.id || ""}`,
+            brandId: `${selectedUpdateBrand?.id || ""}`,
           },
         },
       });
@@ -413,6 +415,7 @@ const IngredientVariationManager = () => {
       setSelectedUpdateSeason(selectedUpdateSeason);
       setSelectedUpdateIngredientFamily(selectedUpdateIngredientFamily);
       setSelectedUpdateIngredientType(selectedUpdateIngredientType);
+      setSelectedUpdateBrand(selectedUpdateBrand);
       setIsOpen(false);
 
       console.log(
@@ -506,6 +509,11 @@ const IngredientVariationManager = () => {
       id: ingredientVariationSearched.type?.id || null || "",
       data: ingredientVariationSearched.type?.name || "",
     });
+    setSelectedUpdateBrand({
+      id: ingredientVariationSearched.brand?.id || null || "",
+      data:
+        ingredientVariationSearched.brand?.name || "Sélectionner une marque",
+    });
     console.log(
       "VARIATION :",
       ingredientVariation?.id,
@@ -530,6 +538,9 @@ const IngredientVariationManager = () => {
         break;
       case "type":
         setSelectedUpdateIngredientType(option);
+        break;
+      case "brand":
+        setSelectedUpdateBrand(option);
         break;
       default:
         break;
@@ -1182,6 +1193,32 @@ const IngredientVariationManager = () => {
                       <button
                         onClick={() => setSelectedUpdateIngredientType(null)}
                         title="Réinitialiser le type d'ingrédient"
+                        className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
+                      >
+                        <FontAwesomeIcon icon={faRotateLeft} />
+                      </button>
+                    </div>
+                    {/* UPDATE----------------------------BRANDSELECT-------------------------------- */}
+                    <div className="my-2 px-8 w-full flex items-center justify-between">
+                      <OptionSelect<string>
+                        options={brands.map((brand) => ({
+                          id: Number(brand.id),
+                          data: brand.name,
+                        }))}
+                        onSelect={(option) =>
+                          handleUpdateOptionChange("brand", option)
+                        }
+                        actualOption={selectedUpdateBrand}
+                        defaultOption={
+                          selectedUpdateBrand
+                            ? selectedUpdateBrand?.data
+                            : "Sélectionner une marque"
+                        }
+                        getDisplayText={(data) => data}
+                      />
+                      <button
+                        onClick={() => setSelectedUpdateBrand(null)}
+                        title="Réinitialiser la marque"
                         className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
