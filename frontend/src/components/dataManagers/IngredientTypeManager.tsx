@@ -674,34 +674,7 @@ const IngredientTypeManager = () => {
                       </ul>
                     )}
                   </div>
-                  {/* SHOP ET BRAND <div className=" w-full px-8 flex items-center justify-between">
-                    <OptionSelect<string>
-                      onClickFunctionProps={() => setUpdateErrors("")}
-                      options={ingredientTypes.map((ingredientType) => ({
-                        id: Number(ingredientType?.id),
-                        data: ingredientType?.name,
-                      }))}
-                      onSelect={handleUpdateIngredientTypeChange}
-                      actualOption={selectedIngredientType}
-                      defaultOption={
-                        ingredientType && ingredientType?.type?.name
-                          ? ingredientType?.type?.name
-                          : "Sélectionner un type ingrédient"
-                      }
-                      getDisplayText={(data) => data}
-                    />
-                    <button
-                      onClick={() => {
-                        setSelectedIngredientType(null);
-                        setUpdateErrors("");
-                        setUpdateIngredientTypeId("");
-                      }}
-                      title="Réinitialiser le type d'ingrédient"
-                      className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
-                    >
-                      <FontAwesomeIcon icon={faRotateLeft} />
-                    </button>
-                  </div> */}
+
                   <div className=" my-8 w-full relative flex flex-col items-center justify-center">
                     <div className="flex justify-center items-center w-full px-8">
                       <input
@@ -790,7 +763,7 @@ const IngredientTypeManager = () => {
                 </div>
               </div>
             </div>
-
+{/* ----------------------------------------------------------END UPDATE----------------------------------------------------------- */}
             <div className="flex flex-col items-center justify-center px-8">
               <h2 className="text-4xl uppercase font-bold text-center mt-8 text-secondary dark:text-secondary-dark transition-200">
                 Tous les ingrédients

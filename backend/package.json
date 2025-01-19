@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"ts-node-dev src/index.ts\" \"ts-node-dev server.ts\"",
+    "start": "concurrently -n \"BACK\" -c \"magenta\" \"ts-node-dev src/index.ts\" \"ts-node-dev server.ts\"", 
     "seed": "ts-node src/datasource/seeds/index.ts"
   },
   "keywords": [],
