@@ -2,11 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { useDropdownPosition } from "../utils/useDropdownPosition";
 
 export type OptionType<T> = {
-  id: number;
+  id: number | string;
   data: T;
 };
 
 type OptionSelectProps<T extends string> = {
+  classError?: string;
+  disabledOption?: boolean;
+  onClickFunctionProps?: () => void;
   options: OptionType<T>[] | undefined;
   onSelect: (option: OptionType<T>) => void;
   actualOption: OptionType<T> | null;
@@ -15,6 +18,9 @@ type OptionSelectProps<T extends string> = {
 };
 
 const OptionSelect = <T extends string>({
+  classError,
+  disabledOption,
+  onClickFunctionProps,
   options,
   onSelect,
   actualOption,
@@ -56,17 +62,19 @@ const OptionSelect = <T extends string>({
 
   return (
     <div
-      className="relative w-full z-10"
+      className="relative w-full disabled:bg-slate-400 disabled:text-gray-100 disabled:cursor-not-allowed"
       ref={triggerRef}
       onClick={(e) => {
+        onClickFunctionProps?.();
         e.stopPropagation();
       }}
     >
       <button
+        disabled={disabledOption}
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex justify-between px-4 py-2 w-full  z-10 bg-secondary transition-all duration-100 ease-in-out ${
+        className={`flex justify-between px-4 py-3 w-full bg-secondary transition-all duration-100 ease-in-out ${
           isOpen ? triggerClasses : "rounded-lg"
-        }  border-primary text-primary text-sm cursor-pointer`}
+        }  border-primary text-primary text-sm cursor-pointer ${classError}`}
       >
         {selected ? getDisplayText(selected.data) : defaultOption}
         <span
@@ -82,10 +90,10 @@ const OptionSelect = <T extends string>({
           ref={dropdownRef}
           className={`${
             options && options?.filter((option) => option).length > 10
-              ? " h-80 overflow-y-scroll"
+              ? " h-80 overflow-y-scroll z-20"
               : options?.filter((option) => option).length === 0
               ? "hidden "
-              : "h-fit"
+              : "h-fit z-20"
           } border-primary  text-primary flex-col flex justify-start bg-secondary custom-scrollbar absolute ${dropdownPosition} ${dropdownClasses} w-full`}
           onClick={() => setIsOpen(false)}
         >
@@ -94,7 +102,7 @@ const OptionSelect = <T extends string>({
             .map((option) => (
               <li
                 key={option.id}
-                className="p-2 hover:bg-secondary-hover cursor-pointer z-10"
+                className="p-2 hover:bg-secondary-hover cursor-pointer"
                 onClick={() => {
                   handleSelect(option);
                 }}

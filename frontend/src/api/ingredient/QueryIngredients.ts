@@ -7,6 +7,28 @@ query QueryIngredients {
     id
     name
     image
+    hasIngredient
+    type {
+      id
+      name
+      image
+    }
+    variations {
+      id
+      name
+      image
+      hasIngredient
+      brand {
+        id
+        name
+        image
+      }
+      shops {
+        id
+        name
+        image
+      }
+    }
   }
 }
 `);

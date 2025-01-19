@@ -11,7 +11,7 @@ import Recipe from "./pages/Recipe.tsx";
 import RecipeCreation from "./pages/RecipeCreation.tsx";
 
 const client = new ApolloClient({
-  uri: "http://localhost:5000",
+  uri: `${import.meta.env.VITE_BACKEND_URL}`,
   cache: new InMemoryCache(),
 });
 

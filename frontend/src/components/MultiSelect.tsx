@@ -1,25 +1,22 @@
 import React, { useRef, useState } from "react";
-import { TagType } from "../types";
-import { useQuery } from "@apollo/client";
-import { queryTags } from "../api/tag/QueryTags";
+import { useDropdownPosition } from "../utils/useDropdownPosition";
 
-type MultiSelectProps = {
-  dataIds: number[] | null;
-  setDataIds: React.Dispatch<React.SetStateAction<number[]>> | null;
-  tagsData: TagType[] | undefined;
+type MultiSelectProps<T extends number | string> = {
+  selectionDefaultValue: string;
+  dataIds: T[] | null;
+  setDataIds: React.Dispatch<React.SetStateAction<T[]>> | null;
+  datas: { id: number; name: string }[];
 };
 
-const MultiSelect: React.FC<MultiSelectProps> = ({
+const MultiSelect: React.FC<MultiSelectProps<number | string>> = ({
+  selectionDefaultValue,
   dataIds,
   setDataIds,
-  tagsData,
+  datas,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const { data: tagsDataFromQuery } = useQuery<{ tags: TagType[] }>(queryTags);
-  const tags = tagsDataFromQuery?.tags || tagsData;
-
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLUListElement>(null);
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleMultiSelect = (id: number) => {
@@ -32,34 +29,51 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     }
   };
 
-  const pushTags = () => {
-    if (!dataIds || !tags) return null;
-    const selectedTags = tags.filter((tag) => dataIds.includes(tag.id));
+  const pushElements = () => {
+    if (!dataIds || !datas) return null;
+    const selectedElements = datas.filter((data) => dataIds.includes(data.id));
     return (
-      <div className="mt-2">
-        {selectedTags.length > 0 ? (
-          <span className="text-sm font-medium">
-            {selectedTags.map((tag) => tag.name).join(", ")}
+      <div className={`${isOpen ? "p-2 font-bold" : ""}`}>
+        {selectedElements.length > 0 ? (
+          <span className="text-sm">
+            {selectedElements.map((data) => data.name).join(", ")}
           </span>
         ) : (
-          <span className="text-sm italic">Aucun tag sélectionné</span>
+          <span className="text-sm italic">Aucun élément sélectionné</span>
         )}
       </div>
     );
   };
 
+  const { dropdownPosition, triggerClasses, dropdownClasses } =
+    useDropdownPosition(
+      triggerRef,
+      dropdownRef,
+      "rounded-tl-lg rounded-tr-lg", // Classes pour le trigger en bas
+      "rounded-bl-lg rounded-br-lg", // Classes pour le trigger en haut
+      "top-full", // Position pour le dropdown en bas
+      "rounded-bl-lg rounded-br-lg shadow-lg", // Classes pour le dropdown en bas
+      "bottom-full", // Position pour le dropdown en haut
+      "rounded-tl-lg rounded-tr-lg" // Classes pour le dropdown en haut
+    );
+
   return (
-    <div className="flex items-center w-full" ref={dropdownRef}>
+    <div className="flex items-center w-full">
       <div
-        className="relative w-full min-w-[40px] h-[40px] p-2 rounded-lg border-2 border-primary flex justify-center items-center gap-1 text-[12px] font-bold text-[#ffa41b] bg-white cursor-pointer transition-all duration-250 ease-in-out"
+        ref={triggerRef}
+        className={`relative flex justify-between p-3 w-full bg-secondary transition-all duration-100 ease-in-out ${
+          isOpen ? triggerClasses : "rounded-lg"
+        }  border-primary text-primary text-sm cursor-pointer`}
         onClick={toggleDropdown}
       >
-        <div className="flex justify-between items-center p-2 w-full">
-          <span>Sélectionner les tags</span>
+        <div className="flex justify-between items-center w-full">
+          <span>
+            {pushElements() && !isOpen ? pushElements() : selectionDefaultValue}
+          </span>
           <span
             className={`${
               isOpen ? " rotate-180" : " rotate-0"
-            } duration-300 ml-2 ease-in-out`}
+            } duration-300 ml-4 ease-in-out`}
           >
             ▼
           </span>
@@ -67,26 +81,30 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
         {isOpen && (
           <div
-            className={`absolute top-full left-0 overflow-y-scroll w-full border-2 border-primary rounded-md bg-white z-10 duration-300 ease-in-out`}
+            className={`border-primary left-0 text-primary flex-col flex justify-start bg-secondary custom-scrollbar absolute ${dropdownPosition} ${dropdownClasses} w-full`}
           >
-            <ul onClick={(e) => e.stopPropagation()}>
-              {pushTags()}
-              {[...(tagsData ?? [])]
+            <ul
+              ref={dropdownRef}
+              onClick={(e) => e.stopPropagation()}
+              className=""
+            >
+              {pushElements()}
+              {[...(datas ?? [])]
                 .sort((a, b) => a.name.localeCompare(b.name))
-                .map((tag) => (
+                .map((data) => (
                   <li
-                    key={tag.id}
+                    key={data.id}
                     className={`flex items-center justify-between p-2 cursor-pointer hover:bg-gray-100 ${
-                      dataIds?.includes(tag.id) ? "bg-gray-200" : ""
+                      dataIds?.includes(data.id) ? "bg-gray-200" : ""
                     }`}
-                    onClick={() => handleMultiSelect(tag.id)}
+                    onClick={() => handleMultiSelect(data.id)}
                   >
-                    <span>{tag.name}</span>
+                    <span>{data.name}</span>
                     <input
                       type="checkbox"
                       className="mr-2 cursor-pointer"
-                      checked={dataIds?.includes(tag.id)}
-                      onChange={() => handleMultiSelect(tag.id)}
+                      checked={dataIds?.includes(data.id)}
+                      onChange={() => handleMultiSelect(data.id)}
                     />
                   </li>
                 ))}

@@ -8,14 +8,17 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "graphql-codegen": "graphql-codegen"
+    "graphql-codegen": "graphql-codegen",
+   "dev-codegen": "concurrently -n \"FRONT,CODEGEN\" -c \"green,blue\" \"npx vite\" \"npx graphql-codegen --watch\""
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@splinetool/react-spline": "^4.0.0",
+    "concurrently": "^9.1.2",
     "graphql": "^16.9.0",
+    "imagekitio-react": "^4.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
