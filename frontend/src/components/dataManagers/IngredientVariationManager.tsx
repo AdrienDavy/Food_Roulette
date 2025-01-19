@@ -103,6 +103,13 @@ const IngredientVariationManager = () => {
     useState<OptionType<string> | null>(null);
   const [selectedUpdateBrand, setSelectedUpdateBrand] =
     useState<OptionType<string> | null>(null);
+  const [selectedUpdateShops, setSelectedUpdateShops] = useState<
+    OptionType<string>[]
+  >([]);
+  const [
+    updateIngredientVariationShopsIds,
+    setUpdateIngredientVariationShopsIds,
+  ] = useState<(string | number)[]>([]);
 
   const [updateErrors, setUpdateErrors] = useState<string>("");
   const [deleteErrors, setDeleteErrors] = useState<string>("");
@@ -406,6 +413,7 @@ const IngredientVariationManager = () => {
             ingredientId: `${selectedUpdateIngredientFamily?.id}`,
             typeId: `${selectedUpdateIngredientType?.id}`,
             brandId: `${selectedUpdateBrand?.id || ""}`,
+            shopIds: updateIngredientVariationShopsIds.map(String),
           },
         },
       });
@@ -416,6 +424,7 @@ const IngredientVariationManager = () => {
       setSelectedUpdateIngredientFamily(selectedUpdateIngredientFamily);
       setSelectedUpdateIngredientType(selectedUpdateIngredientType);
       setSelectedUpdateBrand(selectedUpdateBrand);
+      setSelectedUpdateShops(selectedUpdateShops.map((shop) => shop));
       setIsOpen(false);
 
       console.log(
@@ -1223,6 +1232,30 @@ const IngredientVariationManager = () => {
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
                       </button>
+                    </div>
+                    {/* UPDATE----------------------------SHOPSSELECT-------------------------------- */}
+                    <div className="relative my-4 px-8 w-full flex items-center justify-between">
+                      <MultiSelect
+                        selectionDefaultValue="Sélectionner les magasins"
+                        dataIds={updateIngredientVariationShopsIds}
+                        setDataIds={setUpdateIngredientVariationShopsIds}
+                        datas={shops.map((shop) => ({
+                          id: Number(shop.id),
+                          name: shop.name,
+                        }))}
+                      />
+                      <button
+                        onClick={() => setUpdateIngredientVariationShopsIds([])}
+                        title="Réinitialiser le ou les magasins"
+                        className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
+                      >
+                        <FontAwesomeIcon icon={faRotateLeft} />
+                      </button>
+                      {createErrors.includes("magasin") && createErrors && (
+                        <p className="absolute left-1/2 -translate-x-1/2 top-full text-red-500">
+                          {createErrors}
+                        </p>
+                      )}
                     </div>
 
                     <div className="mt-4 w-full px-8 flex flex-wrap items-center justify-between">
