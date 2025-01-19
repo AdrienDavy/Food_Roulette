@@ -92,24 +92,71 @@ export class IngredientVariationResolver {
     @Mutation(() => IngredientVariation, { nullable: true })
     async updateIngredientVariation(
         @Arg("id", () => ID) id: number,
-        @Arg("data", () => IngredientVariationUpdateInput) data: IngredientVariationUpdateInput
+        @Arg("data", () => IngredientVariationUpdateInput) data: IngredientVariationUpdateInput,
+        @Info() info: GraphQLResolveInfo
     ): Promise<IngredientVariation | null> {
         const variation = await IngredientVariation.findOne({
             where: { id },
-            relations: { ingredient: true },
+            relations: makeRelations(info, IngredientVariation),
         });
-        if (!variation) return null;
 
+        if (!variation) {
+            throw new Error("Ingredient variation not found");
+        }
+
+        // Mise à jour de l'ingrédient
         if (data.ingredientId) {
             const ingredient = await Ingredient.findOneBy({ id: data.ingredientId });
             if (!ingredient) throw new Error("Invalid ingredientId");
             variation.ingredient = ingredient;
         }
 
+        // Mise à jour de la saison
+        if (data.seasonId) {
+            const season = await Season.findOneBy({ id: data.seasonId });
+            if (!season) throw new Error("Invalid seasonId");
+            variation.season = season;
+        } else if (data.seasonId === null) {
+            variation.season = null;
+        }
+
+        // Mise à jour du type
+        if (data.typeId) {
+            const type = await IngredientType.findOneBy({ id: data.typeId });
+            if (!type) throw new Error("Invalid typeId");
+            variation.type = type;
+        } else if (data.typeId === null) {
+            variation.type = null;
+        }
+
+        // Mise à jour de la marque
+        if (data.brandId) {
+            const brand = await Brand.findOneBy({ id: data.brandId });
+            if (!brand) throw new Error("Invalid brandId");
+            variation.brand = brand;
+        } else if (data.brandId === null) {
+            variation.brand = null;
+        }
+
+        // Mise à jour des magasins
+        if (data.shopIds && data.shopIds.length > 0) {
+            const shops = await Shop.findBy({ id: In(data.shopIds) });
+            if (shops.length !== data.shopIds.length) {
+                throw new Error("Some shop IDs are invalid.");
+            }
+            variation.shops = shops;
+        } else if (data.shopIds && data.shopIds.length === 0) {
+            variation.shops = [];
+        }
+
+        // Mise à jour des autres champs (comme `name`, `image`, etc.)
         Object.assign(variation, data);
+
         await variation.save();
         return variation;
     }
+
+
 
     @Mutation(() => IngredientVariation, { nullable: true })
     async deleteIngredientVariation(@Arg("id", () => ID) id: number): Promise<IngredientVariation | null> {

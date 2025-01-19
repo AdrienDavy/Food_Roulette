@@ -19,6 +19,7 @@ import { queryIngredientVariation } from "../../api/ingredientVariation/QueryIng
 import { queryIngredientTypes } from "../../api/ingredientType/QueryIngredientTypes";
 import { useDropdownPosition } from "../../utils/useDropdownPosition";
 import { mutationUpdateIngredientVariation } from "../../api/ingredientVariation/UpdateIngredientVariation";
+import { IngredientVariation } from "../../gql/graphql";
 
 const IngredientVariationManager = () => {
   // --------------------------------STATES--------------------------------
@@ -93,7 +94,9 @@ const IngredientVariationManager = () => {
   const [updateIngredientVariationImage, setUpdateIngredientVariationImage] =
     useState<string>("");
   const [updateIngredientVariationId, setUpdateIngredientVariationId] =
-    useState<string | null>(null);
+    useState<string>("");
+  const [selectedUpdateSeason, setSelectedUpdateSeason] =
+    useState<OptionType<string> | null>(null);
   const [updateErrors, setUpdateErrors] = useState<string>("");
   const [deleteErrors, setDeleteErrors] = useState<string>("");
 
@@ -348,7 +351,7 @@ const IngredientVariationManager = () => {
 
   const validateUpdateForm = () => {
     if (!updateIngredientVariationName) {
-      setUpdateErrors("Le nom du type d'ingrédient est requis.");
+      setUpdateErrors("Le nom du variation d'ingrédient est requis.");
       return;
     }
     if (
@@ -379,6 +382,13 @@ const IngredientVariationManager = () => {
     if (updateIngredientVariationImage === ingredientVariation?.image) {
       setUpdateIngredientVariationImage(ingredientVariation?.image || "");
     }
+    if (selectedUpdateSeason?.id === ingredientVariation?.season?.id) {
+      setSelectedUpdateSeason({
+        id: ingredientVariation?.season?.id || null || "",
+        data: ingredientVariation?.season?.seasonName || "",
+      });
+    }
+    console.log(" selectedUpdateSeason before click:", selectedUpdateSeason);
 
     try {
       const { data } = await doUpdateIngredientVariation({
@@ -387,13 +397,23 @@ const IngredientVariationManager = () => {
           data: {
             name: updateIngredientVariationName,
             image: updateIngredientVariationImage || undefined, // Assurez-vous de définir l'image si nécessaire
+            seasonId: selectedUpdateSeason?.id
+              ? `${selectedUpdateSeason.id}`
+              : null,
             brandId: `${selectedCreateBrand?.id || ""}`,
           },
         },
       });
+      setUpdateIngredientVariationName(updateIngredientVariationName);
+      setUpdateIngredientVariationImage(updateIngredientVariationImage);
+      setUpdateIngredientVariationId(updateIngredientVariationId);
+      setSelectedUpdateSeason(selectedUpdateSeason);
+      setIsOpen(false);
+
+      console.log(" selectedUpdateSeason after click:", selectedUpdateSeason);
       if (data?.updateIngredientVariation) {
         toast.success(
-          `Type d'ingrédient ${data?.updateIngredientVariation.name} modifié avec succès ! 🦄`,
+          `Variation d'ingrédient ${data?.updateIngredientVariation.name} modifié avec succès ! 🦄`,
           {
             className: "toast-success bg-primary",
             position: "top-right",
@@ -408,11 +428,6 @@ const IngredientVariationManager = () => {
           }
         );
       }
-      setUpdateIngredientVariationName(updateIngredientVariationName);
-      setUpdateIngredientVariationImage(updateIngredientVariationImage);
-      setUpdateIngredientVariationId(updateIngredientVariationId);
-      setIsOpen(false);
-
       return data?.updateIngredientVariation;
     } catch (err) {
       console.error(err);
@@ -466,12 +481,38 @@ const IngredientVariationManager = () => {
     setIsOpen(e.target.value.trim() !== ""); // Ouvre la liste si la recherche contient du texte
   };
 
-  const handleClickUpdateIngredientVariationList = (id: number) => {
-    setIngredientVariationId(Number(id));
-    setUpdateIngredientVariationName("");
-    setUpdateIngredientVariationImage("");
+  const handleClickUpdateIngredientVariationList = (
+    ingredientVariationSearched: IngredientVariation
+  ) => {
+    setIngredientVariationId(Number(ingredientVariationSearched.id));
+    setUpdateIngredientVariationName(ingredientVariationSearched.name);
+    setUpdateIngredientVariationImage(ingredientVariationSearched.image || "");
+    setSelectedUpdateSeason({
+      id: ingredientVariationSearched.season?.id || null || "",
+      data: ingredientVariationSearched.season?.seasonName || "",
+    });
+    console.log("IngredientVariation selected:", ingredientVariationSearched);
+
     setIsOpen(!isOpen);
     setUpdateErrors("");
+  };
+  console.log(ingredientVariationId);
+  console.log("selectedUpdateSeason", selectedUpdateSeason);
+
+  const handleUpdateOptionChange = (
+    key: string,
+    option: OptionType<string>
+  ) => {
+    switch (key) {
+      case "season":
+        setSelectedUpdateSeason(option);
+        break;
+      default:
+        break;
+    }
+    console.log("Option selectedCreate:", option);
+    setCreateErrors("");
+    setIsOpen(isOpen);
   };
 
   return (
@@ -751,12 +792,12 @@ const IngredientVariationManager = () => {
                           handleCreateOptionChange("type", option)
                         }
                         actualOption={selectedCreateType}
-                        defaultOption="Sélectionner un type d'ingrédient"
+                        defaultOption="Sélectionner un variation d'ingrédient"
                         getDisplayText={(data) => data}
                       />
                       <button
                         onClick={() => setSelectedCreateType(null)}
-                        title="Réinitialiser le type d'ingrédient"
+                        title="Réinitialiser le variation d'ingrédient"
                         className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
@@ -817,7 +858,7 @@ const IngredientVariationManager = () => {
                     </div>
                   )}
 
-                  {/* ----------------------------SHOPSSELECT-------------------------------- */}
+                  {/* --------------------------------------------SHOPSSELECT-------------------------------- */}
                   {shopsDataError ? (
                     <p className="bg-red-500 p-2 rounded-lg text-light my-4 col-span-4">
                       Erreur lors du chargement des magasins
@@ -872,7 +913,7 @@ const IngredientVariationManager = () => {
               </div>
             </div>
 
-            {/* -----------------------------UPDATE-------------------------- */}
+            {/* -------------------------------------------------------UPDATE--------------------------------------------------------------- */}
             <div className="flex flex-col items-center justify-center w-full bg-primary-hover my-8">
               <div className="w-full px-8 my-8 mx-auto mt-8 relative">
                 <div
@@ -882,7 +923,7 @@ const IngredientVariationManager = () => {
                   )} flex flex-col items-center justify-center bg-primary p-4 rounded-lg transition-200`}
                 >
                   <h2 className=" my-8 font-bold text-2xl text-secondary">
-                    Mettre à jour un type d'ingrédient
+                    Mettre à jour une variation d'ingrédient
                   </h2>
 
                   {ingredientVariation && (
@@ -896,7 +937,7 @@ const IngredientVariationManager = () => {
                       {ingredientVariation.image ? (
                         <img
                           src={ingredientVariation.image || undefined}
-                          alt={`Image du type d'ingrédient ${ingredientVariation.name}`}
+                          alt={`Image du variation d'ingrédient ${ingredientVariation.name}`}
                           className="w-full h-64 object-cover rounded-lg"
                         />
                       ) : (
@@ -938,7 +979,7 @@ const IngredientVariationManager = () => {
                       className="labelForm"
                       htmlFor="updateIngredientVariationName"
                     >
-                      Nom du type d'ingrédient...
+                      Nom de la variation d'ingrédient...
                     </label>
                     {updateIngredientVariationName && isOpen && (
                       <ul
@@ -965,7 +1006,7 @@ const IngredientVariationManager = () => {
                         } ${dropdownPosition} ${dropdownClasses} bg-secondary dark:bg-secondary-dark w-12/12 inset-8 absolute z-10`}
                       >
                         <p className="px-8 py-2 text-primary dark:text-primary-dark text-xl font-bold">
-                          Type d'ingrédients
+                          Variations d'ingrédients
                         </p>
                         {ingredientVariations
                           .filter((ingredientVariation) =>
@@ -980,7 +1021,7 @@ const IngredientVariationManager = () => {
                             <li
                               onClick={() =>
                                 handleClickUpdateIngredientVariationList(
-                                  Number(ingredientVariation.id)
+                                  ingredientVariation
                                 )
                               }
                               key={ingredientVariation.id}
@@ -1044,6 +1085,33 @@ const IngredientVariationManager = () => {
                         />
                       </div>
                     </div>
+                    {/* UPDATE----------------------------SEASONSELECT-------------------------------- */}
+                    <div className="my-8 px-8 w-full flex items-center justify-between">
+                      <OptionSelect<string>
+                        options={seasons.map((season) => ({
+                          id: Number(season.id),
+                          data: season.seasonName,
+                        }))}
+                        onSelect={(option) =>
+                          handleUpdateOptionChange("season", option)
+                        }
+                        actualOption={selectedUpdateSeason}
+                        defaultOption={
+                          selectedUpdateSeason
+                            ? selectedUpdateSeason?.data
+                            : "Sélectionner une saison"
+                        }
+                        getDisplayText={(data) => data}
+                      />
+                      <button
+                        onClick={() => setSelectedUpdateSeason(null)}
+                        title="Réinitialiser la variation d'ingrédient"
+                        className="cursor-pointer text-primary hover:text-primary-hover dark:text-primary-dark dark:hover:text-primary-dark-hover bg-secondary dark:bg-secondary-dark hover:bg-secondary-hover dark:hover:bg-secondary-dark-hover ml-2 py-[0.6rem] px-[0.8rem] rounded-lg transition-200"
+                      >
+                        <FontAwesomeIcon icon={faRotateLeft} />
+                      </button>
+                    </div>
+
                     <div className="mt-4 w-full px-8 flex flex-wrap items-center justify-between">
                       <div className="mt-4 flex flex-col items-center justify-center">
                         <button
@@ -1051,7 +1119,7 @@ const IngredientVariationManager = () => {
                           className="primary-button "
                           onClick={doUpdate}
                         >
-                          Mettre à jour un type d'ingrédient
+                          Mettre à jour une variation d'ingrédient
                         </button>
                       </div>
                       <div className="mt-4 flex flex-col items-center justify-center">
@@ -1060,7 +1128,7 @@ const IngredientVariationManager = () => {
                           className="delete-button"
                           // onClick={doDelete}
                         >
-                          Supprimer un type d'ingrédient
+                          Supprimer une variation d'ingrédient
                         </button>
                       </div>
                     </div>
@@ -1076,7 +1144,7 @@ const IngredientVariationManager = () => {
                 </div>
               </div>
             </div>
-            {/* ----------------------------------------------------------END UPDATE----------------------------------------------------------- */}
+            {/* -----------------------------------------------------------------END UPDATE----------------------------------------------------------- */}
 
             <div className="flex flex-col items-center justify-center px-8">
               <h2 className="text-4xl uppercase font-bold text-center mt-8 text-secondary dark:text-secondary-dark transition-200">

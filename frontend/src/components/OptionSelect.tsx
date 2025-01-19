@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useDropdownPosition } from "../utils/useDropdownPosition";
 
 export type OptionType<T> = {
-  id: number;
+  id: number | string;
   data: T;
 };
 

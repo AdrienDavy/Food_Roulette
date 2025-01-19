@@ -35,7 +35,7 @@ export class IngredientVariation extends BaseEntity {
 
     @ManyToOne(() => Brand, (brand) => brand.ingredientVariations, { nullable: true })
     @Field(() => Brand, { nullable: true })
-    brand!: Brand;
+    brand!: Brand | null;
 
     @ManyToMany(() => Shop, (shop) => shop.ingredients)
     @JoinTable()
@@ -48,11 +48,11 @@ export class IngredientVariation extends BaseEntity {
 
     @ManyToOne(() => IngredientType, { nullable: true })
     @Field(() => IngredientType, { nullable: true })
-    type!: IngredientType;
+    type!: IngredientType | null;
 
     @ManyToOne(() => Season, { nullable: true })
     @Field(() => Season, { nullable: true })
-    season!: Season;
+    season!: Season | null;
 
     @Column({ default: false })
     @Field()
@@ -68,10 +68,10 @@ export class IngredientVariationCreateInput {
     @Field({ nullable: true })
     image!: string;
 
-    @Field(() => ID)
+    @Field(() => ID, { nullable: true })
     brandId!: number; // ID de la marque parent
 
-    @Field(() => ID)
+    @Field(() => ID, { nullable: true })
     ingredientId!: number; // ID de l'ingrédient parent
 
     @Field(() => ID, { nullable: true })
@@ -99,7 +99,7 @@ export class IngredientVariationUpdateInput {
     @Field({ nullable: true })
     image!: string;
 
-    @Field(() => ID)
+    @Field(() => ID, { nullable: true })
     brandId!: number; // ID de la marque parent
 
     @Field(() => ID, { nullable: true })
