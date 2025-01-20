@@ -540,7 +540,7 @@ const IngredientVariationManager = () => {
       ingredientVariationSearched
     );
 
-    setIsOpen(!isOpen);
+    setIsOpen(false);
     setUpdateErrors("");
   };
 
@@ -1337,11 +1337,11 @@ const IngredientVariationManager = () => {
                             : "bg-primary-focus hover:bg-primary-dark-hover"
                         } group flex flex-col justify-between items-center rounded-lg
                     shadow-xl hover:shadow-2xl  overflow-hidden cursor-pointer`}
-                        // onClick={() =>
-                        //   handleClickChosenIngredientVariation(
-                        //     ingredientVariation
-                        //   )
-                        // }
+                        onClick={() =>
+                          handleClickUpdateIngredientVariationList(
+                            ingredientVariation
+                          )
+                        }
                       >
                         <div className="h-1/2 w-full bg-light relative">
                           {ingredientVariation.hasIngredient ? (
