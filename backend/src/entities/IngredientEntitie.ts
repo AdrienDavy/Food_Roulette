@@ -19,7 +19,7 @@ import { Shop } from "./ShopEntitie";
 @ObjectType()
 export class Ingredient extends BaseEntity {
     @PrimaryGeneratedColumn()
-    @Field(() => ID!)
+    @Field(() => ID)
     id!: number;
 
     @Column()
@@ -33,7 +33,7 @@ export class Ingredient extends BaseEntity {
     @Field({ nullable: true })
     image!: string;
 
-    @OneToMany(() => IngredientVariation, (variation) => variation.ingredient)
+    @OneToMany(() => IngredientVariation, (variation) => variation.ingredient, { nullable: true })
     @Field(() => [IngredientVariation], { nullable: true })
     variations!: IngredientVariation[];
 

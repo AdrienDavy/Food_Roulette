@@ -20,6 +20,7 @@ import { queryIngredientTypes } from "../../api/ingredientType/QueryIngredientTy
 import { useDropdownPosition } from "../../utils/useDropdownPosition";
 import { mutationUpdateIngredientVariation } from "../../api/ingredientVariation/UpdateIngredientVariation";
 import { IngredientVariation } from "../../gql/graphql";
+import { mutationDeleteIngredientVariation } from "../../api/ingredientVariation/DeleteIngredientVariation";
 
 const IngredientVariationManager = () => {
   // --------------------------------STATES--------------------------------
@@ -211,6 +212,32 @@ const IngredientVariationManager = () => {
                 .map(
                   (err: { constraints: { isUrl: string } }) =>
                     err.constraints.isUrl
+                )
+                .join(", ")
+            : "Unknown error";
+          setUpdateErrors(errorMessages);
+        } else {
+          setUpdateErrors(error.message);
+        }
+      },
+    }
+  );
+
+  const [doDeleteIngredientType] = useMutation(
+    mutationDeleteIngredientVariation,
+    {
+      refetchQueries: [queryIngredientVariation, queryIngredientVariations],
+      onError: (error) => {
+        const validationErrors =
+          error.graphQLErrors[0]?.extensions?.validationErrors;
+        if (validationErrors) {
+          interface ValidationError {
+            constraints: { [key: string]: string };
+          }
+          const errorMessages = Array.isArray(validationErrors)
+            ? validationErrors
+                .map((err: ValidationError) =>
+                  Object.values(err.constraints).join(", ")
                 )
                 .join(", ")
             : "Unknown error";
@@ -450,7 +477,64 @@ const IngredientVariationManager = () => {
     }
   }
 
-  // -----------------------------DELETE--------------------------
+  // -----------------------------DODELETE--------------------------
+
+  const validateDeleteForm = () => {
+    if (!updateIngredientVariationName) {
+      setDeleteErrors("La variation d'ingrédient est requise.");
+      return;
+    }
+    setDeleteErrors("");
+    return true;
+  };
+
+  async function doDelete() {
+    if (!ingredientVariationId) {
+      setDeleteErrors("Veuillez sélectionner une variation d'ingrédient.");
+      return;
+    }
+    if (!validateDeleteForm()) {
+      return;
+    }
+
+    try {
+      const { data } = await doDeleteIngredientType({
+        variables: {
+          id: `${ingredientVariationId}`,
+        },
+      });
+      if (data?.deleteIngredientVariation) {
+        toast.success(
+          `Type d'ingrédient ${data?.deleteIngredientVariation.name} supprimé avec succès ! 🦄`,
+          {
+            className: "toast-success bg-primary",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          }
+        );
+      }
+      setUpdateIngredientVariationId("");
+      setUpdateIngredientVariationName("");
+      setUpdateIngredientVariationImage("");
+      setSelectedUpdateSeason(null);
+      setSelectedUpdateIngredientFamily(null);
+      setSelectedUpdateIngredientType(null);
+      setSelectedUpdateBrand(null);
+      setSelectedUpdateShops("");
+      setIsOpen(false);
+
+      return data?.deleteIngredientVariation;
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   // -----------------------------HANDLES--------------------------------
 
@@ -1282,7 +1366,7 @@ const IngredientVariationManager = () => {
                         <button
                           type="button"
                           className="delete-button"
-                          // onClick={doDelete}
+                          onClick={doDelete}
                         >
                           Supprimer une variation d'ingrédient
                         </button>
