@@ -103,9 +103,7 @@ const IngredientVariationManager = () => {
     useState<OptionType<string> | null>(null);
   const [selectedUpdateBrand, setSelectedUpdateBrand] =
     useState<OptionType<string> | null>(null);
-  const [selectedUpdateShops, setSelectedUpdateShops] = useState<
-    OptionType<string>[]
-  >([]);
+  const [selectedUpdateShops, setSelectedUpdateShops] = useState<string>("");
   const [
     updateIngredientVariationShopsIds,
     setUpdateIngredientVariationShopsIds,
@@ -396,10 +394,9 @@ const IngredientVariationManager = () => {
     if (updateIngredientVariationImage === ingredientVariation?.image) {
       setUpdateIngredientVariationImage(ingredientVariation?.image || "");
     }
-
     console.log(
-      " selectedUpdateIngredientType before click:",
-      selectedUpdateIngredientType
+      "updateIngredientVariationShopsIds before click:",
+      updateIngredientVariationShopsIds
     );
 
     try {
@@ -424,12 +421,11 @@ const IngredientVariationManager = () => {
       setSelectedUpdateIngredientFamily(selectedUpdateIngredientFamily);
       setSelectedUpdateIngredientType(selectedUpdateIngredientType);
       setSelectedUpdateBrand(selectedUpdateBrand);
-      setSelectedUpdateShops(selectedUpdateShops.map((shop) => shop));
+      setSelectedUpdateShops(selectedUpdateShops);
       setIsOpen(false);
-
       console.log(
-        " selectedUpdateIngredientType after click:",
-        selectedUpdateIngredientType
+        "updateIngredientVariationShopsIds after click:",
+        updateIngredientVariationShopsIds
       );
       if (data?.updateIngredientVariation) {
         toast.success(
@@ -508,21 +504,35 @@ const IngredientVariationManager = () => {
     setUpdateIngredientVariationImage(ingredientVariationSearched.image || "");
     setSelectedUpdateSeason({
       id: ingredientVariationSearched.season?.id || null || "",
-      data: ingredientVariationSearched.season?.seasonName || "",
+      data:
+        ingredientVariationSearched.season?.seasonName ||
+        "Sélectionner une saison",
     });
     setSelectedUpdateIngredientFamily({
       id: ingredientVariationSearched.ingredient?.id || null || "",
-      data: ingredientVariationSearched.ingredient?.name || "",
+      data:
+        ingredientVariationSearched.ingredient?.name ||
+        "Sélectionner une famille d'ingrédient",
     });
     setSelectedUpdateIngredientType({
       id: ingredientVariationSearched.type?.id || null || "",
-      data: ingredientVariationSearched.type?.name || "",
+      data: ingredientVariationSearched.type?.name || " Sélectionner un type",
     });
     setSelectedUpdateBrand({
       id: ingredientVariationSearched.brand?.id || null || "",
       data:
         ingredientVariationSearched.brand?.name || "Sélectionner une marque",
     });
+
+    console.log("Shops data:", ingredientVariationSearched.shops);
+
+    setSelectedUpdateShops(
+      ingredientVariationSearched.shops?.map((shop) => shop.id).join(",") || ""
+    );
+    setUpdateIngredientVariationShopsIds(
+      ingredientVariationSearched.shops?.map((shop) => Number(shop.id)) || []
+    );
+
     console.log(
       "VARIATION :",
       ingredientVariation?.id,

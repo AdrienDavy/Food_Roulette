@@ -37,19 +37,18 @@ export class Ingredient extends BaseEntity {
     @Field(() => [IngredientVariation], { nullable: true })
     variations!: IngredientVariation[];
 
-    @ManyToOne(() => IngredientType, { nullable: true })
+    @ManyToOne(() => IngredientType, (type) => type.ingredients, { nullable: true })
     @Field(() => IngredientType, { nullable: true })
     type!: IngredientType;
 
-    @ManyToOne(() => Season, { nullable: true })
+    @ManyToOne(() => Season, (season) => season.ingredients, { nullable: true })
     @Field(() => Season, { nullable: true })
     season!: Season;
 
-    @ManyToMany(() => Shop, (shop) => shop.ingredients)
+    @ManyToMany(() => Shop, (shop) => shop.ingredients, { nullable: true })
     @JoinTable()
     @Field(() => [Shop], { nullable: true })
     shops!: Shop[];
-
 
     @Column({ default: false })
     @Field({ nullable: true })
@@ -66,6 +65,9 @@ export class IngredientCreateInput {
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image!: string;
+
+    @Field(() => ID, { nullable: true })
+    variationId!: number;
 
     @Field(() => ID, { nullable: true })
     typeId!: number;
@@ -89,6 +91,9 @@ export class IngredientUpdateInput {
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image?: string;
+
+    @Field(() => ID, { nullable: true })
+    variationId!: number;
 
     @Field(() => ID, { nullable: true })
     typeId?: number;

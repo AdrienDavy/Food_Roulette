@@ -76,8 +76,6 @@ export class IngredientVariationResolver {
             newIngredientVariation.shops = shops;
         }
 
-
-
         // Assigne les autres champs
         Object.assign(newIngredientVariation, { ...data });
 

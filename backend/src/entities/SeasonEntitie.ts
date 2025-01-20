@@ -2,6 +2,7 @@ import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "t
 import { Field, ID, InputType, ObjectType, registerEnumType } from "type-graphql";
 import { IsEnum } from "class-validator";
 import { Recipe } from "./RecipeEntitie";
+import { Ingredient } from "./IngredientEntitie";
 
 // Définir l'énumération des saisons
 export enum SeasonName {
@@ -37,6 +38,10 @@ export class Season extends BaseEntity {
     @OneToMany(() => Recipe, (recipe) => recipe.season, { nullable: true })
     @Field(() => [Recipe], { nullable: true })
     recipes?: Recipe[];
+
+    @OneToMany(() => Ingredient, (ingredient) => ingredient.season, { nullable: true })
+    @Field(() => [Ingredient], { nullable: true })
+    ingredients?: Ingredient[];
 
     // Ajout d'un getter pour transformer la valeur en minuscule
     @Field(() => String)

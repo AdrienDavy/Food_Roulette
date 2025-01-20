@@ -2,6 +2,7 @@ import {
     BaseEntity,
     Column,
     Entity,
+    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import { Field, ID, InputType, ObjectType } from "type-graphql";
 import { IngredientType } from "./IngredientTypeEntitie";
 import { IngredientVariation } from "./IngredientVariationEntitie";
 import { IsOptional, IsUrl } from "class-validator";
+import { Shop } from "./ShopEntitie";
 
 @Entity("brands")
 @ObjectType()
@@ -27,9 +29,13 @@ export class Brand extends BaseEntity {
     @Field({ nullable: true })
     image!: string;
 
-    @OneToMany(() => IngredientType, (type) => type.brand)
+    @OneToMany(() => IngredientType, (type) => type.brand, { nullable: true })
     @Field(() => [IngredientType], { nullable: true })
     ingredientTypes!: IngredientType[];
+
+    @ManyToMany(() => Shop, (shop) => shop.brands)
+    @Field(() => [Shop], { nullable: true })
+    shops!: Shop[];
 
     @OneToMany(() => IngredientVariation, (variation) => variation.brand)
     @Field(() => [IngredientVariation], { nullable: true })
@@ -48,6 +54,12 @@ export class BrandCreateInput {
     image!: string;
 
     @Field(() => [ID], { nullable: true })
+    typeIds!: number[];
+
+    @Field(() => [ID], { nullable: true })
+    shopIds!: number[];
+
+    @Field(() => [ID], { nullable: true })
     ingredientVariationIds!: number[];
 }
 
@@ -60,6 +72,12 @@ export class BrandUpdateInput {
     @IsUrl({}, { message: "Image must be a valid URL" })
     @Field({ nullable: true })
     image!: string;
+
+    @Field(() => [ID], { nullable: true })
+    typeIds!: number[];
+
+    @Field(() => [ID], { nullable: true })
+    shopIds!: number[];
 
     @Field(() => [ID], { nullable: true })
     ingredientVariationIds!: number[];

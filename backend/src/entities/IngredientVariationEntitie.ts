@@ -37,7 +37,7 @@ export class IngredientVariation extends BaseEntity {
     @Field(() => Brand, { nullable: true })
     brand!: Brand | null;
 
-    @ManyToMany(() => Shop, (shop) => shop.ingredients)
+    @ManyToMany(() => Shop, (shop) => shop.ingredientVariations)
     @JoinTable()
     @Field(() => [Shop], { nullable: true })
     shops!: Shop[];
