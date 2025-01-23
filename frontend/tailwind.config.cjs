@@ -5,7 +5,42 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
-       
+        "slide-x": {
+          "0%": {
+            transform: "translateX(0)",
+          },
+          "100%": {
+            transform: "translateX(200%)",
+          },
+        },
+        "slide-y": {
+          "0%": {
+            transform: "translateY(0)",
+          },
+          "100%": {
+            transform: "translateY(200%)",
+          },
+        },
+        particle: {
+          "0%": {
+            transform: "scale(1)",
+            opacity: 1,
+          },
+          "100%": {
+            transform: "scale(0) translate(50px, 0)",
+            opacity: 0,
+          },
+        },
+        ring: {
+          "0%": {
+            transform: "scale(0)",
+            opacity: 1,
+          },
+          "100%": {
+            transform: "scale(2)",
+            opacity: 0,
+          },
+        },
         vibrate: {
           "0%, 100%": { transform: "translateX(0)" },
           "25%": { transform: "translateX(-5px)" },
@@ -15,6 +50,10 @@ module.exports = {
       },
       animation: {
         vibrate: "vibrate 400ms linear forwards",
+        'slide-x': 'slide-x 2s linear infinite',
+        'slide-y': 'slide-y 2s linear infinite',
+        particle: 'particle 0.6s ease-out forwards',
+        ring: 'ring 0.6s ease-out forwards',
       },
       colors: {
         primary: {

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { queryIngredientVariations } from "../../api/ingredientVariation/QueryIngredientVariations";
 import OptionSelect, { OptionType } from "../OptionSelect";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronCircleDown,
@@ -21,6 +21,7 @@ import { useDropdownPosition } from "../../utils/useDropdownPosition";
 import { mutationUpdateIngredientVariation } from "../../api/ingredientVariation/UpdateIngredientVariation";
 import { IngredientVariation } from "../../gql/graphql";
 import { mutationDeleteIngredientVariation } from "../../api/ingredientVariation/DeleteIngredientVariation";
+import Checkbox from "../Checkbox";
 
 const IngredientVariationManager = () => {
   // --------------------------------STATES--------------------------------
@@ -78,12 +79,15 @@ const IngredientVariationManager = () => {
   const [createIngredientVariationImage, setCreateIngredientVariationImage] =
     useState<string>("");
 
-  const [createErrors, setCreateErrors] = useState<string>("");
-
   const [
     createIngredientVariationShopsIds,
     setCreateIngredientVariationShopsIds,
   ] = useState<(string | number)[]>([]);
+
+  const [createHasIngredient, setCreateHasIngredient] =
+    useState<boolean>(false);
+
+  const [createErrors, setCreateErrors] = useState<string>("");
 
   // -------------------------------------UPDATE STATES-------------------------------
   const [ingredientVariationId, setIngredientVariationId] = useState<
@@ -110,6 +114,12 @@ const IngredientVariationManager = () => {
     setUpdateIngredientVariationShopsIds,
   ] = useState<(string | number)[]>([]);
 
+  const [updateHasIngredient, setUpdateHasIngredient] =
+    useState<boolean>(false);
+  const [updateOneHasIngredient, setUpdateOneHasIngredient] = useState<
+    Record<number, boolean | undefined>
+  >({});
+
   const [updateErrors, setUpdateErrors] = useState<string>("");
   const [deleteErrors, setDeleteErrors] = useState<string>("");
 
@@ -121,8 +131,10 @@ const IngredientVariationManager = () => {
     error: ingredientVariationsDataError,
     loading: ingredientVariationsDataLoading,
   } = useQuery(queryIngredientVariations);
-  const ingredientVariations =
-    ingredientVariationsDataFromQuery?.ingredientVariations || [];
+  const ingredientVariations = useMemo(
+    () => ingredientVariationsDataFromQuery?.ingredientVariations || [],
+    [ingredientVariationsDataFromQuery]
+  );
   //--------------------- INGREDIENT VARIATION ---------------------
 
   const { data: ingredientVariationDataFromQuery } = useQuery(
@@ -346,6 +358,7 @@ const IngredientVariationManager = () => {
               createIngredientVariationImage || createImageUrl || undefined, // Assurez-vous de définir l'image si nécessaire
             seasonId: `${selectedCreateSeason?.id}`,
             brandId: `${selectedCreateBrand?.id || ""}`,
+            hasIngredient: createHasIngredient,
             ingredientId: `${selectedCreateIngredient?.id}`,
             typeId: `${selectedCreateType?.id}`,
             shopIds: createIngredientVariationShopsIds.map(String),
@@ -376,6 +389,7 @@ const IngredientVariationManager = () => {
         setSelectedCreateType(null);
         setSelectedCreateSeason(null);
         setSelectedCreateShops([]);
+        setCreateHasIngredient(false);
         setCreateErrors("");
       }
       console.log(" IngredientVariation created successfully:", data);
@@ -421,10 +435,7 @@ const IngredientVariationManager = () => {
     if (updateIngredientVariationImage === ingredientVariation?.image) {
       setUpdateIngredientVariationImage(ingredientVariation?.image || "");
     }
-    console.log(
-      "updateIngredientVariationShopsIds before click:",
-      updateIngredientVariationShopsIds
-    );
+    console.log("updateHasIngredient before click:", updateHasIngredient);
 
     try {
       const { data } = await doUpdateIngredientVariation({
@@ -433,6 +444,7 @@ const IngredientVariationManager = () => {
           data: {
             name: updateIngredientVariationName,
             image: updateIngredientVariationImage || undefined, // Assurez-vous de définir l'image si nécessaire
+            hasIngredient: updateHasIngredient,
             seasonId: `${selectedUpdateSeason?.id}`,
             ingredientId: `${selectedUpdateIngredientFamily?.id}`,
             typeId: `${selectedUpdateIngredientType?.id}`,
@@ -443,6 +455,11 @@ const IngredientVariationManager = () => {
       });
       setUpdateIngredientVariationName(updateIngredientVariationName);
       setUpdateIngredientVariationImage(updateIngredientVariationImage);
+      setUpdateHasIngredient(updateHasIngredient);
+      setUpdateOneHasIngredient((prevState) => ({
+        ...prevState,
+        [ingredientVariationId]: updateOneHasIngredient[ingredientVariationId],
+      }));
       setUpdateIngredientVariationId(updateIngredientVariationId);
       setSelectedUpdateSeason(selectedUpdateSeason);
       setSelectedUpdateIngredientFamily(selectedUpdateIngredientFamily);
@@ -476,6 +493,33 @@ const IngredientVariationManager = () => {
       console.error(err);
     }
   }
+
+  async function doUpdateHasIngredient(ingredientVariationId: number) {
+    const updatedState = !updateOneHasIngredient[ingredientVariationId];
+    const { data } = await doUpdateIngredientVariation({
+      variables: {
+        id: `${ingredientVariationId}`,
+        data: {
+          hasIngredient: updatedState,
+        },
+      },
+    });
+    if (data?.updateIngredientVariation) {
+      // Mettre à jour l'état local
+      setUpdateOneHasIngredient((prevState) => ({
+        ...prevState,
+        [ingredientVariationId]: updatedState,
+      }));
+    }
+  }
+
+  useEffect(() => {
+    const initialState: Record<number, boolean | undefined> = {};
+    ingredientVariations.forEach((variation: IngredientVariation) => {
+      initialState[Number(variation.id)] = variation.hasIngredient;
+    });
+    setUpdateOneHasIngredient(initialState);
+  }, [ingredientVariations]);
 
   // -----------------------------DODELETE--------------------------
 
@@ -528,6 +572,7 @@ const IngredientVariationManager = () => {
       setSelectedUpdateIngredientType(null);
       setSelectedUpdateBrand(null);
       setSelectedUpdateShops("");
+      setUpdateHasIngredient(false);
       setIsOpen(false);
 
       return data?.deleteIngredientVariation;
@@ -569,6 +614,10 @@ const IngredientVariationManager = () => {
 
   const handleUrlChange = (url: string) => {
     setCreateImageUrl(url); // Stocke l'URL pour utilisation
+  };
+
+  const handleCreateToggleHasIngredient = () => {
+    setCreateHasIngredient(!createHasIngredient);
   };
 
   // ---------------------------HANDLE UPDATE----------------------------------------
@@ -616,6 +665,11 @@ const IngredientVariationManager = () => {
     setUpdateIngredientVariationShopsIds(
       ingredientVariationSearched.shops?.map((shop) => Number(shop.id)) || []
     );
+    setUpdateOneHasIngredient((prevState) => ({
+      ...prevState,
+      [ingredientVariationSearched.id]:
+        ingredientVariationSearched.hasIngredient,
+    }));
 
     console.log(
       "VARIATION :",
@@ -648,9 +702,18 @@ const IngredientVariationManager = () => {
       default:
         break;
     }
-    console.log("Option selectedCreate:", option);
-    setCreateErrors("");
+    setUpdateErrors("");
     setIsOpen(isOpen);
+  };
+
+  const handleUpdateToggleHasIngredient = () => {
+    if (ingredientVariation)
+      setUpdateOneHasIngredient((prevState) => ({
+        ...prevState,
+        [ingredientVariation.id]: !prevState[Number(ingredientVariation.id)],
+      }));
+    setUpdateHasIngredient(!updateHasIngredient);
+    console.log("Has ingredient:", updateHasIngredient);
   };
 
   return (
@@ -1038,6 +1101,26 @@ const IngredientVariationManager = () => {
                       )}
                     </div>
                   )}
+
+                  <div
+                    className={`${
+                      createIngredientVariationName
+                        ? "opacity-100"
+                        : "opacity-50"
+                    } relative my-4 px-8 w-full flex items-center justify-center`}
+                  >
+                    <Checkbox
+                      htmlForId="createHasIngredient"
+                      isDisabled={createIngredientVariationName ? false : true}
+                      sentence={
+                        createHasIngredient
+                          ? "Vous avez cette variation d'ingrédient"
+                          : "Possédez-vous cette variation d'ingrédient ?"
+                      }
+                      checked={createHasIngredient}
+                      onToggle={handleCreateToggleHasIngredient}
+                    />
+                  </div>
                   <div className="mt-16 flex flex-col items-center justify-center">
                     <button
                       type="button"
@@ -1345,13 +1428,32 @@ const IngredientVariationManager = () => {
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
                       </button>
-                      {createErrors.includes("magasin") && createErrors && (
+                      {updateErrors.includes("magasin") && updateErrors && (
                         <p className="absolute left-1/2 -translate-x-1/2 top-full text-red-500">
-                          {createErrors}
+                          {updateErrors}
                         </p>
                       )}
                     </div>
-
+                    <div
+                      className={`${
+                        ingredientVariationId ? "opacity-100" : "opacity-50"
+                      } relative my-4 px-8 w-full flex items-center justify-center`}
+                    >
+                      <Checkbox
+                        htmlForId="updateHasIngredient"
+                        isDisabled={ingredientVariationId ? false : true}
+                        sentence={
+                          updateOneHasIngredient[ingredientVariationId!]
+                            ? "Vous avez cette variation d'ingrédient"
+                            : "Possédez-vous cette variation d'ingrédient ?"
+                        }
+                        checked={
+                          updateOneHasIngredient[ingredientVariationId!] ||
+                          false
+                        }
+                        onToggle={handleUpdateToggleHasIngredient}
+                      />
+                    </div>
                     <div className="mt-4 w-full px-8 flex flex-wrap items-center justify-between">
                       <div className="mt-4 flex flex-col items-center justify-center">
                         <button
@@ -1416,7 +1518,10 @@ const IngredientVariationManager = () => {
                       <div
                         key={ingredientVariation.id}
                         className={`${
-                          ingredientVariation.hasIngredient === true
+                          ingredientVariation.hasIngredient === true &&
+                          updateOneHasIngredient[
+                            Number(ingredientVariation.id)
+                          ] === true
                             ? " bg-green-600 hover:bg-green-700"
                             : "bg-primary-focus hover:bg-primary-dark-hover"
                         } group flex flex-col justify-between items-center rounded-lg
@@ -1433,6 +1538,22 @@ const IngredientVariationManager = () => {
                               <span className="-translate-x-40 group-hover:translate-x-0 text-green-400">
                                 Ingrédient disponible
                               </span>
+                              <input
+                                className="cursor-pointer"
+                                type="checkbox"
+                                name=""
+                                id=""
+                                checked={
+                                  updateOneHasIngredient[
+                                    Number(ingredientVariation.id)
+                                  ]!
+                                }
+                                onChange={() =>
+                                  doUpdateHasIngredient(
+                                    Number(ingredientVariation.id)
+                                  )
+                                }
+                              />
                               <span
                                 title="Ingrédient disponible"
                                 className="translate-x-4 group-hover:translate-x-0 w-3 h-3 bg-green-400 rounded-full"
@@ -1443,6 +1564,22 @@ const IngredientVariationManager = () => {
                               <span className="-translate-x-40 group-hover:translate-x-0 text-red-400">
                                 Ingrédient manquant
                               </span>
+                              <input
+                                className="cursor-pointer"
+                                type="checkbox"
+                                name=""
+                                id=""
+                                checked={
+                                  updateOneHasIngredient[
+                                    Number(ingredientVariation.id)
+                                  ]
+                                }
+                                onChange={() =>
+                                  doUpdateHasIngredient(
+                                    Number(ingredientVariation.id)
+                                  )
+                                }
+                              />
                               <span
                                 title="Ingrédient manquant"
                                 className="translate-x-4 group-hover:translate-x-0 w-3 h-3 bg-red-400 rounded-full"
@@ -1470,7 +1607,7 @@ const IngredientVariationManager = () => {
                         <div className="h-1/2 p-2 w-full text-center flex flex-col justify-between">
                           <div>
                             <p className=" text-left font-bold text-2xl text-secondary dark:text-secondary-dark">
-                              {ingredientVariation.name}{" "}
+                              {ingredientVariation.name}
                               <span className=" text-sm text-secondary-focus dark:text-secondary-dark-focus">
                                 (id {ingredientVariation.id})
                               </span>
