@@ -1540,6 +1540,7 @@ const IngredientVariationManager = () => {
                               </span>
                               <input
                                 className="cursor-pointer"
+                                title="Cliquez si vous n'avez pas cet ingrédient"
                                 type="checkbox"
                                 name=""
                                 id=""
@@ -1566,6 +1567,7 @@ const IngredientVariationManager = () => {
                               </span>
                               <input
                                 className="cursor-pointer"
+                                title="Cliquez si vous avez cet ingrédient"
                                 type="checkbox"
                                 name=""
                                 id=""
