@@ -54,11 +54,11 @@ const documents = {
     "\nquery QueryTag($tagId: ID!) { \n  tag(id: $tagId) {\n    id\n    name\n    recipes {\n      id\n      name\n      preparation\n      cookTime\n      image\n      recipeType\n      season {\n        id\n        seasonName\n      }\n      variations {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n": types.QueryTagDocument,
     "\nquery Tags {\n  tags {\n    id\n    name\n    recipes {\n      id\n      name\n      preparation\n      cookTime\n      image\n      recipeType\n      season {\n        id\n        seasonName\n      }\n      variations {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n": types.TagsDocument,
     "\nmutation UpdateTag($data: TagUpdateInput!, $id:ID!) {\n  updateTag(data: $data, id:$id) {\n    id\n  }\n}\n": types.UpdateTagDocument,
-    "\nmutation CreateUnit($data: UnitCreateInput!) {\n  createUnit(data: $data) {\n    id\n  }\n}\n": types.CreateUnitDocument,
-    "\nmutation DeleteUnit($id: ID!) {\n  deleteUnit(id: $id) {\n    id\n  }\n}\n": types.DeleteUnitDocument,
+    "\nmutation CreateUnit($data: UnitCreateInput!) {\n  createUnit(data: $data) {\n    id\n    name\n    abbreviation\n  }\n}\n": types.CreateUnitDocument,
+    "\nmutation DeleteUnit($id: ID!) {\n  deleteUnit(id: $id) {\n    id\n    name\n    abbreviation\n  }\n}\n": types.DeleteUnitDocument,
     "\nquery Unit($unitId: ID!) {\n  unit(id: $unitId) {\n    id\n    name\n    abbreviation\n  }\n}\n": types.UnitDocument,
     "\nquery Units {\n  units {\n    id\n    name\n    abbreviation\n  }\n}\n": types.UnitsDocument,
-    "\nmutation UpdateUnit($data: UnitUpdateInput!, $updateUnitId: ID!) {\n  updateUnit(data: $data, id: $updateUnitId) {\n    id\n  \n  }\n}\n": types.UpdateUnitDocument,
+    "\nmutation UpdateUnit($data: UnitUpdateInput!, $updateUnitId: ID!) {\n  updateUnit(data: $data, id: $updateUnitId) {\n    id\n    name\n    abbreviation\n  }\n}\n": types.UpdateUnitDocument,
 };
 
 /**
@@ -238,11 +238,11 @@ export function gql(source: "\nmutation UpdateTag($data: TagUpdateInput!, $id:ID
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation CreateUnit($data: UnitCreateInput!) {\n  createUnit(data: $data) {\n    id\n  }\n}\n"): (typeof documents)["\nmutation CreateUnit($data: UnitCreateInput!) {\n  createUnit(data: $data) {\n    id\n  }\n}\n"];
+export function gql(source: "\nmutation CreateUnit($data: UnitCreateInput!) {\n  createUnit(data: $data) {\n    id\n    name\n    abbreviation\n  }\n}\n"): (typeof documents)["\nmutation CreateUnit($data: UnitCreateInput!) {\n  createUnit(data: $data) {\n    id\n    name\n    abbreviation\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation DeleteUnit($id: ID!) {\n  deleteUnit(id: $id) {\n    id\n  }\n}\n"): (typeof documents)["\nmutation DeleteUnit($id: ID!) {\n  deleteUnit(id: $id) {\n    id\n  }\n}\n"];
+export function gql(source: "\nmutation DeleteUnit($id: ID!) {\n  deleteUnit(id: $id) {\n    id\n    name\n    abbreviation\n  }\n}\n"): (typeof documents)["\nmutation DeleteUnit($id: ID!) {\n  deleteUnit(id: $id) {\n    id\n    name\n    abbreviation\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -254,7 +254,7 @@ export function gql(source: "\nquery Units {\n  units {\n    id\n    name\n    a
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation UpdateUnit($data: UnitUpdateInput!, $updateUnitId: ID!) {\n  updateUnit(data: $data, id: $updateUnitId) {\n    id\n  \n  }\n}\n"): (typeof documents)["\nmutation UpdateUnit($data: UnitUpdateInput!, $updateUnitId: ID!) {\n  updateUnit(data: $data, id: $updateUnitId) {\n    id\n  \n  }\n}\n"];
+export function gql(source: "\nmutation UpdateUnit($data: UnitUpdateInput!, $updateUnitId: ID!) {\n  updateUnit(data: $data, id: $updateUnitId) {\n    id\n    name\n    abbreviation\n  }\n}\n"): (typeof documents)["\nmutation UpdateUnit($data: UnitUpdateInput!, $updateUnitId: ID!) {\n  updateUnit(data: $data, id: $updateUnitId) {\n    id\n    name\n    abbreviation\n  }\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

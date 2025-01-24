@@ -3,6 +3,7 @@ import IngredientManager from "../components/dataManagers/IngredientManager";
 import IngredientTypeManager from "../components/dataManagers/IngredientTypeManager";
 import IngredientVariationManager from "../components/dataManagers/IngredientVariationManager";
 import ShopManager from "../components/dataManagers/ShopManager";
+import UnitManager from "../components/dataManagers/UnitManager";
 import Image from "../components/Image";
 import { handleScrollToElement } from "../utils/handleScrollToElement";
 
@@ -73,6 +74,7 @@ const Creation = () => {
         <IngredientManager />
         <BrandManager />
         <ShopManager />
+        <UnitManager />
       </div>
     </div>
   );
