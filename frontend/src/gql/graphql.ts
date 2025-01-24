@@ -137,7 +137,7 @@ export type Mutation = {
   createIngredientVariation: IngredientVariation;
   createRecipe: Recipe;
   createSeason: Season;
-  createShops: Array<Shop>;
+  createShop: Shop;
   createTag: Tag;
   createUnit: Unit;
   deleteBrand?: Maybe<Brand>;
@@ -191,8 +191,8 @@ export type MutationCreateSeasonArgs = {
 };
 
 
-export type MutationCreateShopsArgs = {
-  data: Array<ShopCreateInput>;
+export type MutationCreateShopArgs = {
+  data: ShopCreateInput;
 };
 
 
