@@ -738,7 +738,7 @@ const IngredientVariationManager = () => {
             Gestionnaire de variations d'ingrédients
           </h1>
         </div>
-        {!isManagerOpen && (
+        {isManagerOpen && (
           <div className="flex flex-col w-full py-8 items-center justify-center rounded-lg transition-200">
             <h2 className=" mb-4 text-center font-bold text-2xl text-secondary dark:text-secondary-dark transition-200">
               Variations d'ingrédients
@@ -1602,7 +1602,7 @@ const IngredientVariationManager = () => {
                             />
                           ) : (
                             <svg
-                              className="w-full h-full  text-gray-200 dark:text-gray-600"
+                              className="w-full h-full p-8 text-gray-200 dark:text-gray-600"
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               fill="currentColor"

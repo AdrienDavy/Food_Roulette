@@ -2,6 +2,7 @@ import BrandManager from "../components/dataManagers/BrandManager";
 import IngredientManager from "../components/dataManagers/IngredientManager";
 import IngredientTypeManager from "../components/dataManagers/IngredientTypeManager";
 import IngredientVariationManager from "../components/dataManagers/IngredientVariationManager";
+import ShopManager from "../components/dataManagers/ShopManager";
 import Image from "../components/Image";
 import { handleScrollToElement } from "../utils/handleScrollToElement";
 
@@ -46,6 +47,13 @@ const Creation = () => {
         >
           Marques
         </a>
+        <a
+          className="text-secondary bg-[rgba(66,119,133,0.5)] hover:bg-primary p-2 rounded-lg dark:text-secondary-dark hover:text-secondary-hover dark:hover:text-secondary-dark-hover cursor-pointer"
+          onClick={(event) => handleScrollToElement(event, "shops")}
+          href="#shops"
+        >
+          Supermarchés
+        </a>
       </div>
       <div
         style={{ position: "relative", width: "300px", height: "300px" }}
@@ -64,6 +72,7 @@ const Creation = () => {
         <IngredientTypeManager />
         <IngredientManager />
         <BrandManager />
+        <ShopManager />
       </div>
     </div>
   );
