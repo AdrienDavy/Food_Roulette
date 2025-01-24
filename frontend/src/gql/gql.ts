@@ -44,10 +44,11 @@ const documents = {
     "\nquery Season($seasonId: ID!) {\n  season(id: $seasonId) {\n    id\n    seasonName\n  }\n}\n": types.SeasonDocument,
     "\nquery Seasons {\n  seasons {\n    id\n    seasonName\n  }\n}\n": types.SeasonsDocument,
     "\nmutation UpdateSeason($data: SeasonUpdateInput!, $id:ID!) {\n  updateSeason(data: $data, id:$id) {\n    id\n  }\n}\n": types.UpdateSeasonDocument,
-    "\nmutation DeleteShop($id: ID!) {\n  deleteShop(id: $id) {\n    id\n  }\n}\n": types.DeleteShopDocument,
+    "\nmutation CreateShop($data: ShopCreateInput!) {\n  createShop(data: $data) {\n    id\n    name\n    image\n  }\n}\n": types.CreateShopDocument,
+    "\nmutation DeleteShop($id: ID!) {\n  deleteShop(id: $id) {\n    id\n    name\n  }\n}\n": types.DeleteShopDocument,
     "\nquery Shop($shopId: ID!) {\n  shop(id: $shopId) {\n    id\n    name\n    image\n  }\n}\n": types.ShopDocument,
     "\nquery Shops {\n  shops {\n    id\n    name\n    image\n  }\n}\n": types.ShopsDocument,
-    "\nmutation UpdateShop($data: ShopUpdateInput!, $updateShopId: ID!) {\n  updateShop(data: $data, id: $updateShopId) {\n    id\n  }\n}\n": types.UpdateShopDocument,
+    "\nmutation UpdateShop($data: ShopUpdateInput!, $updateShopId: ID!) {\n  updateShop(data: $data, id: $updateShopId) {\n    id\n    name\n    image\n  }\n}\n": types.UpdateShopDocument,
     "\nmutation CreateTag($data: TagCreateInput!) {\n  createTag(data: $data) {\n    id\n  }\n}\n": types.CreateTagDocument,
     "\nmutation DeleteTag($id: ID!) {\n  deleteTag(id: $id) {\n    id\n  }\n}\n": types.DeleteTagDocument,
     "\nquery QueryTag($tagId: ID!) { \n  tag(id: $tagId) {\n    id\n    name\n    recipes {\n      id\n      name\n      preparation\n      cookTime\n      image\n      recipeType\n      season {\n        id\n        seasonName\n      }\n      variations {\n        id\n        name\n        image\n      }\n    }\n  }\n}\n": types.QueryTagDocument,
@@ -197,7 +198,11 @@ export function gql(source: "\nmutation UpdateSeason($data: SeasonUpdateInput!, 
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation DeleteShop($id: ID!) {\n  deleteShop(id: $id) {\n    id\n  }\n}\n"): (typeof documents)["\nmutation DeleteShop($id: ID!) {\n  deleteShop(id: $id) {\n    id\n  }\n}\n"];
+export function gql(source: "\nmutation CreateShop($data: ShopCreateInput!) {\n  createShop(data: $data) {\n    id\n    name\n    image\n  }\n}\n"): (typeof documents)["\nmutation CreateShop($data: ShopCreateInput!) {\n  createShop(data: $data) {\n    id\n    name\n    image\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nmutation DeleteShop($id: ID!) {\n  deleteShop(id: $id) {\n    id\n    name\n  }\n}\n"): (typeof documents)["\nmutation DeleteShop($id: ID!) {\n  deleteShop(id: $id) {\n    id\n    name\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -209,7 +214,7 @@ export function gql(source: "\nquery Shops {\n  shops {\n    id\n    name\n    i
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation UpdateShop($data: ShopUpdateInput!, $updateShopId: ID!) {\n  updateShop(data: $data, id: $updateShopId) {\n    id\n  }\n}\n"): (typeof documents)["\nmutation UpdateShop($data: ShopUpdateInput!, $updateShopId: ID!) {\n  updateShop(data: $data, id: $updateShopId) {\n    id\n  }\n}\n"];
+export function gql(source: "\nmutation UpdateShop($data: ShopUpdateInput!, $updateShopId: ID!) {\n  updateShop(data: $data, id: $updateShopId) {\n    id\n    name\n    image\n  }\n}\n"): (typeof documents)["\nmutation UpdateShop($data: ShopUpdateInput!, $updateShopId: ID!) {\n  updateShop(data: $data, id: $updateShopId) {\n    id\n    name\n    image\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
