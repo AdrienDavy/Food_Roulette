@@ -1,10 +1,11 @@
 import { gql } from "../../gql";
 
-
-export const mutationCreateShops = gql(`
-mutation CreateShops($data: ShopCreateInput[]!) {
-  createShops(data: $data) {
+export const mutationCreateShop = gql(`
+mutation CreateShop($data: ShopCreateInput!) {
+  createShop(data: $data) {
     id
+    name
+    image
   }
 }
 `);
