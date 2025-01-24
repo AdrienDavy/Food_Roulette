@@ -1534,16 +1534,19 @@ const IngredientVariationManager = () => {
                       >
                         <div className="h-1/2 w-full bg-light relative">
                           {ingredientVariation.hasIngredient ? (
-                            <div className="overflow-hidden px-2 absolute bottom-0 right-0 w-full justify-between items-center backdrop-blur-lg bg-gradient-to-tr from-[rgba(0,0,0,0.5)] to-[rgba(0,0,0,0.7)] p-1 flex">
+                            <label
+                              title="Cliquez si vous n'avez pas cet ingrédient"
+                              htmlFor={ingredientVariation.id}
+                              className="cursor-pointer overflow-hidden px-2 absolute bottom-0 right-0 w-full justify-between items-center backdrop-blur-lg bg-gradient-to-tr from-[rgba(0,0,0,0.5)] to-[rgba(0,0,0,0.7)] p-1 flex"
+                            >
                               <span className="-translate-x-40 group-hover:translate-x-0 text-green-400">
                                 Ingrédient disponible
                               </span>
                               <input
-                                className="cursor-pointer"
-                                title="Cliquez si vous n'avez pas cet ingrédient"
+                                className="peer appearance-none"
                                 type="checkbox"
                                 name=""
-                                id=""
+                                id={ingredientVariation.id}
                                 checked={
                                   updateOneHasIngredient[
                                     Number(ingredientVariation.id)
@@ -1559,18 +1562,21 @@ const IngredientVariationManager = () => {
                                 title="Ingrédient disponible"
                                 className="translate-x-4 group-hover:translate-x-0 w-3 h-3 bg-green-400 rounded-full"
                               ></span>
-                            </div>
+                            </label>
                           ) : (
-                            <div className="overflow-hidden px-2 absolute bottom-0 right-0 w-full justify-between items-center backdrop-blur-lg bg-gradient-to-tr from-[rgba(0,0,0,0.5)] to-[rgba(0,0,0,0.7)] p-1 flex">
+                            <label
+                              title="Cliquez si vous avez cet ingrédient"
+                              htmlFor={ingredientVariation.id}
+                              className=" cursor-pointer overflow-hidden px-2 absolute bottom-0 right-0 w-full justify-between items-center backdrop-blur-lg bg-gradient-to-tr from-[rgba(0,0,0,0.5)] to-[rgba(0,0,0,0.7)] p-1 flex"
+                            >
                               <span className="-translate-x-40 group-hover:translate-x-0 text-red-400">
                                 Ingrédient manquant
                               </span>
                               <input
-                                className="cursor-pointer"
-                                title="Cliquez si vous avez cet ingrédient"
+                                className="peer appearance-none"
                                 type="checkbox"
                                 name=""
-                                id=""
+                                id={ingredientVariation.id}
                                 checked={
                                   updateOneHasIngredient[
                                     Number(ingredientVariation.id)
@@ -1586,7 +1592,7 @@ const IngredientVariationManager = () => {
                                 title="Ingrédient manquant"
                                 className="translate-x-4 group-hover:translate-x-0 w-3 h-3 bg-red-400 rounded-full"
                               ></span>
-                            </div>
+                            </label>
                           )}
                           {ingredientVariation.image ? (
                             <img
